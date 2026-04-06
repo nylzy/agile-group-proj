@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>APEX Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Share+Tech+Mono&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  
+  <style>
+    /* ═══════════════════════════════════════════
+       APEX FITNESS — Dashboard Specific Styles
+    ═══════════════════════════════════════════ */
+
+    /* Layout */
+    .app-container {
+      display: flex;
+      width: 100%;
+      min-height: 100vh;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 260px;
+      background: rgba(12, 18, 24, 0.85);
+      border-right: 1px solid var(--border);
+      backdrop-filter: blur(10px);
+      display: flex;
+      flex-direction: column;
+      padding: 32px 0;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+    }
+    .sidebar-logo {
+      font-family: var(--font-display);
+      font-size: 2.2rem;
+      letter-spacing: 0.14em;
+      color: var(--accent);
+      text-shadow: 0 0 20px var(--glow);
+      padding: 0 32px;
+      margin-bottom: 48px;
+    }
+    .sidebar-logo span { color: var(--text); }
+    .nav-menu { list-style: none; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+    .nav-item a {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 14px 32px;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-decoration: none;
+      transition: all var(--transition);
+      border-left: 3px solid transparent;
+    }
+    .nav-item a:hover, .nav-item.active a {
+      color: var(--text);
+      background: rgba(0, 245, 160, 0.05);
+      border-left-color: var(--accent);
+    }
+    .nav-item.active a { color: var(--accent); text-shadow: 0 0 10px var(--glow); }
+    .user-card {
+      padding: 24px 32px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .avatar { width: 40px; height: 40px; background: var(--border); border-radius: 50%; display: grid; place-items: center; font-family: var(--font-mono); color: var(--accent); font-weight: bold; border: 1px solid var(--accent); }
+    .user-info { display: flex; flex-direction: column; }
+    .user-name { font-family: var(--font-mono); font-size: 0.75rem; color: var(--text); text-transform: uppercase; letter-spacing: 0.1em; }
+    .user-rank { font-size: 0.7rem; color: var(--muted); }
+
+    /* Main Content */
+    .main-content {
+      flex: 1;
+      padding: 48px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-bottom: 40px;
+    }
+    .page-title { font-size: 3.2rem; }
+    .page-subtitle { font-family: var(--font-mono); color: var(--muted); letter-spacing: 0.1em; font-size: 0.8rem; text-transform: uppercase; }
+
+    /* Buttons (Extending styles.css) */
+    .btn-small { padding: 8px 16px; font-size: 0.7rem; }
+
+    /* Dashboard Grid */
+    .dash-grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 24px;
+    }
+
+    /* Panels */
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      padding: 24px;
+      position: relative;
+    }
+    .panel::before, .panel::after {
+      content: ''; position: absolute; width: 12px; height: 12px; border-color: var(--accent); border-style: solid;
+    }
+    .panel::before { top: -1px; left: -1px; border-width: 2px 0 0 2px; }
+    .panel::after { bottom: -1px; right: -1px; border-width: 0 2px 2px 0; }
+    
+    .panel-header {
+      display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 12px;
+    }
+    .panel-title { font-family: var(--font-mono); font-size: 0.8rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent); display: flex; align-items: center; gap: 8px; }
+    .panel-title::before { content: ''; display: block; width: 6px; height: 6px; background: var(--accent); border-radius: 50%; }
+
+    /* Specific Widgets */
+    .widget-main { grid-column: span 8; display: flex; flex-direction: column; justify-content: space-between; }
+    .widget-side { grid-column: span 4; display: flex; flex-direction: column; gap: 24px; }
+    .widget-half { grid-column: span 6; }
+
+    /* Graph Area inside Main Widget */
+    .graph-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex: 1;
+    }
+    #dashboard-spider { width: 100%; max-width: 400px; height: auto; }
+    .main-score-box { text-align: right; }
+    .score-label { font-family: var(--font-mono); color: var(--muted); font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase; }
+    .score-value { font-family: var(--font-display); font-size: 5rem; color: var(--accent); line-height: 0.9; text-shadow: 0 0 30px var(--glow); margin: 8px 0; }
+    .score-change { font-family: var(--font-mono); color: var(--accent2); font-size: 0.8rem; }
+
+    /* Quick Stats */
+    .stat-row { display: flex; justify-content: space-between; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px dashed var(--border); }
+    .stat-row:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+    .stat-label { font-family: var(--font-mono); color: var(--muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; }
+    .stat-val { font-family: var(--font-display); font-size: 1.5rem; color: var(--text); }
+
+    /* Quick Log */
+    .log-form { display: flex; flex-direction: column; gap: 12px; }
+    .input-group { display: flex; flex-direction: column; gap: 6px; }
+    .input-group label { font-family: var(--font-mono); font-size: 0.65rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; }
+    .input-group select, .input-group input {
+      background: rgba(0,0,0,0.3); border: 1px solid var(--border); color: var(--text); font-family: var(--font-mono); padding: 10px; outline: none; transition: border 0.2s;
+    }
+    .input-group select:focus, .input-group input:focus { border-color: var(--accent); box-shadow: 0 0 10px rgba(0,245,160,0.1); }
+    .log-form .btn { margin-top: 8px; width: 100%; }
+
+    /* Mini Leaderboard */
+    .leaderboard-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+    .lb-item { display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.02); padding: 10px 16px; border: 1px solid var(--border); font-family: var(--font-mono); font-size: 0.8rem; }
+    .lb-item.highlight { border-color: rgba(0,245,160,0.3); background: rgba(0,245,160,0.05); }
+    .lb-rank { color: var(--muted); width: 24px; }
+    .lb-name { flex: 1; color: var(--text); }
+    .lb-score { color: var(--accent); font-weight: bold; }
+
+    /* Recent Logs */
+    .activity-list { display: flex; flex-direction: column; gap: 12px; }
+    .activity-item { display: flex; align-items: center; gap: 16px; padding: 12px; background: rgba(0,0,0,0.2); border-left: 2px solid var(--accent2); }
+    .act-icon { font-size: 1.2rem; opacity: 0.8; }
+    .act-details { flex: 1; display: flex; flex-direction: column; }
+    .act-title { font-family: var(--font-mono); font-size: 0.8rem; color: var(--text); text-transform: uppercase; }
+    .act-time { font-size: 0.7rem; color: var(--muted); }
+    .act-metric { font-family: var(--font-display); font-size: 1.2rem; color: var(--accent); }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .widget-main, .widget-side, .widget-half { grid-column: span 12; }
+      .graph-container { flex-direction: column; text-align: center; }
+      .main-score-box { text-align: center; margin-top: 24px; }
+    }
+    @media (max-width: 768px) {
+      .app-container { flex-direction: column; }
+      .sidebar { width: 100%; height: auto; position: relative; padding: 20px 0; flex-direction: row; align-items: center; justify-content: space-between; border-right: none; border-bottom: 1px solid var(--border); }
+      .sidebar-logo { margin: 0; padding: 0 24px; font-size: 1.5rem; }
+      .nav-menu { display: none; } /* Could add a hamburger menu here */
+      .user-card { display: none; }
+      .main-content { padding: 24px; }
+      .page-title { font-size: 2.4rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Background grid -->
+  <div class="grid-bg" aria-hidden="true"></div>
+
+  <div class="app-container">
+    <!-- ══ SIDEBAR / NAV ══ -->
+    <aside class="sidebar">
+      <div class="sidebar-logo">AP<span>EX</span></div>
+      <ul class="nav-menu">
+        <li class="nav-item active"><a href="#">Dashboard</a></li>
+        <li class="nav-item"><a href="log.html">Log Workout</a></li>
+        <li class="nav-item"><a href="leaderboard.html">Leaderboard</a></li>
+        <li class="nav-item"><a href="profile.html">Profile</a></li>
+        <li class="nav-item" style="margin-top: auto;"><a href="#">Settings</a></li>
+        <li class="nav-item"><a href="login.html">Sign Out</a></li>
+      </ul>
+      <div class="user-card">
+        <div class="avatar">AR</div>
+        <div class="user-info">
+          <span class="user-name">Alex_R</span>
+          <span class="user-rank">Global Rank: #4,291</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ══ MAIN DASHBOARD ══ -->
+    <main class="main-content">
+      
+      <header class="header">
+        <div>
+          <div class="page-subtitle">Unified Fitness Intelligence</div>
+          <h1 class="page-title">SYSTEM <span class="accent">DASHBOARD</span></h1>
+        </div>
+        <a href="log.html" class="btn btn-primary">+ New Entry</a>
+      </header>
+
+      <div class="dash-grid">
+        
+        <!-- 1. SPIDER GRAPH (Main) -->
+        <div class="panel widget-main">
+          <div class="panel-header">
+            <div class="panel-title">Performance Matrix</div>
+            <a href="profile.html" class="btn btn-ghost btn-small">Full Analysis</a>
+          </div>
+          <div class="graph-container">
+            <canvas id="dashboard-spider" width="400" height="340" role="img" aria-label="5-Point Radar chart"></canvas>
+            <div class="main-score-box">
+              <div class="score-label">Current Apex Score</div>
+              <div class="score-value" id="dash-score">0</div>
+              <div class="score-change">↑ +3.2 points this month</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. QUICK ACTIONS & STATS (Side) -->
+        <div class="widget-side">
+          <!-- Quick Log -->
+          <div class="panel">
+            <div class="panel-header">
+              <div class="panel-title">Quick Log</div>
+            </div>
+            <form class="log-form" onsubmit="event.preventDefault(); alert('Exercise logged successfully!');">
+              <div class="input-group">
+                <label>Event Type</label>
+                <select required>
+                  <option value="bench">Bench Press</option>
+                  <option value="5k">5K Run</option>
+                  <option value="pullup">Chin-ups</option>
+                  <option value="sprint">400m Sprint</option>
+                  <option value="deadlift">Deadlift</option>
+                </select>
+              </div>
+              <div class="input-group">
+                <label>Result / Metric</label>
+                <input type="text" placeholder="e.g. 100kg or 22:30" required />
+              </div>
+              <button type="submit" class="btn btn-ghost">Save Entry</button>
+            </form>
+          </div>
+
+          <!-- Mini Stats -->
+          <div class="panel" style="flex: 1;">
+            <div class="panel-header">
+              <div class="panel-title">Overview</div>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">Total Workouts</span>
+              <span class="stat-val">142</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">Current Streak</span>
+              <span class="stat-val accent2">5 Days</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">Top Discipline</span>
+              <span class="stat-val accent3">Power</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. RECENT ACTIVITY -->
+        <div class="panel widget-half">
+          <div class="panel-header">
+            <div class="panel-title">Recent Transmissions</div>
+            <a href="profile.html" class="btn btn-ghost btn-small">View All</a>
+          </div>
+          <div class="activity-list">
+            <div class="activity-item">
+              <div class="act-icon">🏋️</div>
+              <div class="act-details">
+                <span class="act-title">Bench Press</span>
+                <span class="act-time">Today, 08:30 AM</span>
+              </div>
+              <span class="act-metric">105 kg</span>
+            </div>
+            <div class="activity-item" style="border-left-color: var(--accent3);">
+              <div class="act-icon">🏃</div>
+              <div class="act-details">
+                <span class="act-title">5K Run</span>
+                <span class="act-time">Yesterday, 18:45 PM</span>
+              </div>
+              <span class="act-metric">21:40</span>
+            </div>
+            <div class="activity-item" style="border-left-color: var(--danger);">
+              <div class="act-icon">💪</div>
+              <div class="act-details">
+                <span class="act-title">Chin-ups (Max Set)</span>
+                <span class="act-time">Oct 12, 07:15 AM</span>
+              </div>
+              <span class="act-metric">18 reps</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4. MINI LEADERBOARD -->
+        <div class="panel widget-half">
+          <div class="panel-header">
+            <div class="panel-title">Global Top 5</div>
+            <a href="leaderboard.html" class="btn btn-ghost btn-small">Full Rankings</a>
+          </div>
+          <ul class="leaderboard-list">
+            <li class="lb-item">
+              <span class="lb-rank mono">01</span>
+              <span class="lb-name">Marcus_Titan</span>
+              <span class="lb-score">96.4</span>
+            </li>
+            <li class="lb-item">
+              <span class="lb-rank mono">02</span>
+              <span class="lb-name">Sarah_V</span>
+              <span class="lb-score">94.8</span>
+            </li>
+            <li class="lb-item">
+              <span class="lb-rank mono">03</span>
+              <span class="lb-name">J_Chen_Run</span>
+              <span class="lb-score">92.1</span>
+            </li>
+            <li class="lb-item highlight">
+              <span class="lb-rank mono">--</span>
+              <span class="lb-name">Alex_R (You)</span>
+              <span class="lb-score">78.0</span>
+            </li>
+          </ul>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- ══ SCRIPT ══ -->
+  <script>
+    /* ── 5-Point Spider / Radar Chart ── */
+    (function () {
+      const canvas  = document.getElementById('dashboard-spider');
+      if (!canvas) return;
+      
+      const ctx = canvas.getContext('2d');
+      const W = canvas.width, H = canvas.height;
+      const cx = W / 2, cy = H / 2 + 10;
+      const R = Math.min(W, H) * 0.35;
+
+      // Dashboard Graph: 5 core attributes instead of 6 events
+      const labels = ['Strength', 'Speed', 'Endurance', 'Agility', 'Power'];
+      const target = [0.85, 0.65, 0.72, 0.78, 0.90]; 
+      const n = labels.length;
+      let progress = 0;
+
+      function angleFor(i) { 
+        return (Math.PI * 2 * i) / n - Math.PI / 2; 
+      }
+
+      function pointAt(radius, i) {
+        const a = angleFor(i);
+        return { x: cx + Math.cos(a) * radius, y: cy + Math.sin(a) * radius };
+      }
+
+      function draw(t) {
+        ctx.clearRect(0, 0, W, H);
+
+        /* Background Web Rings */
+        const rings = 5;
+        for (let r = 1; r <= rings; r++) {
+          const frac = r / rings;
+          ctx.beginPath();
+          for (let i = 0; i < n; i++) {
+            const p = pointAt(R * frac, i);
+            i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y);
+          }
+          ctx.closePath();
+          ctx.strokeStyle = r === rings ? 'rgba(0,245,160,0.2)' : 'rgba(0,245,160,0.05)';
+          ctx.lineWidth = r === rings ? 1.5 : 1;
+          ctx.stroke();
+
+          /* Ring value labels (only on the vertical axis for neatness) */
+          if (r < rings) {
+            ctx.fillStyle = 'rgba(0,245,160,0.3)';
+            ctx.font = '500 10px "Share Tech Mono"';
+            ctx.textAlign = 'left';
+            ctx.fillText((frac * 100).toFixed(0), cx + 4, cy - R * frac - 4);
+          }
+        }
+
+        /* Spokes */
+        for (let i = 0; i < n; i++) {
+          const p = pointAt(R, i);
+          ctx.beginPath();
+          ctx.moveTo(cx, cy);
+          ctx.lineTo(p.x, p.y);
+          ctx.strokeStyle = 'rgba(0,245,160,0.1)';
+          ctx.lineWidth = 1;
+          ctx.stroke();
+        }
+
+        /* Animated Data Polygon */
+        ctx.beginPath();
+        for (let i = 0; i < n; i++) {
+          const val = target[i] * t;
+          const p = pointAt(R * val, i);
+          i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y);
+        }
+        ctx.closePath();
+        
+        ctx.fillStyle = 'rgba(0,245,160,0.15)';
+        ctx.fill();
+        ctx.strokeStyle = '#00f5a0';
+        ctx.lineWidth = 2.5;
+        ctx.shadowColor = '#00f5a0';
+        ctx.shadowBlur = 15;
+        ctx.stroke();
+        ctx.shadowBlur = 0;
+
+        /* Data Points */
+        for (let i = 0; i < n; i++) {
+          const val = target[i] * t;
+          const p = pointAt(R * val, i);
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, 4, 0, Math.PI * 2);
+          ctx.fillStyle = '#0c1218';
+          ctx.fill();
+          ctx.lineWidth = 2;
+          ctx.strokeStyle = '#00f5a0';
+          ctx.shadowColor = '#00f5a0';
+          ctx.shadowBlur = 10;
+          ctx.stroke();
+          ctx.shadowBlur = 0;
+        }
+
+        /* Outer Labels */
+        for (let i = 0; i < n; i++) {
+          const p = pointAt(R * 1.25, i);
+          const a = angleFor(i);
+          const score = Math.round(target[i] * 100 * t);
+
+          ctx.textAlign = (Math.cos(a) > 0.1) ? 'left' : (Math.cos(a) < -0.1) ? 'right' : 'center';
+          ctx.textBaseline = 'middle';
+          
+          ctx.fillStyle = '#ddeaf5';
+          ctx.font = '400 12px "Share Tech Mono"';
+          ctx.fillText(labels[i].toUpperCase(), p.x, p.y - 8);
+
+          ctx.fillStyle = '#00f5a0';
+          ctx.font = '700 14px "Share Tech Mono"';
+          ctx.fillText(score, p.x, p.y + 8);
+        }
+      }
+
+      /* Animation Loop */
+      const duration = 1500;
+      let start = null;
+      function animate(ts) {
+        if (!start) start = ts;
+        progress = Math.min((ts - start) / duration, 1);
+        // easeOutQuart
+        const eased = 1 - Math.pow(1 - progress, 4); 
+        draw(eased);
+        
+        if (progress < 1) {
+          requestAnimationFrame(animate);
+        } else {
+          idlePulse();
+        }
+      }
+
+      function idlePulse() {
+        let phase = 0;
+        function tick() {
+          phase += 0.02;
+          const pulse = 1 + Math.sin(phase) * 0.015;
+          const saved = target.map(v => v * pulse);
+          const orig = target.slice();
+          
+          for(let i=0; i<n; i++) target[i] = saved[i];
+          draw(1);
+          for(let i=0; i<n; i++) target[i] = orig[i];
+          
+          requestAnimationFrame(tick);
+        }
+        tick();
+      }
+
+      requestAnimationFrame(animate);
+    })();
+
+    /* ── Score Counter Animation ── */
+    (function () {
+      const el = document.getElementById('dash-score');
+      if (!el) return;
+      const end = 78;
+      let current = 0;
+      const duration = 1600;
+      const start = performance.now();
+      
+      function tick(now) {
+        const t = Math.min((now - start) / duration, 1);
+        const eased = 1 - Math.pow(1 - t, 4);
+        current = Math.round(eased * end);
+        el.textContent = current;
+        if (t < 1) requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+    })();
+  </script>
+</body>
+</html>
