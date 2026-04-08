@@ -1,0 +1,43 @@
+body {
+  background-color: #0f1117;
+  color: #e8eaf0;
+}
+
+.navbar {
+  background-color: #1a1d27;
+  border-bottom: 1px solid #2e3250;
+}
+
+.navbar-brand {
+  color: #00c896 !important;
+  font-weight: 800;
+  font-size: 1.5rem;
+}
+
+.btn-primary {
+  background-color: #00c896;
+  border-color: #00c896;
+  color: #0f1117;
+  font-weight: 600;
+}
+
+.btn-primary:hover {
+  background-color: #009e78;
+  border-color: #009e78;
+  color: #0f1117;
+}
+
+
+/* LANDING PAGE STYLING */
+
+
+/* LOGIN PAGE STYLING */
+
+
+/* HOME PAGE STYLING */
+
+
+/* LEADERBOARD PAGE STYLING */
+
+
+/* ACTIVITY LOG PAGE STYLING */
