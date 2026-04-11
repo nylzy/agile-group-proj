@@ -3,6 +3,7 @@ body {
   color: #e8eaf0;
 }
 
+/* NAVBAR STYLING */
 .navbar {
   background-color: #1a1d27;
   border-bottom: 1px solid #2e3250;
@@ -13,6 +14,43 @@ body {
   font-weight: 800;
   font-size: 1.5rem;
 }
+
+.navbar-links {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.navbar-link {
+  color: #e8eaf0;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.navbar-link:hover {
+  color: #00c896;
+}
+
+.navbar-profile-button {
+  background-color: #1a1d27;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.navbar-profile-button:hover {
+  background-color: #003528;
+}
+
+.profile-pic {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* BUTTON STYLING */
 
 .btn-primary {
   background-color: #00c896;
