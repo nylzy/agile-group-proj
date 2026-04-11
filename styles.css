@@ -32,7 +32,6 @@ body {
 }
 
 .navbar-profile-button {
-  background-color: #1a1d27;
   padding: 10px 12px;
   display: flex;
   align-items: center;
@@ -73,7 +72,11 @@ body {
 
 
 /* HOME PAGE STYLING */
-
+.header {
+  margin-bottom: 30px;
+  display: flex;
+  justify-content: space-between;
+}
 
 /* LEADERBOARD PAGE STYLING */
 
