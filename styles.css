@@ -56,14 +56,6 @@ body {
   border-color: #00c896;
   color: #0f1117;
   font-weight: 600;
-  border-radius: 8px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 12px 22px;
-  font-size: 1rem;
 }
 
 .btn-primary:hover {
