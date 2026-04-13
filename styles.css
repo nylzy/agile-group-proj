@@ -78,6 +78,19 @@ body {
   justify-content: space-between;
 }
 
+.dash-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 24px;
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  padding: 24px;
+  position: relative;
+}
+
 /* LEADERBOARD PAGE STYLING */
 
 
