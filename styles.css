@@ -1,5 +1,131 @@
 /* Generic stylesheet that will serve as a placeholder until we implement bootstrap */
 
 body {
-    background-color: aqua;
+  background-color: #0f1117;
+  color: #e8eaf0;
 }
+
+/* NAVBAR STYLING */
+.navbar {
+  background-color: #1a1d27;
+  border-bottom: 1px solid #2e3250;
+}
+
+.navbar-brand {
+  color: #00c896 !important;
+  font-weight: 800;
+  font-size: 1.5rem;
+}
+
+.navbar-links {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.navbar-link {
+  color: #e8eaf0;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.navbar-link:hover {
+  color: #00c896;
+}
+
+.navbar-profile-button {
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.navbar-profile-button:hover {
+  background-color: #003528;
+}
+
+.profile-pic {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* BUTTON STYLING */
+
+.btn-primary {
+  background-color: #00c896;
+  border-color: #00c896;
+  color: #0f1117;
+  font-weight: 600;
+}
+
+.btn-primary:hover {
+  background-color: #009e78;
+  border-color: #009e78;
+  color: #0f1117;
+}
+
+
+/* LANDING PAGE STYLING */
+
+
+/* LOGIN PAGE STYLING */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  margin-bottom: 0.3rem;
+  font-size: 1.3rem;
+  color: #aaa;
+}
+
+input[type="text"],
+input[type="password"] {
+  padding: 0.6rem 0.9rem;
+  background: #1e1e2e;
+  border: 1px solid #444;
+  border-radius: 6px;
+  color: white;
+  font-size: 1rem;
+  width: 400px;
+}
+
+input:focus {
+  outline: none;
+  border-color: #00c896;
+  box-shadow: 0 0 0 3px rgba(0, 200, 150, 0.2)
+}
+
+.login-container {
+  max-width: 400px;
+  margin: 2rem auto;
+  padding: 2rem;
+}
+
+.remember-group {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.page-wrapper {
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+/* HOME PAGE STYLING */
+.header {
+  margin-bottom: 30px;
+  display: flex;
+  justify-content: space-between;
+}
+
+/* LEADERBOARD PAGE STYLING */
+
+
+/* ACTIVITY LOG PAGE STYLING */
