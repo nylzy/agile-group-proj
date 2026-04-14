@@ -69,7 +69,52 @@ body {
 
 
 /* LOGIN PAGE STYLING */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1.5rem;
+}
 
+.form-group label {
+  margin-bottom: 0.3rem;
+  font-size: 1.3rem;
+  color: #aaa;
+}
+
+input[type="text"],
+input[type="password"] {
+  padding: 0.6rem 0.9rem;
+  background: #1e1e2e;
+  border: 1px solid #444;
+  border-radius: 6px;
+  color: white;
+  font-size: 1rem;
+  width: 400px;
+}
+
+input:focus {
+  outline: none;
+  border-color: #00c896;
+  box-shadow: 0 0 0 3px rgba(0, 200, 150, 0.2)
+}
+
+.login-container {
+  max-width: 400px;
+  margin: 2rem auto;
+  padding: 2rem;
+}
+
+.remember-group {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.page-wrapper {
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 2rem;
+}
 
 /* HOME PAGE STYLING */
 .header {
