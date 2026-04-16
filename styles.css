@@ -125,5 +125,111 @@ input:focus {
 
 /* LEADERBOARD PAGE STYLING */
 
+/* Sport filter tab row */
+.lb-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+/* Individual filter tab button */
+.lb-filter-btn {
+    background-color: #1a1d27;
+    color: #e8eaf0;
+    border: 1px solid #2e3250;
+    border-radius: 20px;
+    padding: 6px 18px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.lb-filter-btn:hover {
+    border-color: #00c896;
+    color: #00c896;
+}
+
+/* Active/selected tab */
+.lb-filter-btn.active {
+    background-color: #00c896;
+    border-color: #00c896;
+    color: #0f1117;
+    font-weight: 600;
+}
+
+
+/* Leaderboard table */
+.lb-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.lb-table thead tr {
+    border-bottom: 1px solid #2e3250;
+}
+
+.lb-table th {
+    padding: 10px 16px;
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #aaa;
+    font-weight: 500;
+}
+
+.lb-table tbody tr {
+    border-bottom: 1px solid #1e2133;
+    transition: background-color 0.15s;
+}
+
+.lb-table tbody tr:hover {
+    background-color: #1a1d27;
+}
+
+.lb-table td {
+    padding: 18px 16px;
+    font-size: 0.95rem;
+    vertical-align: middle;
+}
+
+/* Rank column — top 3 get distinct colours */
+.lb-rank {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: #aaa;
+    width: 48px;
+}
+
+.lb-rank-1 { color: #00c896; }
+.lb-rank-2 { color: #4db8ff; }
+.lb-rank-3 { color: #f0c040; }
+
+/* Athlete name + handle */
+.lb-athlete {
+    font-weight: 600;
+}
+
+.lb-athlete span {
+    display: block;
+    font-size: 0.8rem;
+    color: #aaa;
+    font-weight: 400;
+}
+
+/* Score — colour-coded by range */
+.lb-score {
+    font-weight: 700;
+    font-size: 1.05rem;
+}
+
+.lb-score-high  { color: #00c896; }
+.lb-score-mid   { color: #f0c040; }
+.lb-score-low   { color: #e8eaf0; }
+
+/* Trend column */
+.lb-trend { font-weight: 600; }
+.lb-trend-up      { color: #00c896; }
+.lb-trend-down    { color: #ff5c5c; }
+.lb-trend-neutral { color: #aaa; }
 
 /* ACTIVITY LOG PAGE STYLING */
