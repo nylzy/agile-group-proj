@@ -233,3 +233,12 @@ input:focus {
 .lb-trend-neutral { color: #aaa; }
 
 /* ACTIVITY LOG PAGE STYLING */
+
+/* Prompt label above sport selector pills */
+.log-select-label {
+    font-size: 0.85rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #aaa;
+    margin-bottom: 12px;
+}
