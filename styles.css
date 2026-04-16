@@ -65,6 +65,31 @@ body {
   color: #0f1117;
 }
 
+.btn-secondary {
+  background-color: transparent;
+  border: 2px solid #00c896;
+  color: #00c896;
+  font-weight: 600;
+}
+
+.btn-secondary:hover {
+  background-color: #00c8961a;
+  border-color: #009e78;
+  color: #009e78;
+}
+
+.btn-submit {
+  background-color: #009e78;
+  border-color: #009e78;
+  color: #0f1117;
+  font-weight: 600;
+}
+
+.btn-submit:hover {
+  background-color: #007a5c;
+  border-color: #007a5c;
+  color: #0f1117;
+}
 
 /* LANDING PAGE STYLING */
 
@@ -85,6 +110,7 @@ body {
 }
 
 input[type="text"],
+input[type="email"],
 input[type="password"] {
   padding: 12px 16px;
   background: #1e1e2e;
