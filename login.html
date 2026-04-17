@@ -16,15 +16,13 @@
     </nav>
 
     <!-- Main Content -->
-    <div class="page-wrapper">
-        <header>
-            <h1>Welcome back to FitScore!</h1>
-        </header>
+    <div class="container d-flex flex-grow-1 py-5">
+        <div class="page-wrapper">
+            <p class="subtitle">Please enter your details</p>
+            <h1 class="title">Welcome back!</h1>
 
-        <!-- Login Form -->
-        <div class="login-container">
-            <form action="/login" method="post">
-
+            <!-- Login Form -->
+            <form action="/login" id="loginform">
                 <!-- Username -->
                 <div class="form-group">
                     <label for="user"><b>Username</b></label>
@@ -37,20 +35,21 @@
                     <input type="password" id="password" name="password" placeholder="Password" required>
                 </div>
 
-                <!-- Remember Me -->
-                <div class="form-group remember-group">
-                    <label for="remember">Remember me</label>
+                <!-- Remember Me and Forgot Password -->
+                <div class="remember-forgot">
+                    <label for="remember" class="remember-label">Remember me
                     <input type="checkbox" id="remember" name="remember" value="true">
+                    </label>
+                    <a href="#" class="forgot-link">Forgot password?</a>
                 </div>
 
                 <!-- Submit -->
-                <a href="home.html" class="btn btn-primary">Log In</a>
+                <a href="home.html" class="btn-login">Log In</a>
 
                 <!--Register Link-->
-                <p class="lead text"><b>Don't have an account?</b>   <a href="register.html">Sign up</a></p>
+                <p class="register-text"><b>Don't have an account?</b> <a href="register.html">Sign up</a></p>
             </form>
         </div>
-
     </div>
 </body>
 </html>
