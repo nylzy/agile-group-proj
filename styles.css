@@ -1,4 +1,5 @@
 body {
+  min-height: 100vh;
   background-color: #0f1117;
   color: #e8eaf0;
 }
@@ -64,12 +65,163 @@ body {
   color: #0f1117;
 }
 
+.btn-secondary {
+  background-color: transparent;
+  border: 2px solid #00c896;
+  color: #00c896;
+  font-weight: 600;
+}
+
+.btn-secondary:hover {
+  background-color: #00c8961a;
+  border-color: #009e78;
+  color: #009e78;
+}
+
+.btn-submit {
+  background-color: #009e78;
+  border-color: #009e78;
+  color: #0f1117;
+  font-weight: 600;
+}
+
+.btn-submit:hover {
+  background-color: #007a5c;
+  border-color: #007a5c;
+  color: #0f1117;
+}
 
 /* LANDING PAGE STYLING */
 
 
-/* LOGIN PAGE STYLING */
+/* LOGIN AND REGISTRATION PAGE STYLING */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 18px;
+}
 
+.form-group label {
+  font-size: 1rem;
+  font-weight: 400;
+  color: #aaa;
+  margin-bottom: 7px;
+  letter-spacing: 0.03em;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+  padding: 12px 16px;
+  background: #1e1e2e;
+  border: 1px solid #444;
+  border-radius: 6px;
+  color: white;
+  font-size: 15px;
+  width: 100%;
+}
+
+input:focus {
+  outline: none;
+  border-color: #00c896;
+  box-shadow: 0 0 0 3px rgba(0, 200, 150, 0.2)
+}
+
+.remember-forgot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 28px;
+  margin-top: 4px;
+}
+
+.page-wrapper {
+  background: #1a1d27;
+  border: 1px solid #2e3250;
+  border-radius: 16px;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 44px 48px 40px;
+  width: 100%;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.4);
+}
+
+.subtitle {
+  font-size: 14px;
+  color: #6b7280;
+  margin-bottom: 6px;
+}
+
+.title {
+  font-size: 30px;
+  font-weight: 700;
+  margin-bottom: 28px;
+}
+
+.remember-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  color: #9ca3af;
+  cursor: pointer;
+}
+
+input[type="checkbox"] {
+  accent-color: #00c896;
+  cursor: pointer;
+}
+
+.forgot-link {
+  font-size: 14px;
+  color: #00c896;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s;
+}
+
+.forgot-link:hover { color: #009e78; }
+
+.btn-login {
+  display: block;
+  width: 100%;
+  padding: 14px;
+  background: #00c896;
+  color: #0f1117;
+  font-weight: 700;
+  font-size: 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  letter-spacing: 0.01em;
+  transition: background 0.2s, transform 0.1s;
+  margin-bottom: 14px;
+}
+ 
+.btn-login:hover {
+  background: #009e78;
+  color: #0f1117;
+  transform: translateY(-1px);
+}
+
+.btn-login:active { transform: translateY(0); }
+
+.register-text {
+  text-align: center;
+  font-size: 16px;
+  color: #aaa;
+  margin: 0;
+}
+
+.register-text a {
+  color: #00c896;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.register-text a:hover { color: #009e78; }
 
 /* HOME PAGE STYLING */
 .header {
@@ -93,5 +245,328 @@ body {
 
 /* LEADERBOARD PAGE STYLING */
 
+/* Sport filter tab row */
+.lb-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+/* Individual filter tab button */
+.lb-filter-btn {
+    background-color: #1a1d27;
+    color: #e8eaf0;
+    border: 1px solid #2e3250;
+    border-radius: 20px;
+    padding: 6px 18px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.lb-filter-btn:hover {
+    border-color: #00c896;
+    color: #00c896;
+}
+
+/* Active/selected tab */
+.lb-filter-btn.active {
+    background-color: #00c896;
+    border-color: #00c896;
+    color: #0f1117;
+    font-weight: 600;
+}
+
+
+/* Leaderboard table */
+.lb-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.lb-table thead tr {
+    border-bottom: 1px solid #2e3250;
+}
+
+.lb-table th {
+    padding: 10px 16px;
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #aaa;
+    font-weight: 500;
+}
+
+.lb-table tbody tr {
+    border-bottom: 1px solid #1e2133;
+    transition: background-color 0.15s;
+}
+
+.lb-table tbody tr:hover {
+    background-color: #1a1d27;
+}
+
+.lb-table td {
+    padding: 18px 16px;
+    font-size: 0.95rem;
+    vertical-align: middle;
+}
+
+/* Rank column — top 3 get distinct colours */
+.lb-rank {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: #aaa;
+    width: 48px;
+}
+
+.lb-rank-1 { color: #00c896; }
+.lb-rank-2 { color: #4db8ff; }
+.lb-rank-3 { color: #f0c040; }
+
+/* Athlete name + handle */
+.lb-athlete {
+    font-weight: 600;
+}
+
+.lb-athlete span {
+    display: block;
+    font-size: 0.8rem;
+    color: #aaa;
+    font-weight: 400;
+}
+
+/* Score — colour-coded by range */
+.lb-score {
+    font-weight: 700;
+    font-size: 1.05rem;
+}
+
+.lb-score-high  { color: #00c896; }
+.lb-score-mid   { color: #f0c040; }
+.lb-score-low   { color: #e8eaf0; }
+
+/* Trend column */
+.lb-trend { font-weight: 600; }
+.lb-trend-up      { color: #00c896; }
+.lb-trend-down    { color: #ff5c5c; }
+.lb-trend-neutral { color: #aaa; }
 
 /* ACTIVITY LOG PAGE STYLING */
+
+/* Dark card container for each sport's form section */
+.log-form-card {
+    background-color: #1a1d27;
+    border: 1px solid #2e3250;
+    border-radius: 10px;
+    padding: 2rem;
+    margin-top: 1.5rem;
+}
+
+.log-form-title {
+    color: #00c896;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+}
+
+/* Two-column responsive grid for form fields */
+.log-form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 0 2rem;
+}
+
+/* Standard text/number input for log forms */
+.log-input {
+    padding: 0.6rem 0.9rem;
+    background: #0f1117;
+    border: 1px solid #444;
+    border-radius: 6px;
+    color: #e8eaf0;
+    font-size: 1rem;
+    width: 100%;
+}
+
+.log-input:focus {
+    outline: none;
+    border-color: #00c896;
+    box-shadow: 0 0 0 3px rgba(0, 200, 150, 0.2);
+}
+
+/* Read-only inputs (e.g. calculated pace) */
+.log-input[readonly] {
+    color: #00c896;
+    border-color: #2e3250;
+    cursor: default;
+}
+
+/* Compact input for lifting set rows */
+.log-input-sm {
+    padding: 0.4rem 0.6rem;
+    background: #0f1117;
+    border: 1px solid #444;
+    border-radius: 6px;
+    color: #e8eaf0;
+    font-size: 0.9rem;
+    width: 80px;
+}
+
+.log-input-sm:focus {
+    outline: none;
+    border-color: #00c896;
+}
+
+/* Select dropdowns */
+.log-select {
+    padding: 0.6rem 0.9rem;
+    background: #0f1117;
+    border: 1px solid #444;
+    border-radius: 6px;
+    color: #e8eaf0;
+    font-size: 1rem;
+    width: 100%;
+    cursor: pointer;
+}
+
+.log-select:focus {
+    outline: none;
+    border-color: #00c896;
+    box-shadow: 0 0 0 3px rgba(0, 200, 150, 0.2);
+}
+
+/* Secondary action button (Add Set, Add Exercise) */
+.log-btn-secondary {
+    background: transparent;
+    border: 1px dashed #2e3250;
+    border-radius: 6px;
+    color: #aaa;
+    padding: 6px 16px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    margin-top: 0.75rem;
+    transition: border-color 0.2s, color 0.2s;
+}
+
+.log-btn-secondary:hover {
+    border-color: #00c896;
+    color: #00c896;
+}
+
+/* Lifting sets table */
+.lifting-sets-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 0.5rem;
+}
+
+.lifting-sets-table th {
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #aaa;
+    padding: 6px 8px;
+    text-align: left;
+}
+
+.lifting-sets-table td {
+    padding: 6px 8px;
+    vertical-align: middle;
+}
+
+.lifting-exercise-block {
+    padding-bottom: 1.5rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid #2e3250;
+}
+
+/* Radio button group */
+.log-radio-group {
+    display: flex;
+    gap: 1.5rem;
+    margin-top: 0.5rem;
+}
+
+.log-radio-label {
+    color: #e8eaf0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+/* Checkbox group (calisthenics exercises) */
+.log-checkbox-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 1.5rem;
+    margin-top: 0.5rem;
+}
+
+.log-checkbox-label {
+    color: #e8eaf0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.95rem;
+}
+
+/* Notes textarea */
+.log-textarea {
+    padding: 0.7rem 0.9rem;
+    background: #0f1117;
+    border: 1px solid #444;
+    border-radius: 6px;
+    color: #e8eaf0;
+    font-size: 1rem;
+    width: 100%;
+    resize: vertical;
+}
+
+.log-textarea:focus {
+    outline: none;
+    border-color: #00c896;
+    box-shadow: 0 0 0 3px rgba(0, 200, 150, 0.2);
+}
+
+/* Effort 1–5 radio group */
+.log-effort-group {
+    display: flex;
+    gap: 1rem;
+    margin-top: 0.5rem;
+}
+
+.log-effort-label {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    color: #e8eaf0;
+    cursor: pointer;
+    font-size: 0.95rem;
+}
+
+/* Submit button — full width within the card */
+.log-submit-btn {
+    margin-top: 1.5rem;
+    padding: 12px 32px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+/* "optional" hint text on labels */
+.log-optional {
+    font-size: 0.75rem;
+    color: #aaa;
+    font-weight: 400;
+}
+
+/* Prompt label above sport selector pills */
+.log-select-label {
+    font-size: 0.85rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #aaa;
+    margin-bottom: 12px;
+}

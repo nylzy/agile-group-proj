@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>FitScore - Leaderboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-dark px-4">
+        <span class="navbar-brand">FitScore</span>
+        <div class="navbar-links">
+            <a href="home.html" class="navbar-link">Home</a>
+            <a href="log.html" class="navbar-link">Log Exercise</a>
+            <a href="leaderboard.html" class="navbar-link">Leaderboard</a>
+            <a href="profile.html" class="navbar-profile-button">
+                <img src="generic_profile_pic.png" alt="Profile Picture" class="profile-pic">
+            </a>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <div class="container py-5">
+        <h1 class="display-4 fw-bold">Leaderboard</h1>
+        <p class="lead" style="color: #aaa;">See how you stack up against other FitScore athletes.</p>
+    </div>
+
+    <!-- Sport Filter Tabs -->
+    <div class="container pb-4">
+        <div class="lb-filters">
+            <button class="lb-filter-btn active" data-sport="all">All</button>
+            <button class="lb-filter-btn" data-sport="lifting">Lifting</button>
+            <button class="lb-filter-btn" data-sport="running">Running</button>
+            <button class="lb-filter-btn" data-sport="swimming">Swimming</button>
+            <button class="lb-filter-btn" data-sport="cycling">Cycling</button>
+            <button class="lb-filter-btn" data-sport="yoga">Yoga / Pilates</button>
+            <button class="lb-filter-btn" data-sport="plyometrics">Plyometrics</button>
+            <button class="lb-filter-btn" data-sport="martial-arts">Martial Arts</button>
+            <button class="lb-filter-btn" data-sport="climbing">Climbing</button>
+            <button class="lb-filter-btn" data-sport="hiking">Hiking</button>
+        </div>
+    </div>
+
+    <!-- Leaderboard Table -->
+    <div class="container pb-5">
+        <table class="lb-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Athlete</th>
+                    <th>Sport</th>
+                    <th>Score</th>
+                    <th>Sessions</th>
+                    <th>Trend</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr data-sport="lifting">
+                    <td class="lb-rank lb-rank-1">1</td>
+                    <td class="lb-athlete">Jordan Kim<span>@jkim_lifts</span></td>
+                    <td>Lifting</td>
+                    <td class="lb-score lb-score-high">97</td>
+                    <td>63</td>
+                    <td class="lb-trend lb-trend-up">▲ +1</td>
+                </tr>
+                <tr data-sport="running">
+                    <td class="lb-rank lb-rank-2">2</td>
+                    <td class="lb-athlete">Sam Reed<span>@samruns</span></td>
+                    <td>Running</td>
+                    <td class="lb-score lb-score-high">91</td>
+                    <td>47</td>
+                    <td class="lb-trend lb-trend-up">▲ +3</td>
+                </tr>
+                <tr data-sport="cycling">
+                    <td class="lb-rank lb-rank-3">3</td>
+                    <td class="lb-athlete">Mia Park<span>@mia_cycles</span></td>
+                    <td>Cycling</td>
+                    <td class="lb-score lb-score-high">88</td>
+                    <td>38</td>
+                    <td class="lb-trend lb-trend-neutral">— 0</td>
+                </tr>
+                <tr data-sport="swimming">
+                    <td class="lb-rank">4</td>
+                    <td class="lb-athlete">Taylor Nguyen<span>@t_nguyen</span></td>
+                    <td>Swimming</td>
+                    <td class="lb-score lb-score-mid">85</td>
+                    <td>55</td>
+                    <td class="lb-trend lb-trend-up">▲ +2</td>
+                </tr>
+                <tr data-sport="plyometrics">
+                    <td class="lb-rank">5</td>
+                    <td class="lb-athlete">Chris Walsh<span>@walsh_wod</span></td>
+                    <td>Plyometrics</td>
+                    <td class="lb-score lb-score-mid">83</td>
+                    <td>29</td>
+                    <td class="lb-trend lb-trend-down">▼ −1</td>
+                </tr>
+                <tr data-sport="yoga">
+                    <td class="lb-rank">6</td>
+                    <td class="lb-athlete">Priya Sharma<span>@priya_fit</span></td>
+                    <td>Yoga / Pilates</td>
+                    <td class="lb-score lb-score-mid">79</td>
+                    <td>72</td>
+                    <td class="lb-trend lb-trend-up">▲ +4</td>
+                </tr>
+                <tr data-sport="climbing">
+                    <td class="lb-rank">7</td>
+                    <td class="lb-athlete">Luca Bianchi<span>@luca_climb</span></td>
+                    <td>Climbing</td>
+                    <td class="lb-score lb-score-mid">76</td>
+                    <td>41</td>
+                    <td class="lb-trend lb-trend-down">▼ −2</td>
+                </tr>
+                <tr data-sport="running">
+                    <td class="lb-rank">8</td>
+                    <td class="lb-athlete">Aisha Okonkwo<span>@aisha_runs</span></td>
+                    <td>Running</td>
+                    <td class="lb-score lb-score-mid">74</td>
+                    <td>33</td>
+                    <td class="lb-trend lb-trend-neutral">— 0</td>
+                </tr>
+                <tr data-sport="lifting">
+                    <td class="lb-rank">9</td>
+                    <td class="lb-athlete">Ben Torres<span>@ben_lifts</span></td>
+                    <td>Lifting</td>
+                    <td class="lb-score lb-score-low">68</td>
+                    <td>21</td>
+                    <td class="lb-trend lb-trend-up">▲ +1</td>
+                </tr>
+                <tr data-sport="hiking">
+                    <td class="lb-rank">10</td>
+                    <td class="lb-athlete">Zoe Marshall<span>@zoe_hikes</span></td>
+                    <td>Hiking</td>
+                    <td class="lb-score lb-score-low">61</td>
+                    <td>18</td>
+                    <td class="lb-trend lb-trend-down">▼ −3</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="leaderboard.js"></script>
+</body>
+</html>

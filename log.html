@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>FitScore - Log Exercise</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-dark px-4">
+        <span class="navbar-brand">FitScore</span>
+        <div class="navbar-links">
+            <a href="home.html" class="navbar-link">Home</a>
+            <a href="log.html" class="navbar-link">Log Exercise</a>
+            <a href="leaderboard.html" class="navbar-link">Leaderboard</a>
+            <a href="profile.html" class="navbar-profile-button">
+                <img src="generic_profile_pic.png" alt="Profile Picture" class="profile-pic">
+            </a>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <div class="container py-5">
+        <h1 class="display-4 fw-bold">Log Exercise</h1>
+        <p class="lead" style="color: #aaa;">Record a training session and update your FitScore.</p>
+    </div>
+
+    <!-- Sport Selector -->
+    <div class="container pb-4">
+        <p class="log-select-label">Select a sport to get started</p>
+        <div class="lb-filters">
+            <button class="lb-filter-btn" data-sport="lifting">Lifting</button>
+            <button class="lb-filter-btn" data-sport="running">Running</button>
+            <button class="lb-filter-btn" data-sport="swimming">Swimming</button>
+            <button class="lb-filter-btn" data-sport="cycling">Cycling</button>
+            <button class="lb-filter-btn" data-sport="yoga">Yoga / Pilates</button>
+            <button class="lb-filter-btn" data-sport="plyometrics">Plyometrics</button>
+            <button class="lb-filter-btn" data-sport="martial-arts">Martial Arts</button>
+            <button class="lb-filter-btn" data-sport="climbing">Climbing</button>
+            <button class="lb-filter-btn" data-sport="hiking">Hiking</button>
+        </div>
+    </div>
+
+    <!-- SPORT-SPECIFIC FORM SECTIONS
+         All hidden by default — JS reveals the correct
+         one when the user picks a sport above. -->
+         
+    <div class="container pb-5">
+
+        <!-- LIFTING -->
+        <div class="log-sport-form" data-sport="lifting" hidden>
+            <div class="log-form-card">
+                <h4 class="log-form-title">Lifting</h4>
+
+                <!-- Exercise block — more can be added dynamically via JS -->
+                <div id="lifting-exercises">
+                    <div class="lifting-exercise-block">
+                        <div class="form-group">
+                            <label>Exercise</label>
+                            <select class="log-select">
+                                <option value="" disabled selected>Choose an exercise</option>
+                                <optgroup label="Compound">
+                                    <option>Squat</option>
+                                    <option>Bench Press</option>
+                                    <option>Deadlift</option>
+                                    <option>Overhead Press</option>
+                                    <option>Barbell Row</option>
+                                    <option>Pull-up / Chin-up</option>
+                                </optgroup>
+                                <optgroup label="Isolation">
+                                    <option>Bicep Curl</option>
+                                    <option>Tricep Pushdown</option>
+                                    <option>Lateral Raise</option>
+                                    <option>Leg Press</option>
+                                    <option>Leg Curl</option>
+                                    <option>Calf Raise</option>
+                                </optgroup>
+                            </select>
+                        </div>
+
+                        <!-- Set rows table -->
+                        <table class="lifting-sets-table">
+                            <thead>
+                                <tr>
+                                    <th>Set</th>
+                                    <th>Weight (kg)</th>
+                                    <th>Reps</th>
+                                    <th>Done</th>
+                                </tr>
+                            </thead>
+                            <tbody class="lifting-sets-body">
+                                <tr>
+                                    <td>1</td>
+                                    <td><input type="number" class="log-input-sm" placeholder="0" min="0"></td>
+                                    <td><input type="number" class="log-input-sm" placeholder="0" min="0"></td>
+                                    <td><input type="checkbox"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <button type="button" class="log-btn-secondary add-set-btn">+ Add Set</button>
+                    </div>
+                </div>
+
+                <button type="button" class="log-btn-secondary" id="add-exercise-btn">+ Add Exercise</button>
+            </div>
+        </div>
+
+        <!-- RUNNING -->
+        <div class="log-sport-form" data-sport="running" hidden>
+            <div class="log-form-card">
+                <h4 class="log-form-title">Running</h4>
+                <div class="log-form-grid">
+                    <div class="form-group">
+                        <label for="run-distance">Distance (km)</label>
+                        <input type="number" id="run-distance" class="log-input" placeholder="0.0" min="0" step="0.1">
+                    </div>
+                    <div class="form-group">
+                        <label for="run-duration">Duration (min)</label>
+                        <input type="number" id="run-duration" class="log-input" placeholder="0" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label>Avg Pace</label>
+                        <!-- Read-only — calculated live by JS -->
+                        <input type="text" id="run-pace" class="log-input" placeholder="— min/km" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="run-type">Run Type</label>
+                        <select id="run-type" class="log-select">
+                            <option value="" disabled selected>Select type</option>
+                            <option>Easy</option>
+                            <option>Tempo</option>
+                            <option>Intervals</option>
+                            <option>Long Run</option>
+                            <option>Race</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SWIMMING -->
+        <div class="log-sport-form" data-sport="swimming" hidden>
+            <div class="log-form-card">
+                <h4 class="log-form-title">Swimming</h4>
+                <div class="log-form-grid">
+                    <div class="form-group">
+                        <label for="swim-pool">Pool Length</label>
+                        <select id="swim-pool" class="log-select">
+                            <option value="" disabled selected>Select pool</option>
+                            <option>25m</option>
+                            <option>50m</option>
+                            <option>Open Water</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="swim-distance">Distance (metres)</label>
+                        <input type="number" id="swim-distance" class="log-input" placeholder="0" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="swim-stroke">Stroke</label>
+                        <select id="swim-stroke" class="log-select">
+                            <option value="" disabled selected>Select stroke</option>
+                            <option>Freestyle</option>
+                            <option>Backstroke</option>
+                            <option>Breaststroke</option>
+                            <option>Butterfly</option>
+                            <option>Mixed</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CYCLING -->
+        <div class="log-sport-form" data-sport="cycling" hidden>
+            <div class="log-form-card">
+                <h4 class="log-form-title">Cycling</h4>
+                <div class="log-form-grid">
+                    <div class="form-group">
+                        <label for="cycle-distance">Distance (km)</label>
+                        <input type="number" id="cycle-distance" class="log-input" placeholder="0.0" min="0" step="0.1">
+                    </div>
+                    <div class="form-group">
+                        <label for="cycle-elevation">Elevation Gain (m) <span class="log-optional">optional</span></label>
+                        <input type="number" id="cycle-elevation" class="log-input" placeholder="0" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="cycle-type">Ride Type</label>
+                        <select id="cycle-type" class="log-select">
+                            <option value="" disabled selected>Select type</option>
+                            <option>Road</option>
+                            <option>Mountain</option>
+                            <option>Indoor (stationary)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- YOGA / PILATES -->
+        <div class="log-sport-form" data-sport="yoga" hidden>
+            <div class="log-form-card">
+                <h4 class="log-form-title">Yoga / Pilates</h4>
+                <div class="log-form-grid">
+                    <div class="form-group">
+                        <label for="yoga-style">Style</label>
+                        <select id="yoga-style" class="log-select">
+                            <option value="" disabled selected>Select style</option>
+                            <option>Vinyasa</option>
+                            <option>Hatha</option>
+                            <option>Yin</option>
+                            <option>Restorative</option>
+                            <option>Pilates Mat</option>
+                            <option>Reformer</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="log-checkbox-label">
+                            <input type="checkbox" id="yoga-instructor">
+                            Instructor-led session
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PLYOMETRICS -->
+        <div class="log-sport-form" data-sport="plyometrics" hidden>
+            <div class="log-form-card">
+                <h4 class="log-form-title">Plyometrics &amp; Sprints</h4>
+                <div class="log-form-grid">
+                    <div class="form-group">
+                        <label for="plyo-focus">Focus</label>
+                        <select id="plyo-focus" class="log-select">
+                            <option value="" disabled selected>Select focus</option>
+                            <option>Sprints</option>
+                            <option>Box Jumps</option>
+                            <option>Burpees</option>
+                            <option>Mixed Circuit</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="plyo-rounds">Rounds</label>
+                        <input type="number" id="plyo-rounds" class="log-input" placeholder="0" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="plyo-rest">Rest Between Rounds (sec)</label>
+                        <input type="number" id="plyo-rest" class="log-input" placeholder="60" min="0">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MARTIAL ARTS -->
+        <div class="log-sport-form" data-sport="martial-arts" hidden>
+            <div class="log-form-card">
+                <h4 class="log-form-title">Martial Arts</h4>
+                <div class="log-form-grid">
+                    <div class="form-group">
+                        <label for="ma-discipline">Discipline</label>
+                        <select id="ma-discipline" class="log-select">
+                            <option value="" disabled selected>Select discipline</option>
+                            <option>Boxing</option>
+                            <option>Muay Thai</option>
+                            <option>BJJ</option>
+                            <option>Judo</option>
+                            <option>Karate</option>
+                            <option>MMA</option>
+                            <option>Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="ma-session">Session Type</label>
+                        <select id="ma-session" class="log-select">
+                            <option value="" disabled selected>Select type</option>
+                            <option>Drilling</option>
+                            <option>Sparring</option>
+                            <option>Bag Work</option>
+                            <option>Competition</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CLIMBING / CALISTHENICS -->
+        <div class="log-sport-form" data-sport="climbing" hidden>
+            <div class="log-form-card">
+                <h4 class="log-form-title">Climbing / Calisthenics</h4>
+
+                <!-- Sub-type toggle -->
+                <div class="form-group">
+                    <label class="log-select-label">Type</label>
+                    <div class="log-radio-group">
+                        <label class="log-radio-label">
+                            <input type="radio" name="climbing-type" value="climbing" checked> Climbing
+                        </label>
+                        <label class="log-radio-label">
+                            <input type="radio" name="climbing-type" value="calisthenics"> Calisthenics
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Climbing fields -->
+                <div id="climbing-fields" class="log-form-grid">
+                    <div class="form-group">
+                        <label for="climb-grade">Highest Grade Climbed</label>
+                        <select id="climb-grade" class="log-select">
+                            <option value="" disabled selected>Select grade</option>
+                            <optgroup label="Bouldering (V-scale)">
+                                <option>V0</option><option>V1</option><option>V2</option>
+                                <option>V3</option><option>V4</option><option>V5</option>
+                                <option>V6</option><option>V7</option><option>V8</option>
+                                <option>V9</option><option>V10+</option>
+                            </optgroup>
+                            <optgroup label="Sport (Yosemite)">
+                                <option>5.6</option><option>5.7</option><option>5.8</option>
+                                <option>5.9</option><option>5.10</option><option>5.11</option>
+                                <option>5.12</option><option>5.13</option><option>5.14+</option>
+                            </optgroup>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="climb-routes">Number of Routes</label>
+                        <input type="number" id="climb-routes" class="log-input" placeholder="0" min="0">
+                    </div>
+                </div>
+
+                <!-- Calisthenics fields (hidden until radio switched) -->
+                <div id="calisthenics-fields" class="log-form-grid" hidden>
+                    <div class="form-group">
+                        <label>Exercises</label>
+                        <div class="log-checkbox-group">
+                            <label class="log-checkbox-label"><input type="checkbox" value="pull-ups"> Pull-ups</label>
+                            <label class="log-checkbox-label"><input type="checkbox" value="dips"> Dips</label>
+                            <label class="log-checkbox-label"><input type="checkbox" value="push-ups"> Push-ups</label>
+                            <label class="log-checkbox-label"><input type="checkbox" value="l-sit"> L-sit</label>
+                            <label class="log-checkbox-label"><input type="checkbox" value="muscle-up"> Muscle-up</label>
+                            <label class="log-checkbox-label"><input type="checkbox" value="handstand"> Handstand</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="cali-sets">Sets</label>
+                        <input type="number" id="cali-sets" class="log-input" placeholder="0" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="cali-reps">Reps per Set</label>
+                        <input type="number" id="cali-reps" class="log-input" placeholder="0" min="0">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- HIKING / RECREATIONAL CARDIO -->
+        <div class="log-sport-form" data-sport="hiking" hidden>
+            <div class="log-form-card">
+                <h4 class="log-form-title">Hiking / Recreational Cardio</h4>
+                <div class="log-form-grid">
+                    <div class="form-group">
+                        <label for="hike-distance">Distance (km)</label>
+                        <input type="number" id="hike-distance" class="log-input" placeholder="0.0" min="0" step="0.1">
+                    </div>
+                    <div class="form-group">
+                        <label for="hike-elevation">Elevation Gain (m) <span class="log-optional">optional</span></label>
+                        <input type="number" id="hike-elevation" class="log-input" placeholder="0" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="hike-terrain">Terrain</label>
+                        <select id="hike-terrain" class="log-select">
+                            <option value="" disabled selected>Select terrain</option>
+                            <option>Trail</option>
+                            <option>Urban</option>
+                            <option>Beach</option>
+                            <option>Mountain</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div><!-- end container -->
+
+    <!-- Common Fields — hidden until a sport is chosen -->
+    <div class="container pb-5" id="log-common-fields" hidden>
+        <div class="log-form-card">
+            <h4 class="log-form-title">Session Details</h4>
+            <div class="log-form-grid">
+
+                <!-- Date -->
+                <div class="form-group">
+                    <label for="log-date">Date</label>
+                    <input type="date" id="log-date" class="log-input">
+                </div>
+
+                <!-- Duration -->
+                <div class="form-group">
+                    <label for="log-duration">Duration (min)</label>
+                    <input type="number" id="log-duration" class="log-input" placeholder="0" min="0">
+                </div>
+
+                <!-- Effort / Intensity (1–5 radio buttons) -->
+                <div class="form-group">
+                    <label>Effort</label>
+                    <div class="log-effort-group">
+                        <label class="log-effort-label" title="Easy">
+                            <input type="radio" name="log-effort" value="1"> 1
+                        </label>
+                        <label class="log-effort-label" title="Light">
+                            <input type="radio" name="log-effort" value="2"> 2
+                        </label>
+                        <label class="log-effort-label" title="Moderate">
+                            <input type="radio" name="log-effort" value="3"> 3
+                        </label>
+                        <label class="log-effort-label" title="Hard">
+                            <input type="radio" name="log-effort" value="4"> 4
+                        </label>
+                        <label class="log-effort-label" title="Max effort">
+                            <input type="radio" name="log-effort" value="5"> 5
+                        </label>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Notes -->
+            <div class="form-group" style="margin-top: 1rem;">
+                <label for="log-notes">Notes <span class="log-optional">optional</span></label>
+                <textarea id="log-notes" class="log-textarea" rows="3" placeholder="How did it go?"></textarea>
+            </div>
+
+            <!-- Submit -->
+            <button type="submit" class="btn-submit log-submit-btn">Save Session</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="log.js"></script>
+</body>
+</html>
