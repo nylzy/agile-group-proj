@@ -383,6 +383,59 @@
 
     </div><!-- end container -->
 
+    <!-- Common Fields — hidden until a sport is chosen -->
+    <div class="container pb-5" id="log-common-fields" hidden>
+        <div class="log-form-card">
+            <h4 class="log-form-title">Session Details</h4>
+            <div class="log-form-grid">
+
+                <!-- Date -->
+                <div class="form-group">
+                    <label for="log-date">Date</label>
+                    <input type="date" id="log-date" class="log-input">
+                </div>
+
+                <!-- Duration -->
+                <div class="form-group">
+                    <label for="log-duration">Duration (min)</label>
+                    <input type="number" id="log-duration" class="log-input" placeholder="0" min="0">
+                </div>
+
+                <!-- Effort / Intensity (1–5 radio buttons) -->
+                <div class="form-group">
+                    <label>Effort</label>
+                    <div class="log-effort-group">
+                        <label class="log-effort-label" title="Easy">
+                            <input type="radio" name="log-effort" value="1"> 1
+                        </label>
+                        <label class="log-effort-label" title="Light">
+                            <input type="radio" name="log-effort" value="2"> 2
+                        </label>
+                        <label class="log-effort-label" title="Moderate">
+                            <input type="radio" name="log-effort" value="3"> 3
+                        </label>
+                        <label class="log-effort-label" title="Hard">
+                            <input type="radio" name="log-effort" value="4"> 4
+                        </label>
+                        <label class="log-effort-label" title="Max effort">
+                            <input type="radio" name="log-effort" value="5"> 5
+                        </label>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Notes -->
+            <div class="form-group" style="margin-top: 1rem;">
+                <label for="log-notes">Notes <span class="log-optional">optional</span></label>
+                <textarea id="log-notes" class="log-textarea" rows="3" placeholder="How did it go?"></textarea>
+            </div>
+
+            <!-- Submit -->
+            <button type="submit" class="btn-submit log-submit-btn">Save Session</button>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="log.js"></script>
 </body>

@@ -2,8 +2,13 @@
 
 // ── Sport selector ──────────────────────────────────────────────────────────
 
-const sportButtons = document.querySelectorAll('.lb-filter-btn[data-sport]');
-const sportForms   = document.querySelectorAll('.log-sport-form');
+const sportButtons   = document.querySelectorAll('.lb-filter-btn[data-sport]');
+const sportForms     = document.querySelectorAll('.log-sport-form');
+const commonFields   = document.getElementById('log-common-fields');
+
+// Default the date input to today when the page loads
+const dateInput = document.getElementById('log-date');
+dateInput.value = new Date().toISOString().split('T')[0];
 
 sportButtons.forEach(button => {
     button.addEventListener('click', () => {
@@ -17,6 +22,9 @@ sportButtons.forEach(button => {
         sportForms.forEach(form => {
             form.hidden = form.dataset.sport !== selectedSport;
         });
+
+        // Reveal the common session details section
+        commonFields.hidden = false;
     });
 });
 
