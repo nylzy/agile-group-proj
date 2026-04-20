@@ -26,6 +26,10 @@ def login():
 def register():
     return render_template('register.html')
 
+@app.route('/social')
+def social():
+    return render_template('social.html')
+
 @app.route('/profile')
 def profile():
     return "Profile page coming soon!"
