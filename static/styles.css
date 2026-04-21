@@ -491,6 +491,108 @@ input[type="checkbox"] {
 .lb-trend-down    { color: #ff5c5c; }
 .lb-trend-neutral { color: #aaa; }
 
+/* PROFILE PAGE STYLING */
+/* ── Split layout ────────────────────────────────────────── */
+.split-layout {
+    display: flex;
+    flex: 1;
+    overflow: hidden;     /* prevents page scroll; panels scroll independently */
+}
+ 
+/* ── LEFT PANEL ──────────────────────────────────────────── */
+.left-panel {
+    width: 240px;
+    min-width: 240px;
+    background-color: #1a1d27;
+    border-right: 1px solid #2e3250;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+ 
+/* Avatar block */
+.profile-summary {
+    padding: 28px 20px 20px;
+    text-align: center;
+    border-bottom: 1px solid #2e3250;
+}
+.profile-summary img {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #00c896;
+    margin-bottom: 10px;
+}
+.profile-summary .name {
+    font-weight: 700;
+    font-size: 1rem;
+}
+.profile-summary .handle {
+    font-size: 0.8rem;
+    color: #6b7280;
+}
+ 
+/* Nav items */
+.panel-nav {
+    list-style: none;
+    padding: 12px 0;
+    margin: 0;
+    flex: 1;
+}
+.panel-nav li a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 20px;
+    color: #b0b3c1;
+    text-decoration: none;
+    font-size: 0.9rem;
+    border-left: 3px solid transparent;
+    transition: background 0.15s, color 0.15s;
+}
+.panel-nav li a:hover {
+    background-color: #232636;
+    color: #e8eaf0;
+}
+.panel-nav li a.active {
+    background-color: #003528;
+    color: #00c896;
+    border-left-color: #00c896;
+    font-weight: 600;
+}
+.panel-nav li a i {
+    font-size: 1.05rem;
+    width: 18px;
+    text-align: center;
+}
+ 
+/* ── RIGHT PANEL ─────────────────────────────────────────── */
+.right-panel {
+    flex: 1;
+    overflow-y: auto;
+    padding: 36px 48px;
+}
+
+/* Sections (shown/hidden by JS) */
+.section { display: none; }
+.section.active { display: block; }
+
+.section-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+.section-subtitle {
+    font-size: 0.85rem;
+    color: #6b7280;
+    margin-bottom: 28px;
+}
+.divider {
+    border-top: 1px solid #2e3250;
+    margin: 28px 0;
+}
+
 /* ACTIVITY LOG PAGE STYLING */
 
 /* Dark card container for each sport's form section */
