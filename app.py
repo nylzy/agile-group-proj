@@ -28,7 +28,7 @@ def register():
 
 @app.route('/profile')
 def profile():
-    return "Profile page coming soon!"
+    return render_template('profile.html')
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
