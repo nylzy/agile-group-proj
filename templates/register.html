@@ -20,48 +20,196 @@
     <div class="container d-flex flex-grow-1 py-5">
         <div class="page-wrapper">
             <h1 class="title">Welcome to FitScore!</h1>
-            <p class="subtitle">It's time to begin your journey with us.</p>
+            <p class="subtitle" style="margin-bottom: 1.8rem;">It's time to begin your fitness journey with us.</p>
 
             <!-- Step Indicator -->
-            <p class="text">Step <span id="step-number">1</span> of 3</p>
+            <div class="step-indicator">
+                <div class="step-dot active" id="dot-1">1</div>
+                <div class="step-line"></div>
+                <div class="step-dot" id="dot-2">2</div>
+            </div>
+
+            <div class="step-labels">
+                <span class="step-label active" id="label-1">Account</span>
+                <span class="step-label" id="label-2">Security</span>
+            </div>
 
             <!-- Form -->
-            <form action="/register" id="signupform">
+            <form action="/register" id="signupform" autocomplete="off">
 
-                <!-- Step 1 -->
-                <div class="step active">
+                <!-- Step 1: Account Details -->
+                <div class="step-panel active" id="step-1">
                     <div class="form-group">
                         <label for="username"><b>Username</b></label>
-                        <input type="text" id="username" placeholder="Username" required>
+                        <input type="text" id="username" placeholder="e.g. strongman2026" required>
+                        <span class="field-error" id="error-username">Username must be at least 3 characters long.</span>
+                        <!-- Optional: add more conditions to the username -->
                     </div>
-                </div>
 
-                <!-- Step 2 -->
-                <div class="step">
                     <div class="form-group">
                         <label for="email"><b>E-mail</b></label>
                         <input type="email" id="email" placeholder="E-mail" required>
+                        <span class="field-error" id="error-email">PLease enter a valid email address.</span>
                     </div>
                 </div>
 
-                <!-- Step 3 -->
-                <div class="step">
+                <!-- Step 2: Password -->
+                <div class="step-panel" id="step-2">
                     <div class="form-group">
                         <label for="password"><b>Password</b></label>
-                        <input type="password" id="password" placeholder="Password" required>
+                        <input type="password" id="password" placeholder="Create a STRONG password." required>
+                        <span class="field-error" id="error-password">Password must be at least 8 characters long.</span>
+                        <!-- Optional: add more conditions to password. Add a password security bar? -->
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="confirm-password"><b>Confirm password</b></label>
+                        <input type="password" id="confirm-password" placeholder="Re-enter your STRONG password." required>
+                        <span class="field-error" id="error-confirm">Passwords do not match.</span>
                     </div>
                 </div>
 
-                <!-- Buttons -->
-                <div class="d-flex justify-content-between">
-                    <button type="button" id="back-btn" class="btn btn-secondary">Back</button>
-                    <button type="button" id="next-btn" class="btn btn-primary">Next</button>
-                    <button type="button" id="submit-btn" class="btn btn-submit">Submit</button>
+                <!-- Nav Buttons -->
+                <div class="form-nav" id="form-nav">
+                    <button type="button" id="back-btn" class="btn btn-secondary" disabled>Back</button>
+                    <button type="button" id="next-btn" class="btn btn-primary">Continue</button>
                 </div>
-
             </form>
+
+                <!-- Login link -->
+                <p class="subtitle" style="margin-top: 1rem;" id="login-link">
+                    <b>Already have an account?</b> <a href="{{ url_for('login') }}" style="color:#00c896;">Log in</a>
+                </p>
         </div>
     </div>
 
+<script>
+$(
+    function () {
+        let currentStep = 1;
+        const totalSteps = 2;
+        let direction = 'forward';
+
+        // Helpers
+
+        function showError(id, msg) {
+            $('#' + id).text(msg).show();
+            $('#' + id).prev('input, select').addClass('is-invalid');
+        }
+
+        function clearError(id) {
+            $('#' + id).hide();
+            $('#' + id).prev('input, select').removeClass('is-invalid');
+        }
+
+        function clearAllErrors() {
+            $('.field-error').hide();
+            $('input, select').removeClass('is-invalid');
+        }
+
+        // Validation per step
+
+        function validateStep(step) {
+            let valid = true;
+
+            if (step === 1) {
+                const username = $('#username').val().trim();
+                const email    = $('#email').val().trim();
+                const emailRx  = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+                clearError('error-username'); clearError('error-email');
+
+                if (username.length < 3) { showError('error-username', 'Please enter a username (3+ characters).'); valid = false; }
+                if (!emailRx.test(email)) { showError('error-email', 'Please enter a valid email address.');        valid = false; }
+            }
+
+            if (step === 2) {
+                const pw  = $('#password').val();
+                const pw2 = $('#confirm-password').val();
+
+                clearError('error-password'); clearError('error-confirm');
+
+                if (pw.length < 8) { showError('error-password', 'Password must be at least 8 characters.'); valid = false; }
+                if (pw !== pw2)     { showError('error-confirm', 'Passwords do not match.');                 valid = false; }
+            }
+
+            return valid;
+        }
+
+        // UI update
+    
+        function updateIndicator(step) {
+            for (let i = 1; i <= totalSteps; i++) {
+                const dot = $('#dot-' + i);
+                const lbl = $('#lbl-' + i);
+                dot.removeClass('active completed');
+                lbl.removeClass('active completed');
+
+                if (i < step)  { dot.addClass('completed').html('✓'); lbl.addClass('completed'); }
+                if (i === step){ dot.addClass('active').html(i);       lbl.addClass('active');    }
+                if (i > step)  { dot.html(i); }
+            }
+
+            $('#line-1').toggleClass('completed', 1 < step);
+        }
+
+        function goToStep(step) {
+            const animClass = direction === 'forward' ? '' : 'slide-back';
+
+            $('#step-' + currentStep).removeClass('active slide-back');
+            currentStep = step;
+            $('#step-' + currentStep).addClass('active ' + animClass);
+
+            updateIndicator(currentStep);
+
+            $('#back-btn').prop('disabled', currentStep === 1);
+            $('#next-btn').text(currentStep === totalSteps ? 'Create Account' : 'Continue →');
+        }
+
+        // Button handlers
+
+        $('#next-btn').on('click', function () {
+            if (!validateStep(currentStep)) return;
+
+            if (currentStep < totalSteps) {
+                direction = 'forward';
+                goToStep(currentStep + 1);
+            } else {
+                // Final submit
+                submitForm();
+            }
+        });
+
+        $('#back-btn').on('click', function () {
+            if (currentStep > 1) {
+                direction = 'back';
+                clearAllErrors();
+                goToStep(currentStep - 1);
+            }
+        });
+
+        // Submit Form
+
+        function submitForm() {
+            const payload = {
+                username: $('#username').val().trim(),
+                email:    $('#email').val().trim(),
+                newsletter: $('#newsletter').is(':checked'),
+                password: $('#password').val(),
+            };
+
+            $.ajax({
+                url: '/register',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(payload),
+                success: function () { window.location.href = "{{ url_for('home') }}"; },
+                error: function () { window.location.href = "{{ url_for('home') }}"; } // Change this when finalising the product
+                // error:   function () { throw new Error("Registration failed") }
+            });
+        }
+    });
+
+</script>
 </body>
 </html>
