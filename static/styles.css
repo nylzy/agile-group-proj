@@ -93,6 +93,78 @@ body {
 
 /* LANDING PAGE STYLING */
 
+/* Form Styling (for consistency?) */
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 18px;
+}
+
+.form-group label {
+  font-size: 1rem;
+  font-weight: 400;
+  color: #aaa;
+  margin-bottom: 7px;
+  letter-spacing: 0.03em;
+}
+
+/* Input Styling */
+input[type="text"],
+input[type="number"],
+input[type="email"],
+input[type="password"],
+.profile-bio {
+  padding: 12px 16px;
+  background: #1e1e2e;
+  border: 1px solid #444;
+  border-radius: 6px;
+  color: white;
+  font-size: 15px;
+  width: 100%;
+}
+
+.remember-forgot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 28px;
+  margin-top: 4px;
+}
+
+.remember-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  color: #9ca3af;
+  cursor: pointer;
+}
+
+input[type="checkbox"] {
+  accent-color: #00c896;
+  cursor: pointer;
+}
+
+input:focus {
+  outline: none;
+  border-color: #00c896;
+  box-shadow: 0 0 0 3px rgba(0, 200, 150, 0.2)
+}
+
+/* Validation errors */
+input.is-invalid {
+  border-color: #f87171 !important;
+  box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.2) !important;
+}
+
+.field-error {
+  font-size: 12px;
+  color: #f87171;
+  margin-top: 5px;
+  display: none;
+}
+
 /* HOME PAGE STYLING */
 .header {
   margin-bottom: 30px;

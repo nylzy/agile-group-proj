@@ -1,62 +1,5 @@
 /* LOGIN PAGE STYLING */
 
-/* Form styling */
-.form-group {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 18px;
-}
-
-.form-group label {
-  font-size: 1rem;
-  font-weight: 400;
-  color: #aaa;
-  margin-bottom: 7px;
-  letter-spacing: 0.03em;
-}
-
-/* Input Styling */
-input[type="text"],
-input[type="number"],
-input[type="email"],
-input[type="password"],
-.profile-bio {
-  padding: 12px 16px;
-  background: #1e1e2e;
-  border: 1px solid #444;
-  border-radius: 6px;
-  color: white;
-  font-size: 15px;
-  width: 100%;
-}
-
-input:focus {
-  outline: none;
-  border-color: #00c896;
-  box-shadow: 0 0 0 3px rgba(0, 200, 150, 0.2)
-}
-
-/* Validation errors */
-input.is-invalid {
-  border-color: #f87171 !important;
-  box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.2) !important;
-}
-
-.field-error {
-  font-size: 12px;
-  color: #f87171;
-  margin-top: 5px;
-  display: none;
-}
-
-.remember-forgot {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 28px;
-  margin-top: 4px;
-}
-
 .page-wrapper {
   background: #1a1d27;
   border: 1px solid #2e3250;
@@ -68,13 +11,13 @@ input.is-invalid {
   box-shadow: 0 8px 40px rgba(0,0,0,0.4);
 }
 
-.subtitle {
+.login-subtitle {
   font-size: 14px;
   color: #6b7280;
   margin-bottom: 6px;
 }
 
-.title {
+.login-title {
   font-size: 30px;
   font-weight: 700;
   margin-bottom: 28px;
@@ -104,7 +47,7 @@ input[type="checkbox"] {
 
 .forgot-link:hover { color: #009e78; }
 
-.btn-login {
+.loginpage-btn-login {
   display: block;
   width: 100%;
   padding: 14px;
@@ -122,13 +65,13 @@ input[type="checkbox"] {
   margin-bottom: 14px;
 }
  
-.btn-login:hover {
+.loginpage-btn-login:hover {
   background: #009e78;
   color: #0f1117;
   transform: translateY(-1px);
 }
 
-.btn-login:active { transform: translateY(0); }
+.loginpage-btn-login:active { transform: translateY(0); }
 
 .register-text {
   text-align: center;
@@ -147,7 +90,6 @@ input[type="checkbox"] {
 
 /* REGISTRATION PAGE STYLING */
 
-/* ── Nav button styling ── */
 .form-nav {
   display: flex;
   justify-content: space-between;
@@ -208,7 +150,7 @@ input[type="checkbox"] {
   background: #00c896;
 }
 
-/* ── Step label row ── */
+/* Step label row */
 .step-labels {
   display: flex;
   justify-content: space-between;
