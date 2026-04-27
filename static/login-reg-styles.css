@@ -1,0 +1,198 @@
+/* LOGIN PAGE STYLING */
+
+.page-wrapper {
+  background: #1a1d27;
+  border: 1px solid #2e3250;
+  border-radius: 16px;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 44px 48px 40px;
+  width: 100%;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.4);
+}
+
+.login-subtitle {
+  font-size: 14px;
+  color: #6b7280;
+  margin-bottom: 6px;
+}
+
+.login-title {
+  font-size: 30px;
+  font-weight: 700;
+  margin-bottom: 28px;
+}
+
+.remember-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  color: #9ca3af;
+  cursor: pointer;
+}
+
+input[type="checkbox"] {
+  accent-color: #00c896;
+  cursor: pointer;
+}
+
+.forgot-link {
+  font-size: 14px;
+  color: #00c896;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s;
+}
+
+.forgot-link:hover { color: #009e78; }
+
+.loginpage-btn-login {
+  display: block;
+  width: 100%;
+  padding: 14px;
+  background: #00c896;
+  color: #0f1117;
+  font-weight: 700;
+  font-size: 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  letter-spacing: 0.01em;
+  transition: background 0.2s, transform 0.1s;
+  margin-bottom: 14px;
+}
+ 
+.loginpage-btn-login:hover {
+  background: #009e78;
+  color: #0f1117;
+  transform: translateY(-1px);
+}
+
+.loginpage-btn-login:active { transform: translateY(0); }
+
+.register-text {
+  text-align: center;
+  font-size: 16px;
+  color: #aaa;
+  margin: 0;
+}
+
+.register-text a {
+  color: #00c896;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.register-text a:hover { color: #009e78; }
+
+/* REGISTRATION PAGE STYLING */
+
+.form-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1.8rem;
+  gap: 10px;
+}
+
+/* Step indicator */
+.step-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  margin-bottom: 2rem;
+}
+
+.step-dot {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 2px solid #2e3250;
+  background: #1a1d27;
+  color: #6b7280;
+  font-size: 13px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.35s ease;
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+}
+
+.step-dot.active {
+  border-color: #00c896;
+  background: #00c896;
+  color: #0f1117;
+  box-shadow: 0 0 0 4px rgba(0, 200, 150, 0.18);
+}
+
+.step-dot.completed {
+  border-color: #00c896;
+  background: #003528;
+  color: #00c896;
+}
+ 
+.step-line {
+  height: 2px;
+  width: 60px;
+  background: #2e3250;
+  transition: background 0.35s ease;
+  flex-shrink: 0;
+}
+
+.step-line.completed {
+  background: #00c896;
+}
+
+/* Step label row */
+.step-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1.8rem;
+}
+.step-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  text-align: center;
+  width: 80px;
+  transition: color 0.3s;
+}
+.step-label.active {
+  color: #00c896;
+}
+.step-label.completed {
+  color: #009e78;
+}
+ 
+/* ── Step panels ── */
+.step-panel {
+  display: none;
+  animation: fadeSlideIn 0.3s ease forwards;
+}
+
+.step-panel.active {
+  display: block;
+}
+
+@keyframes fadeSlideIn {
+  from { opacity: 0; transform: translateX(18px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes fadeSlideBack {
+  from { opacity: 0; transform: translateX(-18px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.step-panel.slide-back {
+  animation: fadeSlideBack 0.3s ease forwards;
+}

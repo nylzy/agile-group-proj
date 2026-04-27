@@ -6,12 +6,15 @@
     <title>FitScore - Your Profile</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='profile-styles.css') }}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
 
     <!-- Navbar -->
     <nav class="navbar navbar-dark px-4">
-        <span class="navbar-brand">FitScore</span>
+        <a href="{{ url_for('home') }}" class="navbar-brand">FitScore</span>
+            <!-- As of now, this is hardcoded to redirect to the dashboard. May need further implementation? -->
         <div class="navbar-links">
             <a href="{{ url_for('home') }}" class="navbar-link">Home</a>
             <a href="{{ url_for('social') }}" class="navbar-link">Social</a>
@@ -35,10 +38,13 @@
         </div>
  
         <ul class="panel-nav">
-            <li><a href="#" class="active" section="details">
+            <li><a href="#" class="active" data-section="details">
                 <i class="bi bi-person-fill"></i> Profile
             </a></li>
-            <li><a href="#" section="activity">
+            <li><a href="#" data-section="security">
+                <i class="bi bi-security"></i> Security
+            </a></li>
+            <li><a href="#" data-section="activity">
                 <i class="bi bi-activity"></i> Activity Log
             </a></li>
         </ul>
@@ -47,112 +53,140 @@
     <!-- RIGHT PANEL -->
     <main class="right-panel">
  
-        <!-- ── SECTION: Profile Details ───────────────────────── -->
+        <!-- Section 1: Profile Details -->
         <div class="section active" id="section-details">
             <div class="section-title">Profile</div>
-            <div class="section-subtitle">Update your personal information, fitness preferences, and account security.</div>
+            <div class="section-subtitle">Update your personal information and fitness preferences.</div>
  
-            <!-- Avatar -->
-            <div class="avatar-upload-area">
-                <img src="{{ url_for('static', filename='images/generic_profile_pic.png') }}" alt="Avatar">
-                <div class="avatar-actions">
-                    <button class="btn-primary" style="font-size:0.8rem;padding:7px 16px">
-                        <i class="bi bi-upload"></i> Upload photo
-                    </button>
-                    <button class="btn-secondary-outline" style="font-size:0.8rem;padding:7px 16px">Remove</button>
+            <div style="display:flex; gap:32px; align-items:flex-start; margin-bottom:8px;">
+                <!-- Avatar -->
+                <div style="display:flex; flex-direction:column; align-items:center; gap:10px; flex-shrink:0;">
+                    <img src="{{ url_for('static', filename='images/generic_profile_pic.png') }}" alt="Avatar" style="width: 384px; height: 384px;">
+                    <div class="avatar-actions">
+                        <button class="btn btn-primary" style="font-size:0.8rem; padding:7px 16px">
+                            <i class="bi bi-upload"></i> Upload photo
+                        </button>
+                        <button class="btn btn-secondary" style="font-size:0.8rem; padding:7px 16px; margin-left: 6px">
+                            Remove</button>
+                    </div>
                 </div>
-            </div>
+
+                <!-- Name fields -->
+                <div style="flex:1; min-width: 0;">
+                <div class="section-title">Personal Information</div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>First name</label>
+                            <input type="text" value="Alex">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Last name</label>
+                            <input type="text" value="Johnson">
+                        </div>
+                    </div>
+                
+                    <div class="form-group">
+                        <label>Username</label>
+                        <input type="text" value="alexj">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Bio</label>
+                        <textarea class="profile-bio" rows="3" placeholder="Tell others about your fitness journey…">Marathon runner chasing a sub-3hr finish</textarea>
+                    </div>
+                </div>
+
+                <!-- Fitness Info -->
+                <div style="flex: 1; min-width: 0;">
+                    <div class="section-title">Fitness Info</div>
+ 
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Age</label>
+                            <input type="number" value="27">
+                        </div>
+                        <div class="form-group">
+                            <label>Weight (kg)</label>
+                            <input type="number" value="74">
+                        </div>
+                    </div>
+                
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Height (cm)</label>
+                            <input type="number" value="178">
+                        </div>
+                    </div>
+                
+                    <!--<div class="form-group">
+                        <label>Primary sport</label>
+                        <select>
+                            <option selected>Running</option>
+                            <option>Cycling</option>
+                            <option>Swimming</option>
+                            <option>Weightlifting</option>
+                        </select>
+                    </div>
+                    -->
+
+                    <div class="d-flex gap-3 mt-2">
+                        <button class="btn btn-primary"><i class="bi bi-check-lg"></i> Save changes</button>
+                        <button class="btn btn-secondary">Discard</button>
+                    </div>
+                </div>
  
             <div class="divider"></div>
- 
-            <!-- Name row -->
-            <div class="form-row">
-                <div class="form-group">
-                    <label>First name</label>
-                    <input type="text" value="Alex">
-                </div>
-                <div class="form-group">
-                    <label>Last name</label>
-                    <input type="text" value="Johnson">
-                </div>
-            </div>
- 
-            <div class="form-group">
-                <label>Username</label>
-                <input type="text" value="alexj">
-            </div>
- 
-            <div class="form-group">
-                <label>Email</label>
-                <input type="email" value="alex@email.com">
-            </div>
- 
-            <div class="divider"></div>
-            <div style="font-weight:700; margin-bottom:16px; font-size:0.95rem">Fitness Info</div>
- 
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="">Age</label>
-                    <input type="number" value="27">
-                </div>
-                <div class="form-group">
-                    <label>Weight (kg)</label>
-                    <input type="number" value="74">
-                </div>
-            </div>
- 
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Height (cm)</label>
-                    <input type="number" value="178">
-                </div>
-                <div class="form-group">
-                    <label>Primary sport</label>
-                    <select>
-                        <option selected>Running</option>
-                        <option>Cycling</option>
-                        <option>Swimming</option>
-                        <option>Weightlifting</option>
-                    </select>
-                </div>
-            </div>
- 
-            <div class="form-group">
-                <label>Bio</label>
-                <textarea rows="3" placeholder="Tell others about your fitness journey…">Marathon runner chasing a sub-3hr finish 🏃</textarea>
-            </div>
- 
-            <div class="d-flex gap-3 mt-2">
-                <button class="btn-primary save-btn"><i class="bi bi-check-lg"></i> Save changes</button>
-                <button class="btn-secondary-outline">Discard</button>
+            
             </div>
         </div>
+
+        <!-- Section 2: Security-->
+        <div class="section" id="section-security">
  
-            <div class="divider"></div>
-            <div style="font-weight:700; margin-bottom:4px; font-size:0.95rem">Security</div>
-            <div style="font-size:0.82rem; color:#6b7280; margin-bottom:20px">Change your password or delete your account.</div>
- 
-            <div class="form-group">
-                <label>Current password</label>
-                <input type="password" placeholder="••••••••">
-            </div>
-            <div class="form-row">
-                <div class="form-group">
-                    <label>New password</label>
-                    <input type="password" placeholder="••••••••">
+            <div class="section-title">Security</div>
+            <div class="section-subtitle">Change your account security information.</div>
+            
+            <div style="display:flex; gap:32px; align-items:flex-start; margin-bottom:8px;">
+            <!-- Email -->
+                <div style="flex: 1; min-width: 0;">
+                    <div class="form-group">
+                        <label>Current email</label>
+                        <input type="email" value="alex@email.com">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>New email</label>
+                            <input type="email" placeholder="Enter e-mail here">
+                        </div>
+                        <div class="form-group">
+                            <label>Confirm new email</label>
+                            <input type="email" placeholder="Re-enter e-mail here">
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" style="margin-bottom:28px"><i class="bi bi-lock-fill"></i>
+                        Update email</button>
                 </div>
-                <div class="form-group">
-                    <label>Confirm new password</label>
-                    <input type="password" placeholder="••••••••">
+
+            <!-- Password -->
+                <div style="flex: 1; min-width: 0;">
+                    <div class="form-group">
+                        <label>Current password</label>
+                        <input type="password" placeholder="••••••••">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>New password</label>
+                            <input type="password" placeholder="••••••••">
+                        </div>
+                        <div class="form-group">
+                            <label>Confirm new password</label>
+                            <input type="password" placeholder="••••••••">
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" style="margin-bottom:28px"><i class="bi bi-lock-fill"></i>
+                        Update password</button>
                 </div>
-            </div>
-            <button class="btn-primary save-btn" style="margin-bottom:28px"><i class="bi bi-lock-fill"></i> Update password</button>
- 
-            <div class="divider"></div>
-            <div class="danger-zone">
-                <h6><i class="bi bi-exclamation-triangle-fill"></i> Delete account</h6>
-                <p>This will permanently remove your profile, scores, and all activity data. This cannot be undone.</p>
-                <button class="btn-danger-outline">Delete my account</button>
             </div>
  
         </div>
@@ -250,7 +284,7 @@
 </div>
 
 <script>
-    // ── Section switching ─────────────────────────────────────────
+    // Section switching
     $('.panel-nav a').on('click', function(e) {
         e.preventDefault();
         const target = $(this).data('section');
@@ -264,14 +298,13 @@
         $('#section-' + target).addClass('active');
     });
 
-    // ── Activity filters ──────────────────────────────────────────
+    // TODO: Activity filters 
     $('.filter-btn').on('click', function() {
         $('.filter-btn').removeClass('active');
         $(this).addClass('active');
-        // TODO: real filtering for backend
     });
  
-    // ── Save toast ────────────────────────────────────────────────
+    // Save toast 
     $(document).on('click', '.save-btn', function() {
         const $toast = $('#save-toast');
         $toast.fadeIn(200);
