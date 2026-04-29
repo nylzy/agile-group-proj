@@ -37,11 +37,7 @@
             <button class="lb-filter-btn" data-sport="running">Running</button>
             <button class="lb-filter-btn" data-sport="swimming">Swimming</button>
             <button class="lb-filter-btn" data-sport="cycling">Cycling</button>
-            <button class="lb-filter-btn" data-sport="yoga">Yoga / Pilates</button>
             <button class="lb-filter-btn" data-sport="plyometrics">Plyometrics</button>
-            <button class="lb-filter-btn" data-sport="martial-arts">Martial Arts</button>
-            <button class="lb-filter-btn" data-sport="climbing">Climbing</button>
-            <button class="lb-filter-btn" data-sport="hiking">Hiking</button>
         </div>
     </div>
 
@@ -201,33 +197,6 @@
             </div>
         </div>
 
-        <!-- YOGA / PILATES -->
-        <div class="log-sport-form" data-sport="yoga" hidden>
-            <div class="log-form-card">
-                <h4 class="log-form-title">Yoga / Pilates</h4>
-                <div class="log-form-grid">
-                    <div class="form-group">
-                        <label for="yoga-style">Style</label>
-                        <select id="yoga-style" class="log-select">
-                            <option value="" disabled selected>Select style</option>
-                            <option>Vinyasa</option>
-                            <option>Hatha</option>
-                            <option>Yin</option>
-                            <option>Restorative</option>
-                            <option>Pilates Mat</option>
-                            <option>Reformer</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label class="log-checkbox-label">
-                            <input type="checkbox" id="yoga-instructor">
-                            Instructor-led session
-                        </label>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <!-- PLYOMETRICS -->
         <div class="log-sport-form" data-sport="plyometrics" hidden>
             <div class="log-form-card">
@@ -250,133 +219,6 @@
                     <div class="form-group">
                         <label for="plyo-rest">Rest Between Rounds (sec)</label>
                         <input type="number" id="plyo-rest" class="log-input" placeholder="60" min="0">
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- MARTIAL ARTS -->
-        <div class="log-sport-form" data-sport="martial-arts" hidden>
-            <div class="log-form-card">
-                <h4 class="log-form-title">Martial Arts</h4>
-                <div class="log-form-grid">
-                    <div class="form-group">
-                        <label for="ma-discipline">Discipline</label>
-                        <select id="ma-discipline" class="log-select">
-                            <option value="" disabled selected>Select discipline</option>
-                            <option>Boxing</option>
-                            <option>Muay Thai</option>
-                            <option>BJJ</option>
-                            <option>Judo</option>
-                            <option>Karate</option>
-                            <option>MMA</option>
-                            <option>Other</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="ma-session">Session Type</label>
-                        <select id="ma-session" class="log-select">
-                            <option value="" disabled selected>Select type</option>
-                            <option>Drilling</option>
-                            <option>Sparring</option>
-                            <option>Bag Work</option>
-                            <option>Competition</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- CLIMBING / CALISTHENICS -->
-        <div class="log-sport-form" data-sport="climbing" hidden>
-            <div class="log-form-card">
-                <h4 class="log-form-title">Climbing / Calisthenics</h4>
-
-                <!-- Sub-type toggle -->
-                <div class="form-group">
-                    <label class="log-select-label">Type</label>
-                    <div class="log-radio-group">
-                        <label class="log-radio-label">
-                            <input type="radio" name="climbing-type" value="climbing" checked> Climbing
-                        </label>
-                        <label class="log-radio-label">
-                            <input type="radio" name="climbing-type" value="calisthenics"> Calisthenics
-                        </label>
-                    </div>
-                </div>
-
-                <!-- Climbing fields -->
-                <div id="climbing-fields" class="log-form-grid">
-                    <div class="form-group">
-                        <label for="climb-grade">Highest Grade Climbed</label>
-                        <select id="climb-grade" class="log-select">
-                            <option value="" disabled selected>Select grade</option>
-                            <optgroup label="Bouldering (V-scale)">
-                                <option>V0</option><option>V1</option><option>V2</option>
-                                <option>V3</option><option>V4</option><option>V5</option>
-                                <option>V6</option><option>V7</option><option>V8</option>
-                                <option>V9</option><option>V10+</option>
-                            </optgroup>
-                            <optgroup label="Sport (Yosemite)">
-                                <option>5.6</option><option>5.7</option><option>5.8</option>
-                                <option>5.9</option><option>5.10</option><option>5.11</option>
-                                <option>5.12</option><option>5.13</option><option>5.14+</option>
-                            </optgroup>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="climb-routes">Number of Routes</label>
-                        <input type="number" id="climb-routes" class="log-input" placeholder="0" min="0">
-                    </div>
-                </div>
-
-                <!-- Calisthenics fields (hidden until radio switched) -->
-                <div id="calisthenics-fields" class="log-form-grid" hidden>
-                    <div class="form-group">
-                        <label>Exercises</label>
-                        <div class="log-checkbox-group">
-                            <label class="log-checkbox-label"><input type="checkbox" value="pull-ups"> Pull-ups</label>
-                            <label class="log-checkbox-label"><input type="checkbox" value="dips"> Dips</label>
-                            <label class="log-checkbox-label"><input type="checkbox" value="push-ups"> Push-ups</label>
-                            <label class="log-checkbox-label"><input type="checkbox" value="l-sit"> L-sit</label>
-                            <label class="log-checkbox-label"><input type="checkbox" value="muscle-up"> Muscle-up</label>
-                            <label class="log-checkbox-label"><input type="checkbox" value="handstand"> Handstand</label>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="cali-sets">Sets</label>
-                        <input type="number" id="cali-sets" class="log-input" placeholder="0" min="0">
-                    </div>
-                    <div class="form-group">
-                        <label for="cali-reps">Reps per Set</label>
-                        <input type="number" id="cali-reps" class="log-input" placeholder="0" min="0">
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- HIKING / RECREATIONAL CARDIO -->
-        <div class="log-sport-form" data-sport="hiking" hidden>
-            <div class="log-form-card">
-                <h4 class="log-form-title">Hiking / Recreational Cardio</h4>
-                <div class="log-form-grid">
-                    <div class="form-group">
-                        <label for="hike-distance">Distance (km)</label>
-                        <input type="number" id="hike-distance" class="log-input" placeholder="0.0" min="0" step="0.1">
-                    </div>
-                    <div class="form-group">
-                        <label for="hike-elevation">Elevation Gain (m) <span class="log-optional">optional</span></label>
-                        <input type="number" id="hike-elevation" class="log-input" placeholder="0" min="0">
-                    </div>
-                    <div class="form-group">
-                        <label for="hike-terrain">Terrain</label>
-                        <select id="hike-terrain" class="log-select">
-                            <option value="" disabled selected>Select terrain</option>
-                            <option>Trail</option>
-                            <option>Urban</option>
-                            <option>Beach</option>
-                            <option>Mountain</option>
-                        </select>
                     </div>
                 </div>
             </div>
