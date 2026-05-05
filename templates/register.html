@@ -1,21 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>FitScore - Registration</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='login-reg-styles.css') }}">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-</head>
-<body>
+{% extends "base_auth.html" %}
 
-    <!-- Navbar -->
-    <nav class="navbar navbar-dark px-4">
-        <a href="{{ url_for('index') }}" class="navbar-brand">FitScore</span>
-        <a href="{{ url_for('login') }}" class="btn btn-primary">Log In</a>
-    </nav>
+{% block title %}FitScore - Registration{% endblock %}
+
+{% block content %}
 
     <!-- Main Content -->
     <div class="container d-flex flex-grow-1 py-5">
@@ -44,13 +31,12 @@
                         <label for="username"><b>Username</b></label>
                         <input type="text" id="username" placeholder="e.g. strongman2026" required>
                         <span class="field-error" id="error-username">Username must be at least 3 characters long.</span>
-                        <!-- Optional: add more conditions to the username -->
                     </div>
 
                     <div class="form-group">
                         <label for="email"><b>E-mail</b></label>
                         <input type="email" id="email" placeholder="E-mail" required>
-                        <span class="field-error" id="error-email">PLease enter a valid email address.</span>
+                        <span class="field-error" id="error-email">Please enter a valid email address.</span>
                     </div>
                 </div>
 
@@ -60,9 +46,8 @@
                         <label for="password"><b>Password</b></label>
                         <input type="password" id="password" placeholder="Create a STRONG password." required>
                         <span class="field-error" id="error-password">Password must be at least 8 characters long.</span>
-                        <!-- Optional: add more conditions to password. Add a password security bar? -->
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="confirm-password"><b>Confirm password</b></label>
                         <input type="password" id="confirm-password" placeholder="Re-enter your STRONG password." required>
@@ -77,140 +62,128 @@
                 </div>
             </form>
 
-                <!-- Login link -->
-                <p class="subtitle" style="margin-top: 1rem;" id="login-link">
-                    <b>Already have an account?</b> <a href="{{ url_for('login') }}" style="color:#00c896;">Log in</a>
-                </p>
+            <!-- Login link -->
+            <p class="subtitle" style="margin-top: 1rem;" id="login-link">
+                <b>Already have an account?</b> <a href="{{ url_for('login') }}" style="color:#00c896;">Log in</a>
+            </p>
         </div>
     </div>
 
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-$(
-    function () {
-        let currentStep = 1;
-        const totalSteps = 2;
-        let direction = 'forward';
+$(function () {
+    let currentStep = 1;
+    const totalSteps = 2;
+    let direction = 'forward';
 
-        // Helpers
+    function showError(id, msg) {
+        $('#' + id).text(msg).show();
+        $('#' + id).prev('input, select').addClass('is-invalid');
+    }
 
-        function showError(id, msg) {
-            $('#' + id).text(msg).show();
-            $('#' + id).prev('input, select').addClass('is-invalid');
+    function clearError(id) {
+        $('#' + id).hide();
+        $('#' + id).prev('input, select').removeClass('is-invalid');
+    }
+
+    function clearAllErrors() {
+        $('.field-error').hide();
+        $('input, select').removeClass('is-invalid');
+    }
+
+    function validateStep(step) {
+        let valid = true;
+
+        if (step === 1) {
+            const username = $('#username').val().trim();
+            const email    = $('#email').val().trim();
+            const emailRx  = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+            clearError('error-username'); clearError('error-email');
+
+            if (username.length < 3) { showError('error-username', 'Please enter a username (3+ characters).'); valid = false; }
+            if (!emailRx.test(email)) { showError('error-email', 'Please enter a valid email address.');        valid = false; }
         }
 
-        function clearError(id) {
-            $('#' + id).hide();
-            $('#' + id).prev('input, select').removeClass('is-invalid');
+        if (step === 2) {
+            const pw  = $('#password').val();
+            const pw2 = $('#confirm-password').val();
+
+            clearError('error-password'); clearError('error-confirm');
+
+            if (pw.length < 8) { showError('error-password', 'Password must be at least 8 characters.'); valid = false; }
+            if (pw !== pw2)     { showError('error-confirm', 'Passwords do not match.');                 valid = false; }
         }
 
-        function clearAllErrors() {
-            $('.field-error').hide();
-            $('input, select').removeClass('is-invalid');
+        return valid;
+    }
+
+    function updateIndicator(step) {
+        for (let i = 1; i <= totalSteps; i++) {
+            const dot = $('#dot-' + i);
+            const lbl = $('#lbl-' + i);
+            dot.removeClass('active completed');
+            lbl.removeClass('active completed');
+
+            if (i < step)  { dot.addClass('completed').html('✓'); lbl.addClass('completed'); }
+            if (i === step){ dot.addClass('active').html(i);       lbl.addClass('active');    }
+            if (i > step)  { dot.html(i); }
         }
 
-        // Validation per step
+        $('#line-1').toggleClass('completed', 1 < step);
+    }
 
-        function validateStep(step) {
-            let valid = true;
+    function goToStep(step) {
+        const animClass = direction === 'forward' ? '' : 'slide-back';
 
-            if (step === 1) {
-                const username = $('#username').val().trim();
-                const email    = $('#email').val().trim();
-                const emailRx  = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        $('#step-' + currentStep).removeClass('active slide-back');
+        currentStep = step;
+        $('#step-' + currentStep).addClass('active ' + animClass);
 
-                clearError('error-username'); clearError('error-email');
+        updateIndicator(currentStep);
 
-                if (username.length < 3) { showError('error-username', 'Please enter a username (3+ characters).'); valid = false; }
-                if (!emailRx.test(email)) { showError('error-email', 'Please enter a valid email address.');        valid = false; }
-            }
+        $('#back-btn').prop('disabled', currentStep === 1);
+        $('#next-btn').text(currentStep === totalSteps ? 'Create Account' : 'Continue →');
+    }
 
-            if (step === 2) {
-                const pw  = $('#password').val();
-                const pw2 = $('#confirm-password').val();
+    $('#next-btn').on('click', function () {
+        if (!validateStep(currentStep)) return;
 
-                clearError('error-password'); clearError('error-confirm');
-
-                if (pw.length < 8) { showError('error-password', 'Password must be at least 8 characters.'); valid = false; }
-                if (pw !== pw2)     { showError('error-confirm', 'Passwords do not match.');                 valid = false; }
-            }
-
-            return valid;
-        }
-
-        // UI update
-    
-        function updateIndicator(step) {
-            for (let i = 1; i <= totalSteps; i++) {
-                const dot = $('#dot-' + i);
-                const lbl = $('#lbl-' + i);
-                dot.removeClass('active completed');
-                lbl.removeClass('active completed');
-
-                if (i < step)  { dot.addClass('completed').html('✓'); lbl.addClass('completed'); }
-                if (i === step){ dot.addClass('active').html(i);       lbl.addClass('active');    }
-                if (i > step)  { dot.html(i); }
-            }
-
-            $('#line-1').toggleClass('completed', 1 < step);
-        }
-
-        function goToStep(step) {
-            const animClass = direction === 'forward' ? '' : 'slide-back';
-
-            $('#step-' + currentStep).removeClass('active slide-back');
-            currentStep = step;
-            $('#step-' + currentStep).addClass('active ' + animClass);
-
-            updateIndicator(currentStep);
-
-            $('#back-btn').prop('disabled', currentStep === 1);
-            $('#next-btn').text(currentStep === totalSteps ? 'Create Account' : 'Continue →');
-        }
-
-        // Button handlers
-
-        $('#next-btn').on('click', function () {
-            if (!validateStep(currentStep)) return;
-
-            if (currentStep < totalSteps) {
-                direction = 'forward';
-                goToStep(currentStep + 1);
-            } else {
-                // Final submit
-                submitForm();
-            }
-        });
-
-        $('#back-btn').on('click', function () {
-            if (currentStep > 1) {
-                direction = 'back';
-                clearAllErrors();
-                goToStep(currentStep - 1);
-            }
-        });
-
-        // Submit Form
-
-        function submitForm() {
-            const payload = {
-                username: $('#username').val().trim(),
-                email:    $('#email').val().trim(),
-                newsletter: $('#newsletter').is(':checked'),
-                password: $('#password').val(),
-            };
-
-            $.ajax({
-                url: '/register',
-                method: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify(payload),
-                success: function () { window.location.href = "{{ url_for('home') }}"; },
-                error: function () { window.location.href = "{{ url_for('home') }}"; } // Change this when finalising the product
-                // error:   function () { throw new Error("Registration failed") }
-            });
+        if (currentStep < totalSteps) {
+            direction = 'forward';
+            goToStep(currentStep + 1);
+        } else {
+            submitForm();
         }
     });
 
+    $('#back-btn').on('click', function () {
+        if (currentStep > 1) {
+            direction = 'back';
+            clearAllErrors();
+            goToStep(currentStep - 1);
+        }
+    });
+
+    function submitForm() {
+        const payload = {
+            username: $('#username').val().trim(),
+            email:    $('#email').val().trim(),
+            password: $('#password').val(),
+        };
+
+        $.ajax({
+            url: '/register',
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(payload),
+            success: function () { window.location.href = "{{ url_for('home') }}"; },
+            error:   function () { window.location.href = "{{ url_for('home') }}"; }
+        });
+    }
+});
 </script>
-</body>
-</html>
+{% endblock %}
