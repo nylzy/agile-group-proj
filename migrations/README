@@ -1,0 +1,36 @@
+# Flask-Migrate Configuration
+
+Single-database configuration for Flask.
+
+This `migrations` folder acts as version control for your database schema. It keeps track of changes made to your database over time (like adding tables or columns) without losing your existing data.
+
+## How to use Flask-Migrate
+
+Whenever you make changes to your database models in `models.py`, follow this simple two-step process:
+
+### Step 1: Generate a Migration Script
+After you save your changes in `models.py`, open your terminal (make sure your `.venv` is activated) and run:
+
+```bash
+flask db migrate -m "Describe your change here"
+```
+*(Example: `flask db migrate -m "Added profile_picture column to Users table"`)*
+
+This command looks at your `models.py`, compares it to your current database, and creates a new Python script inside the `migrations/versions/` folder that contains the code needed to apply your new changes.
+
+### Step 2: Apply the Migration to the Database
+Once the migration script is generated, apply those changes to your `app.db` file by running:
+
+```bash
+flask db upgrade
+```
+
+This executes the new script generated in Step 1, officially updating your database schema without deleting any of your existing data.
+
+---
+
+## Summary Cheat Sheet
+- **`flask db init`**: Run only **once** per project to set up the migrations folder (already done for this project).
+- **`flask db migrate -m "Message"`**: Run **every time** you change `models.py` to draft the database update.
+- **`flask db upgrade`**: Run **every time** after migrating to apply the drafted update to your live database.
+- **`flask db downgrade`**: (Optional) Run this if you made a mistake and need to undo the last `upgrade`.
