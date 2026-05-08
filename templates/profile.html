@@ -1,34 +1,16 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>FitScore - Your Profile</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='profile-styles.css') }}">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-</head>
-<body>
+{% extends "base.html" %}
 
-    <!-- Navbar -->
-    <nav class="navbar navbar-dark px-4">
-        <a href="{{ url_for('home') }}" class="navbar-brand">FitScore</span>
-            <!-- As of now, this is hardcoded to redirect to the dashboard. May need further implementation? -->
-        <div class="navbar-links">
-            <a href="{{ url_for('home') }}" class="navbar-link">Home</a>
-            <a href="{{ url_for('social') }}" class="navbar-link">Social</a>
-            <a href="{{ url_for('log') }}" class="navbar-link">Log Exercise</a>
-            <a href="{{ url_for('leaderboard') }}" class="navbar-link">Leaderboard</a>
-            <a href="{{ url_for('profile') }}" class="navbar-profile-button">
-                <img src="{{ url_for('static', filename='images/generic_profile_pic.png') }}" alt="Generic profile avatar: white silhouette of a person with a circular head and shoulders on a teal green circular background" class="profile-pic">
-            </a>
-        </div>
-    </nav>
+{% block title %}FitScore - Your Profile{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='profile-styles.css') }}">
+{% endblock %}
+
+{% block content %}
 
     <!-- Main Content -->
     <div class="split-layout">
- 
+
     <!-- LEFT PANEL -->
     <aside class="left-panel">
         <div class="profile-summary">
@@ -36,7 +18,7 @@
             <div class="name">Alex Johnson</div>
             <div class="handle">@alexj · Rank #14</div>
         </div>
- 
+
         <ul class="panel-nav">
             <li><a href="#" class="active" data-section="details">
                 <i class="bi bi-person-fill"></i> Profile
@@ -49,15 +31,15 @@
             </a></li>
         </ul>
     </aside>
- 
+
     <!-- RIGHT PANEL -->
     <main class="right-panel">
- 
+
         <!-- Section 1: Profile Details -->
         <div class="section active" id="section-details">
             <div class="section-title">Profile</div>
             <div class="section-subtitle">Update your personal information and fitness preferences.</div>
- 
+
             <div style="display:flex; gap:32px; align-items:flex-start; margin-bottom:8px;">
                 <!-- Avatar -->
                 <div style="display:flex; flex-direction:column; align-items:center; gap:10px; flex-shrink:0;">
@@ -85,7 +67,7 @@
                             <input type="text" value="Johnson">
                         </div>
                     </div>
-                
+
                     <div class="form-group">
                         <label>Username</label>
                         <input type="text" value="alexj">
@@ -100,7 +82,7 @@
                 <!-- Fitness Info -->
                 <div style="flex: 1; min-width: 0;">
                     <div class="section-title">Fitness Info</div>
- 
+
                     <div class="form-row">
                         <div class="form-group">
                             <label>Age</label>
@@ -111,42 +93,31 @@
                             <input type="number" value="74">
                         </div>
                     </div>
-                
+
                     <div class="form-row">
                         <div class="form-group">
                             <label>Height (cm)</label>
                             <input type="number" value="178">
                         </div>
                     </div>
-                
-                    <!--<div class="form-group">
-                        <label>Primary sport</label>
-                        <select>
-                            <option selected>Running</option>
-                            <option>Cycling</option>
-                            <option>Swimming</option>
-                            <option>Weightlifting</option>
-                        </select>
-                    </div>
-                    -->
 
                     <div class="d-flex gap-3 mt-2">
                         <button class="btn btn-primary"><i class="bi bi-check-lg"></i> Save changes</button>
                         <button class="btn btn-secondary">Discard</button>
                     </div>
                 </div>
- 
+
             <div class="divider"></div>
-            
+
             </div>
         </div>
 
-        <!-- Section 2: Security-->
+        <!-- Section 2: Security -->
         <div class="section" id="section-security">
- 
+
             <div class="section-title">Security</div>
             <div class="section-subtitle">Change your account security information.</div>
-            
+
             <div style="display:flex; gap:32px; align-items:flex-start; margin-bottom:8px;">
             <!-- Email -->
                 <div style="flex: 1; min-width: 0;">
@@ -188,14 +159,14 @@
                         Update password</button>
                 </div>
             </div>
- 
+
         </div>
- 
+
         <!-- Activity Log -->
         <div class="section" id="section-activity">
             <div class="section-title">Activity Log</div>
             <div class="section-subtitle">Your full history of logged workouts and earned FitScores.</div>
- 
+
             <!-- Filters -->
             <div class="activity-filters">
                 <button class="filter-btn active">All</button>
@@ -204,9 +175,9 @@
                 <button class="filter-btn">Lifting</button>
                 <button class="filter-btn">Swimming</button>
             </div>
- 
+
             <div class="activity-list">
- 
+
                 <div class="activity-item">
                     <div class="activity-icon icon-run"><i class="bi bi-lightning-charge-fill"></i></div>
                     <div class="activity-info">
@@ -220,7 +191,7 @@
                     </div>
                     <div class="score-badge">+320</div>
                 </div>
- 
+
                 <div class="activity-item">
                     <div class="activity-icon icon-lift"><i class="bi bi-trophy-fill"></i></div>
                     <div class="activity-info">
@@ -234,7 +205,7 @@
                     </div>
                     <div class="score-badge">+280</div>
                 </div>
- 
+
                 <div class="activity-item">
                     <div class="activity-icon icon-cycle"><i class="bi bi-bicycle"></i></div>
                     <div class="activity-info">
@@ -248,7 +219,7 @@
                     </div>
                     <div class="score-badge">+410</div>
                 </div>
- 
+
                 <div class="activity-item">
                     <div class="activity-icon icon-swim"><i class="bi bi-water"></i></div>
                     <div class="activity-info">
@@ -262,7 +233,7 @@
                     </div>
                     <div class="score-badge">+360</div>
                 </div>
- 
+
                 <div class="activity-item">
                     <div class="activity-icon icon-run"><i class="bi bi-lightning-charge-fill"></i></div>
                     <div class="activity-info">
@@ -276,41 +247,44 @@
                     </div>
                     <div class="score-badge">+295</div>
                 </div>
- 
+
             </div>
         </div>
 
     </main>
 </div>
 
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     // Section switching
     $('.panel-nav a').on('click', function(e) {
         e.preventDefault();
         const target = $(this).data('section');
- 
+
         // Update nav highlight
         $('.panel-nav a').removeClass('active');
         $(this).addClass('active');
- 
+
         // Swap section
         $('.section').removeClass('active');
         $('#section-' + target).addClass('active');
     });
 
-    // TODO: Activity filters 
+    // Activity filters
     $('.filter-btn').on('click', function() {
         $('.filter-btn').removeClass('active');
         $(this).addClass('active');
     });
- 
-    // Save toast 
+
+    // Save toast
     $(document).on('click', '.save-btn', function() {
         const $toast = $('#save-toast');
         $toast.fadeIn(200);
         setTimeout(() => $toast.fadeOut(400), 2200);
- 
         // TODO: replace with real AJAX POST
     });
 </script>
-</body>
+{% endblock %}
