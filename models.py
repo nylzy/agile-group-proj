@@ -18,7 +18,7 @@ class Exercise(db.Model):
     exercise_name = db.Column(db.String(50), nullable=False)
     exercise_type = db.Column(db.String(50), nullable=False)
     units = db.Column(db.String(50), nullable=False)
-    mean_statistic = db.Column(db.Float, nullable=False)
+    mean_statistic = db.Column(db.Float, nullable=False) # use negative value for time-based exercises
     stdev_statistic = db.Column(db.Float, nullable=False)
 
     logs = db.relationship('Log', backref='exercise', lazy=True)
@@ -28,7 +28,7 @@ class Log(db.Model):
     log_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     exercise_id = db.Column(db.Integer, db.ForeignKey('Exercises.exercise_id'), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('Users.user_id'), nullable=False)
-    stat_value = db.Column(db.Float, nullable=False)
+    stat_value = db.Column(db.Float, nullable=False) # use negative value for time-based exercises
     standardised_score = db.Column(db.Float, nullable=True)
     completed_on = db.Column(db.DateTime, default=datetime.utcnow)
 
