@@ -11,7 +11,7 @@ app.config.from_object(Config)
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
-from models import User
+from models import User, Log
 
 # flask login manager
 login_manager = LoginManager()
@@ -29,7 +29,8 @@ def index():
 @app.route('/home')
 @login_required
 def home():
-    return render_template('home.html')
+    recent_log = Log.query.filter_by(user_id=current_user.user_id).order_by(Log.completed_on.desc()).first()
+    return render_template('home.html', recent_log=recent_log)
 
 @app.route('/leaderboard')
 @login_required

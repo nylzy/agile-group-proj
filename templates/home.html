@@ -27,7 +27,23 @@
                 <h2 class="h5">Friends Leaderboard</h2>
             </div>
             <div class="panel">
-                <h2 class="h5">Your Last Workout</h2>
+                <h2 class="h5 mb-3">Your Last Workout</h2>
+                {% if recent_log %}
+                    <div>
+                        <p class="mb-1"><strong>Exercise:</strong> {{ recent_log.exercise.exercise_name }}</p>
+                        <p class="mb-1"><strong>Result:</strong> {{ recent_log.stat_value | abs }} {{ recent_log.exercise.units }}</p>
+                        <p class="mb-1"><strong>Score:</strong> 
+                            {% if recent_log.standardised_score %}
+                                {% if recent_log.standardised_score > 0 %}+{% endif %}{{ "%.2f"|format(recent_log.standardised_score) }}
+                            {% else %}
+                                N/A
+                            {% endif %}
+                        </p>
+                        <p class="mb-0 mt-2"><small class="text-muted">Completed on: {{ recent_log.completed_on.strftime('%Y-%m-%d %H:%M') }}</small></p>
+                    </div>
+                {% else %}
+                    <p class="text-muted">No workouts logged yet.</p>
+                {% endif %}
             </div>
         </div>
     </div>
