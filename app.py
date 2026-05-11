@@ -45,7 +45,7 @@ def log():
 def login():
     # If a user is already logged in, send them to the dashboard
     if current_user.is_authenticated:
-        return redirect(url_for('dashboard'))
+        return redirect(url_for('home'))
 
     if request.method == 'POST':
         username = request.form.get('username')
