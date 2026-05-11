@@ -11,7 +11,7 @@
             <h1 class="login-title">Welcome back!</h1>
 
             <!-- Login Form -->
-            <form action="/login" id="loginform">
+            <form method="POST" action="/login" id="loginform">
                 <!-- Username -->
                 <div class="form-group">
                     <label for="user"><b>Username</b></label>
@@ -33,7 +33,7 @@
                 </div>
 
                 <!-- Submit -->
-                <a href="{{ url_for('home') }}" class="loginpage-btn-login">Log In</a>
+                <button type="submit" class="loginpage-btn-login">Log In</button>
 
                 <!-- Register Link -->
                 <p class="register-text"><b>Don't have an account?</b> <a href="{{ url_for('register') }}">Sign up</a></p>

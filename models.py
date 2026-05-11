@@ -1,7 +1,9 @@
 from app import db
 from datetime import datetime
 
-class User(db.Model):
+from flask_login import UserMixin
+
+class User(UserMixin, db.Model):
     __tablename__ = 'Users'
     user_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     username = db.Column(db.String(50), nullable=False)
@@ -11,6 +13,12 @@ class User(db.Model):
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     logs = db.relationship('Log', backref='user', lazy=True)
+
+    def get_id(self):
+        return str(self.user_id)
+
+    def check_password(self, password):
+        return self.password == password
 
 class Exercise(db.Model):
     __tablename__ = 'Exercises'

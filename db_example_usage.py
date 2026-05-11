@@ -7,9 +7,9 @@ def demonstrate_log_creation():
         print("--- Setting up demo data ---")
         
         # 1. Get or create a User
-        user = User.query.filter_by(username="demo_athlete").first()
+        user = User.query.filter_by(username="admin").first()
         if not user:
-            user = User(username="demo_athlete", email="demo@example.com", password="hashed_pw_here")
+            user = User(username="admin", email="admin@admin.com", password="admin")
             db.session.add(user)
             db.session.commit()
             print(f"Created new user: {user.username}")
