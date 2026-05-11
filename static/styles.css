@@ -8,6 +8,9 @@ body {
 .navbar {
   background-color: #1a1d27;
   border-bottom: 1px solid #2e3250;
+  min-height: 80px;
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
 }
 
 .navbar-brand {
@@ -18,7 +21,7 @@ body {
 
 .navbar-links {
   display: flex;
-  gap: 20px;
+  gap: 30px;
   align-items: center;
 }
 
@@ -26,6 +29,7 @@ body {
   color: #e8eaf0;
   text-decoration: none;
   transition: color 0.3s;
+  font-size: 16px;
 }
 
 .navbar-link:hover, .navbar-link.active {
@@ -44,8 +48,8 @@ body {
 }
 
 .profile-pic {
-  width: 40px;
-  height: 40px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   object-fit: cover;
 }
