@@ -13,7 +13,7 @@
 
     <!-- Navbar -->
     <nav class="navbar navbar-dark px-4">
-        <span class="navbar-brand">FitScore</span>
+        <a href="{{ url_for('home') }}" class="navbar-brand">FitScore</a>
         <div class="navbar-links">
             <a href="{{ url_for('home') }}"
                class="navbar-link {% if request.endpoint == 'home' %}active{% endif %}">Home</a>
