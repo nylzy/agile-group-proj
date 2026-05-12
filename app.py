@@ -2,14 +2,13 @@ from flask import render_template, request, redirect, url_for, flash
 from flask import Flask, render_template
 from flask_login import UserMixin, LoginManager, login_user, logout_user, login_required, current_user
 from config import Config
-from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
+from extensions import db, migrate
 
 app = Flask(__name__)
 app.config.from_object(Config)
 
-db = SQLAlchemy(app)
-migrate = Migrate(app, db)
+db.init_app(app)
+migrate.init_app(app, db)
 
 from models import User
 
