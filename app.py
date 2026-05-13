@@ -11,7 +11,7 @@ app.config.from_object(Config)
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
-from models import User, Log
+from models import User, Log, Friendship
 
 # flask login manager
 login_manager = LoginManager()
@@ -72,6 +72,38 @@ def register():
 @login_required
 def social():
     return render_template('social.html')
+
+@app.route('/add_friend', methods=['POST'])
+@login_required
+def add_friend():
+    friend_username = request.form.get('username')
+    if not friend_username:
+        flash('Please enter a username.', 'warning')
+        return redirect(url_for('social'))
+    
+    friend = User.query.filter_by(username=friend_username).first()
+    
+    if not friend:
+        flash('User not found.', 'danger')
+        return redirect(url_for('social'))
+        
+    if friend.user_id == current_user.user_id:
+        flash('You cannot add yourself as a friend.', 'warning')
+        return redirect(url_for('social'))
+        
+    # Check if already friends
+    existing_friendship = Friendship.query.filter_by(user_id_1=current_user.user_id, user_id_2=friend.user_id).first()
+    if existing_friendship:
+        flash('You are already friends with this user.', 'info')
+        return redirect(url_for('social'))
+        
+    # Create friendship
+    new_friendship = Friendship(user_id_1=current_user.user_id, user_id_2=friend.user_id)
+    db.session.add(new_friendship)
+    db.session.commit()
+    
+    flash(f'Successfully added {friend.username} as a friend!', 'success')
+    return redirect(url_for('social'))
 
 @app.route('/profile')
 @login_required

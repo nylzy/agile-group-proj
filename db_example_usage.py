@@ -16,6 +16,16 @@ def demonstrate_log_creation():
         else:
             print(f"Found existing user: {user.username}")
 
+        # Create second user
+        user2 = User.query.filter_by(username="user").first()
+        if not user2:
+            user2 = User(username="user", email="user@user.com", password="user")
+            db.session.add(user2)
+            db.session.commit()
+            print(f"Created new user: {user2.username}")
+        else:
+            print(f"Found existing user: {user2.username}")
+
         # 2. Get or create an Exercise
         # Let's say we are tracking a 5km run. 
         # The models note says "use negative value for time-based exercises", meaning a lower time is better.
@@ -50,6 +60,16 @@ def demonstrate_log_creation():
         )
         
         db.session.add(new_log)
+
+        new_log = Log(
+            user_id=user2.user_id,
+            exercise_id=exercise.exercise_id,
+            stat_value=user_stat_value,
+            standardised_score=z_score
+        )
+        
+        db.session.add(new_log)
+
         db.session.commit()
 
         print("\n--- Log Successfully Created ---")
@@ -58,6 +78,8 @@ def demonstrate_log_creation():
         print(f"Stat Value Recorded: {user_stat_value} {exercise.units}")
         print(f"Calculated Standardised Score: +{z_score:.2f}")
         print("Note: A positive score here means they performed better than the mean!")
+
+        
 
 if __name__ == "__main__":
     demonstrate_log_creation()

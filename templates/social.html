@@ -9,11 +9,11 @@
 
         <!-- Search & Add Friend Bar -->
         <div class="social-search-container">
-            <div class="search-input-group">
+            <form action="{{ url_for('add_friend') }}" method="POST" class="search-input-group">
                 <i class="bi bi-search py-2 ps-3 text-muted"></i>
-                <input type="text" placeholder="Enter username to add friend...">
-                <button class="btn btn-primary px-4">Add Friend</button>
-            </div>
+                <input type="text" name="username" placeholder="Enter username to add friend..." required>
+                <button type="submit" class="btn btn-primary px-4">Add Friend</button>
+            </form>
         </div>
 
         <div class="row">
