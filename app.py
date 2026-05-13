@@ -71,7 +71,14 @@ def register():
 @app.route('/social')
 @login_required
 def social():
-    return render_template('social.html')
+    # Get all friends of the current user
+    friendships = Friendship.query.filter_by(user_id_1=current_user.user_id).all()
+    friend_ids = [f.user_id_2 for f in friendships]
+    
+    # Get the last 10 logs from those friends
+    recent_friend_logs = Log.query.filter(Log.user_id.in_(friend_ids)).order_by(Log.completed_on.desc()).limit(10).all()
+    
+    return render_template('social.html', recent_friend_logs=recent_friend_logs)
 
 @app.route('/add_friend', methods=['POST'])
 @login_required
