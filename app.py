@@ -40,7 +40,8 @@ def leaderboard():
 def log():
     lifting = Exercise.query.filter_by(exercise_type="Lifting").all()
     cardio = Exercise.query.filter_by(exercise_type="Cardio").all()
-    return render_template('log.html', lifting=lifting, cardio=cardio)
+    swimming = Exercise.query.filter_by(exercise_type="Swimming").all()
+    return render_template('log.html', lifting=lifting, cardio=cardio, swimming=swimming)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
