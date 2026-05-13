@@ -24,6 +24,17 @@
                     <input type="password" id="password" name="password" placeholder="Password" required>
                 </div>
 
+                <!-- Incorrect Details Warning -->
+                {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="field-error active" role="alert">
+                            {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
                 <!-- Remember Me and Forgot Password -->
                 <div class="remember-forgot">
                     <label for="remember" class="remember-label">Remember me

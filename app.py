@@ -61,9 +61,38 @@ def login():
 
     return render_template('login.html')
 
-@app.route('/register')
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('index'))
+
+@app.route('/register', methods=['GET', 'POST'])
 def register():
-    return render_template('register.html')
+    if request.method == 'GET':
+        return render_template('register.html')
+    
+    data = request.get_json()
+    username = data.get('username', '').strip()
+    email = data.get('email', '').strip()
+    password = data.get('password', '').strip()
+
+    # Duplicated username
+    if User.query.filter_by(username=username).first():
+        return {'field': 'username', 'success': False, 'message': 'Username already exists'}, 409
+
+    # Duplicated email
+    if User.query.filter_by(email=email).first():
+        return {'field': 'email', 'success': False, 'message': 'Email already exists'}, 409
+
+    # Create new user
+    new_user = User(username=username, email=email, password=password)
+    db.session.add(new_user)
+    db.session.commit()
+
+    login_user(new_user)
+
+    return {}, 200
 
 @app.route('/social')
 @login_required

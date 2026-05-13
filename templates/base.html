@@ -23,6 +23,7 @@
                class="navbar-link {% if request.endpoint == 'log' %}active{% endif %}">Log Exercise</a>
             <a href="{{ url_for('leaderboard') }}"
                class="navbar-link {% if request.endpoint == 'leaderboard' %}active{% endif %}">Leaderboard</a>
+            <a href="{{ url_for('logout') }}" class="navbar-link">Logout</a>
             <a href="{{ url_for('profile') }}" class="navbar-profile-button">
                 <img src="{{ url_for('static', filename='images/generic_profile_pic.png') }}"
                      alt="Profile Picture" class="profile-pic">
