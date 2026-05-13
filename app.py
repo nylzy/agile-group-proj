@@ -10,7 +10,7 @@ app.config.from_object(Config)
 db.init_app(app)
 migrate.init_app(app, db)
 
-from models import User
+from models import User, Exercise
 
 # flask login manager
 login_manager = LoginManager()
@@ -38,11 +38,12 @@ def leaderboard():
 @app.route('/log')
 @login_required
 def log():
-    return render_template('log.html')
+    lifting = Exercise.query.filter_by(exercise_type="Lifting").all()
+    cardio = Exercise.query.filter_by(exercise_type="Cardio").all()
+    return render_template('log.html', lifting=lifting, cardio=cardio)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    # If a user is already logged in, send them to the dashboard
     if current_user.is_authenticated:
         return redirect(url_for('home'))
 
@@ -50,12 +51,10 @@ def login():
         username = request.form.get('username')
         password = request.form.get('password')
 
-        # Find the user in the SQLAlchemy database
         user = User.query.filter_by(username=username).first()
 
-        # Check if user exists and the password matches the hash
         if user and user.check_password(password):
-            login_user(user) # This logs the user in!
+            login_user(user)
             return redirect(url_for('home'))
         else:
             flash('Invalid username or password')
