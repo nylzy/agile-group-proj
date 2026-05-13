@@ -80,17 +80,17 @@ $(function () {
     let direction = 'forward';
 
     function showError(id, msg) {
-        $('#' + id).text(msg).show();
+        $('#' + id).text(msg).addClass('active');
         $('#' + id).prev('input, select').addClass('is-invalid');
     }
 
     function clearError(id) {
-        $('#' + id).hide();
+        $('#' + id).removeClass('active');
         $('#' + id).prev('input, select').removeClass('is-invalid');
     }
 
     function clearAllErrors() {
-        $('.field-error').hide();
+        $('.field-error').removeClass('active');
         $('input, select').removeClass('is-invalid');
     }
 
@@ -181,7 +181,19 @@ $(function () {
             contentType: 'application/json',
             data: JSON.stringify(payload),
             success: function () { window.location.href = "{{ url_for('home') }}"; },
-            error:   function () { window.location.href = "{{ url_for('home') }}"; }
+            error:   function (xhr) { 
+                const res = xhr.responseJSON;
+                if (res && res.field === 'username') {
+                    goToStep(1);
+                    showError('error-username', res.message);
+                } else if (res && res.field === 'email') {
+                    goToStep(1);
+                    showError('error-email', res.message);
+                } else {
+                    goToStep(1);
+                    alert('An unexpected error occurred. Please try again.');
+                }
+            }
         });
     }
 });

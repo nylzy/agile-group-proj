@@ -23,7 +23,7 @@ class User(UserMixin, db.Model):
 class Exercise(db.Model):
     __tablename__ = 'Exercises'
     exercise_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    exercise_name = db.Column(db.String(50), nullable=False)
+    exercise_name = db.Column(db.String(50), nullable=False, unique=True)
     exercise_type = db.Column(db.String(50), nullable=False)
     units = db.Column(db.String(50), nullable=False)
     mean_statistic = db.Column(db.Float, nullable=False) # use negative value for time-based exercises
