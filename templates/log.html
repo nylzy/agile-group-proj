@@ -78,6 +78,47 @@
             </div>
         </div>
 
+        <!-- SWIMMING -->
+        <div class="log-sport-form" data-sport="swimming" hidden>
+            <div class="log-form-card">
+                <h4 class="log-form-title">Swimming</h4>
+                <div class="form-group">
+                    <label for="swim-stroke">Stroke</label>
+                    <select id="swim-stroke" class="log-select">
+                        <option value="" disabled selected>Choose a stroke</option>
+                        <option value="Freestyle">Freestyle</option>
+                        <option value="Backstroke">Backstroke</option>
+                        <option value="Breaststroke">Breaststroke</option>
+                        <option value="Butterfly">Butterfly</option>
+                    </select>
+                </div>
+                <div class="form-group" style="margin-top: 1rem;">
+                    <label for="swim-exercise">Distance</label>
+                    <select id="swim-exercise" class="log-select" disabled>
+                        <option value="" disabled selected>Select a stroke first</option>
+                        {% for exercise in swimming %}
+                            <option value="{{ exercise.exercise_id }}"
+                                    data-stroke="{{ exercise.exercise_name.split('m ')[1] }}"
+                                    data-distance="{{ exercise.exercise_name.split('m ')[0] }}">
+                                {{ exercise.exercise_name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="log-form-grid" style="margin-top: 1rem;">
+                    <div class="form-group">
+                        <label for="swim-minutes">Minutes</label>
+                        <input type="number" id="swim-minutes" class="log-input" placeholder="0" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="swim-seconds">Seconds</label>
+                        <input type="number" id="swim-seconds" class="log-input" placeholder="0" min="0" max="59">
+                    </div>
+                </div>
+                <button type="submit" class="btn-submit log-submit-btn" style="margin-top: 1rem;">Save Session</button>
+            </div>
+        </div>
+
         <!-- CYCLING -->
         <div class="log-sport-form" data-sport="cycling" hidden>
             <div class="log-form-card">
