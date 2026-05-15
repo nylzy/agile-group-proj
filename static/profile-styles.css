@@ -1,16 +1,23 @@
 /* PROFILE PAGE STYLING */
 /* ── Split layout ────────────────────────────────────────── */
+.right-panel .section-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 6px;
+    color: #e8eaf0;
+    display: block;
+    gap: unset;
+}
+
 .split-layout {
     display: flex;
-    height: calc(100vh - 56px); /* 56px is the navbar length */
-    flex: 1;
+    height: calc(100vh - 80px); /* 80px is the navbar length */
     overflow: hidden;     /* prevents page scroll; panels scroll independently */
 }
  
 /* ── LEFT PANEL ──────────────────────────────────────────── */
 .left-panel {
     width: 240px;
-    min-width: 240px;
     background-color: #1a1d27;
     border-right: 1px solid #2e3250;
     display: flex;
@@ -86,11 +93,6 @@
 .section { display: none; }
 .section.active { display: block; }
 
-.section-title {
-    font-size: 1.4rem;
-    font-weight: 700;
-    margin-bottom: 6px;
-}
 .section-subtitle {
     font-size: 0.85rem;
     color: #6b7280;
@@ -154,11 +156,11 @@
 .icon-cycle { background: rgba(251,191,36,0.12); color: #fbbf24; }
 .icon-swim  { background: rgba(167,139,250,0.12); color: #a78bfa; }
 
-.activity-info { flex: 1; }
+.activity-item .activity-info { flex: 1; }
 .activity-name { font-weight: 600; font-size: 0.95rem; margin-bottom: 2px; }
 .activity-meta { font-size: 0.78rem; color: #6b7280; }
 
-.activity-stats { display: flex; gap: 20px; text-align: right; }
+.activity-item .activity-stats { display: flex; gap: 20px; text-align: right; }
 .stat-block .val { font-weight: 700; font-size: 0.95rem; color: #e8eaf0; }
 .stat-block .lbl { font-size: 0.7rem; color: #6b7280; text-transform: uppercase; }
 
