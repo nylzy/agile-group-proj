@@ -30,6 +30,8 @@ def index():
 @login_required
 def home():
     recent_log = Log.query.filter_by(user_id=current_user.user_id).order_by(Log.completed_on.desc()).first()
+    cdf = 0.5 * (1 + math.erf(recent_log.standardised_score / math.sqrt(2)))
+    recent_log.standardised_score = round(cdf * 100)
     
     # Calculate Performance Matrix Scores
     exercise_types = [r[0] for r in db.session.query(Exercise.exercise_type).distinct().all()]

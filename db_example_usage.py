@@ -47,6 +47,7 @@ def demonstrate_log_creation():
         create_log(user, "200m Breaststroke", -520.0)
         create_log(user, "5k Run", -1200.0)
         create_log(user, "Bench Press", 60.0)
+        create_log(user, "10km Cycling", -900.0)
 
         db.session.commit()
         
