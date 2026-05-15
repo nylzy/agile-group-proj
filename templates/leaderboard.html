@@ -1,127 +1,65 @@
-{% extends "base.html" %}
+    {% extends "base.html" %}
 
-{% block title %}FitScore - Leaderboard{% endblock %}
+    {% block title %}FitScore - Leaderboard{% endblock %}
 
-{% block content %}
+    {% block content %}
 
-    <!-- Page Header -->
-    <div class="container py-5">
-        <h1 class="display-4 fw-bold">Leaderboard</h1>
-        <p class="lead" style="color: #aaa;">See how you stack up against other FitScore athletes.</p>
-    </div>
-
-    <!-- Sport Filter Tabs -->
-    <div class="container pb-4">
-        <div class="lb-filters">
-            <button class="lb-filter-btn active" data-sport="all">All</button>
-            <button class="lb-filter-btn" data-sport="lifting">Lifting</button>
-            <button class="lb-filter-btn" data-sport="running">Running</button>
-            <button class="lb-filter-btn" data-sport="swimming">Swimming</button>
-            <button class="lb-filter-btn" data-sport="cycling">Cycling</button>
-            <button class="lb-filter-btn" data-sport="plyometrics">Plyometrics</button>
+        <!-- Page Header -->
+        <div class="container py-5">
+            <h1 class="display-4 fw-bold">Leaderboard</h1>
+            <p class="lead" style="color: #aaa;">See how you stack up against other FitScore athletes.</p>
         </div>
-    </div>
 
-    <!-- Leaderboard Table -->
-    <div class="container pb-5">
-        <table class="lb-table">
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Athlete</th>
-                    <th>Sport</th>
-                    <th>Score</th>
-                    <th>Sessions</th>
-                    <th>Trend</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr data-sport="lifting">
-                    <td class="lb-rank lb-rank-1">1</td>
-                    <td class="lb-athlete">Jordan Kim<span>@jkim_lifts</span></td>
-                    <td>Lifting</td>
-                    <td class="lb-score lb-score-high">97</td>
-                    <td>63</td>
-                    <td class="lb-trend lb-trend-up">▲ +1</td>
-                </tr>
-                <tr data-sport="running">
-                    <td class="lb-rank lb-rank-2">2</td>
-                    <td class="lb-athlete">Sam Reed<span>@samruns</span></td>
-                    <td>Running</td>
-                    <td class="lb-score lb-score-high">91</td>
-                    <td>47</td>
-                    <td class="lb-trend lb-trend-up">▲ +3</td>
-                </tr>
-                <tr data-sport="cycling">
-                    <td class="lb-rank lb-rank-3">3</td>
-                    <td class="lb-athlete">Mia Park<span>@mia_cycles</span></td>
-                    <td>Cycling</td>
-                    <td class="lb-score lb-score-high">88</td>
-                    <td>38</td>
-                    <td class="lb-trend lb-trend-neutral">— 0</td>
-                </tr>
-                <tr data-sport="swimming">
-                    <td class="lb-rank">4</td>
-                    <td class="lb-athlete">Taylor Nguyen<span>@t_nguyen</span></td>
-                    <td>Swimming</td>
-                    <td class="lb-score lb-score-mid">85</td>
-                    <td>55</td>
-                    <td class="lb-trend lb-trend-up">▲ +2</td>
-                </tr>
-                <tr data-sport="plyometrics">
-                    <td class="lb-rank">5</td>
-                    <td class="lb-athlete">Chris Walsh<span>@walsh_wod</span></td>
-                    <td>Plyometrics</td>
-                    <td class="lb-score lb-score-mid">83</td>
-                    <td>29</td>
-                    <td class="lb-trend lb-trend-down">▼ −1</td>
-                </tr>
-                <tr data-sport="cycling">
-                    <td class="lb-rank">6</td>
-                    <td class="lb-athlete">Priya Sharma<span>@priya_fit</span></td>
-                    <td>Cycling</td>
-                    <td class="lb-score lb-score-mid">79</td>
-                    <td>72</td>
-                    <td class="lb-trend lb-trend-up">▲ +4</td>
-                </tr>
-                <tr data-sport="swimming">
-                    <td class="lb-rank">7</td>
-                    <td class="lb-athlete">Luca Bianchi<span>@luca_swim</span></td>
-                    <td>Swimming</td>
-                    <td class="lb-score lb-score-mid">76</td>
-                    <td>41</td>
-                    <td class="lb-trend lb-trend-down">▼ −2</td>
-                </tr>
-                <tr data-sport="running">
-                    <td class="lb-rank">8</td>
-                    <td class="lb-athlete">Aisha Okonkwo<span>@aisha_runs</span></td>
-                    <td>Running</td>
-                    <td class="lb-score lb-score-mid">74</td>
-                    <td>33</td>
-                    <td class="lb-trend lb-trend-neutral">— 0</td>
-                </tr>
-                <tr data-sport="lifting">
-                    <td class="lb-rank">9</td>
-                    <td class="lb-athlete">Ben Torres<span>@ben_lifts</span></td>
-                    <td>Lifting</td>
-                    <td class="lb-score lb-score-low">68</td>
-                    <td>21</td>
-                    <td class="lb-trend lb-trend-up">▲ +1</td>
-                </tr>
-                <tr data-sport="running">
-                    <td class="lb-rank">10</td>
-                    <td class="lb-athlete">Zoe Marshall<span>@zoe_runs</span></td>
-                    <td>Running</td>
-                    <td class="lb-score lb-score-low">61</td>
-                    <td>18</td>
-                    <td class="lb-trend lb-trend-down">▼ −3</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+        <!-- Sport Filter Tabs -->
+        <div class="container pb-4">
+            <div class="lb-filters">
+                <button class="lb-filter-btn active" data-sport="all">All</button>
+                <button class="lb-filter-btn" data-sport="lifting">Lifting</button>
+                <button class="lb-filter-btn" data-sport="running">Running</button>
+                <button class="lb-filter-btn" data-sport="swimming">Swimming</button>
+                <button class="lb-filter-btn" data-sport="cycling">Cycling</button>
+                <button class="lb-filter-btn" data-sport="plyometrics">Plyometrics</button>
+            </div>
+        </div>
 
-{% endblock %}
+        <!-- Leaderboard Table -->
+        <div class="container pb-5">
+            <table class="lb-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Athlete</th>
+                        <th>Sport</th>
+                        <th>Score</th>
+                        <th>Sessions</th>
+                        <th>Trend</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if leaderboard %}
+                        {% for entry in leaderboard %}
+                            {% set score_class = 'lb-score-high' if entry.overall_score >= 80 else ('lb-score-mid' if entry.overall_score >= 60 else 'lb-score-low') %}
+                            {% set primary_sport = entry.primary_category.lower() if entry.primary_category != 'N/A' else 'all' %}
+                            <tr data-sport="{{ primary_sport }}">
+                                <td class="lb-rank">{{ loop.index }}</td>
+                                <td class="lb-athlete">{{ entry.username }}<span>@{{ entry.username.lower() }}</span></td>
+                                <td>{{ entry.primary_category|title }}</td>
+                                <td class="lb-score {{ score_class }}">{{ entry.overall_score|int }}</td>
+                                <td>{{ entry.total_sessions }}</td>
+                                <td class="lb-trend lb-trend-neutral">— 0</td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="6" style="text-align: center; padding: 20px;">No athlete data available</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
 
-{% block extra_js %}
-    <script src="{{ url_for('static', filename='leaderboard.js') }}"></script>
-{% endblock %}
+    {% endblock %}
+
+    {% block extra_js %}
+        <script src="{{ url_for('static', filename='leaderboard.js') }}"></script>
+    {% endblock %}
