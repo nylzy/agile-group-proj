@@ -25,6 +25,46 @@ def z_to_percentile(z):
     """Convert a z-score to a 0-100 percentile score."""
     return round(0.5 * (1 + math.erf(z / math.sqrt(2))) * 100)
 
+
+def summarize_user_performance(user):
+    user_logs = Log.query.filter_by(user_id=user.user_id).order_by(Log.completed_on.desc()).all()
+    latest_logs_per_exercise = {}
+    for log in user_logs:
+        if log.exercise_id not in latest_logs_per_exercise:
+            latest_logs_per_exercise[log.exercise_id] = log
+
+    category_scores = {}
+    for log in latest_logs_per_exercise.values():
+        exercise_type = log.exercise.exercise_type
+        category_scores.setdefault(exercise_type, [])
+        if log.standardised_score is not None:
+            category_scores[exercise_type].append(log.standardised_score)
+
+    averaged_scores = {}
+    for etype, scores in category_scores.items():
+        if scores:
+            avg_z = sum(scores) / len(scores)
+            averaged_scores[etype] = z_to_percentile(avg_z)
+        else:
+            averaged_scores[etype] = 0
+
+    if averaged_scores:
+        overall_score = sum(averaged_scores.values()) / len(averaged_scores)
+        primary_category = max(averaged_scores, key=averaged_scores.get)
+    else:
+        overall_score = 0
+        primary_category = 'N/A'
+
+    return {
+        'user_id': user.user_id,
+        'username': user.username,
+        'overall_score': round(overall_score, 2),
+        'category_scores': averaged_scores,
+        'total_sessions': len(user_logs),
+        'primary_category': primary_category,
+        'has_logs': bool(user_logs)
+    }
+
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -70,25 +110,34 @@ def home():
     highest_score = round(0.5 * (1 + math.erf(highest_z / math.sqrt(2))) * 100) if highest_z is not None else None
 
 
+    friendships = Friendship.query.filter_by(user_id_1=current_user.user_id).all()
+    friend_ids = [f.user_id_2 for f in friendships]
+
     stats = {
         'total_workouts':   len(user_logs),
         'unique_exercises': len(set(log.exercise_id for log in user_logs)),
         'highest_score':    highest_score,
-        'total_friends':    Friendship.query.filter_by(user_id_1=current_user.user_id).count()
+        'total_friends':    len(friend_ids)
     }
     
     # Get 2 recent logs from friends
-    friendships        = Friendship.query.filter_by(user_id_1=current_user.user_id).all()
-    friend_ids         = [f.user_id_2 for f in friendships]
-    recent_friend_logs = Log.query.filter(Log.user_id.in_(friend_ids)).order_by(Log.completed_on.desc()).limit(2).all()
+    recent_friend_logs = []
+    friend_log_scores = {}
+    friends_leaderboard = [summarize_user_performance(current_user)]
+    if friend_ids:
+        recent_friend_logs = Log.query.filter(Log.user_id.in_(friend_ids)).order_by(Log.completed_on.desc()).limit(2).all()
+        friend_log_scores = {
+            log.log_id: z_to_percentile(log.standardised_score)
+            for log in recent_friend_logs
+            if log.standardised_score is not None
+        }
 
-    # Build display scores separately rather than mutating log objects
-    friend_log_scores = {
-        log.log_id: z_to_percentile(log.standardised_score)
-        for log in recent_friend_logs
-        if log.standardised_score is not None
-    }
-    
+        friends = User.query.filter(User.user_id.in_(friend_ids)).all()
+        friends_leaderboard.extend(summarize_user_performance(friend) for friend in friends)
+
+    friends_leaderboard.sort(key=lambda x: x['overall_score'], reverse=True)
+    friends_leaderboard = friends_leaderboard[:5]
+
     recent_log_score = z_to_percentile(recent_log.standardised_score) if recent_log and recent_log.standardised_score is not None else None
 
     return render_template('home.html',
@@ -98,67 +147,16 @@ def home():
                            performance_data=performance_data,
                            stats=stats,
                            recent_friend_logs=recent_friend_logs,
-                           friend_log_scores=friend_log_scores)
+                           friend_log_scores=friend_log_scores,
+                           friends_leaderboard=friends_leaderboard)
 
 @app.route('/leaderboard')
 @login_required
 def leaderboard():
-    # Get all users with their logs
     users = User.query.all()
-    leaderboard_data = []
-    
-    for user in users:
-        # Get all logs for this user
-        user_logs = Log.query.filter_by(user_id=user.user_id).all()
-        
-        if not user_logs:
-            continue
-        
-        # Get latest log per exercise
-        latest_logs_per_exercise = {}
-        for log in user_logs:
-            if log.exercise_id not in latest_logs_per_exercise:
-                latest_logs_per_exercise[log.exercise_id] = log
-        
-        # Get all distinct exercise types
-        exercise_types = set()
-        for log in latest_logs_per_exercise.values():
-            exercise_types.add(log.exercise.exercise_type)
-        
-        # Calculate average score per exercise type
-        category_scores = {}
-        for etype in exercise_types:
-            type_logs = [log for log in latest_logs_per_exercise.values() 
-                        if log.exercise.exercise_type == etype]
-            if type_logs:
-                valid_scores = [log.standardised_score for log in type_logs 
-                              if log.standardised_score is not None]
-                if valid_scores:
-                    avg_z = sum(valid_scores) / len(valid_scores)
-                    category_scores[etype] = z_to_percentile(avg_z)
-                else:
-                    category_scores[etype] = 0
-            else:
-                category_scores[etype] = 0
-        
-        # Calculate overall score as average of all category scores
-        if category_scores:
-            overall_score = sum(category_scores.values()) / len(category_scores)
-        else:
-            overall_score = 0
-        
-        leaderboard_data.append({
-            'user_id': user.user_id,
-            'username': user.username,
-            'overall_score': overall_score,
-            'category_scores': category_scores,
-            'total_sessions': len(user_logs),
-            'primary_category': max(category_scores, key=category_scores.get) if category_scores else 'N/A'
-        })
-    
-    # Sort by overall score descending
+    leaderboard_data = [entry for user in users
+                        if (entry := summarize_user_performance(user))['has_logs']]
     leaderboard_data.sort(key=lambda x: x['overall_score'], reverse=True)
-    
     return render_template('leaderboard.html', leaderboard=leaderboard_data)
 
 @app.route('/log', methods=['GET', 'POST'])
