@@ -33,21 +33,19 @@ def index():
 @login_required
 def home():
     recent_log = Log.query.filter_by(user_id=current_user.user_id).order_by(Log.completed_on.desc()).first()
-
-    # Convert for display only — don't mutate the object
-    recent_log_score = None
     if recent_log and recent_log.standardised_score is not None:
-        recent_log_score = z_to_percentile(recent_log.standardised_score)
+        cdf = 0.5 * (1 + math.erf(recent_log.standardised_score / math.sqrt(2)))
+        recent_log.standardised_score = round(cdf * 100)
 
     # Calculate Performance Matrix Scores
     exercise_types = [r[0] for r in db.session.query(Exercise.exercise_type).distinct().all()]
-    
+
     user_logs = Log.query.filter_by(user_id=current_user.user_id).order_by(Log.completed_on.desc()).all()
     latest_logs_per_exercise = {}
     for log in user_logs:
         if log.exercise_id not in latest_logs_per_exercise:
             latest_logs_per_exercise[log.exercise_id] = log
-            
+
     performance_scores = {}
     for etype in exercise_types:
         type_logs = [log for log in latest_logs_per_exercise.values() if log.exercise.exercise_type == etype]
@@ -60,17 +58,17 @@ def home():
                 performance_scores[etype] = 0
             else:
                 avg_z = sum(valid_scores) / len(valid_scores)
-                performance_scores[etype] = z_to_percentile(avg_z)
-                
+                cdf = 0.5 * (1 + math.erf(avg_z / math.sqrt(2)))
+                performance_scores[etype] = round(cdf * 100)
+
     performance_labels = list(performance_scores.keys())
-    performance_data   = list(performance_scores.values())
-    
+    performance_data = list(performance_scores.values())
+
     # Calculate Statistics
-    valid_logs    = [log for log in user_logs if log.standardised_score is not None]
-    highest_score = 0
-    if valid_logs:
-        highest_z     = max(log.standardised_score for log in valid_logs)
-        highest_score = z_to_percentile(highest_z)
+    valid_logs = [log for log in user_logs if log.standardised_score is not None]
+    highest_z = max((log.standardised_score for log in valid_logs), default=None)
+    highest_score = round(0.5 * (1 + math.erf(highest_z / math.sqrt(2))) * 100) if highest_z is not None else None
+
 
     stats = {
         'total_workouts':   len(user_logs),
@@ -91,7 +89,9 @@ def home():
         if log.standardised_score is not None
     }
     
-    return render_template('home.html', 
+    recent_log_score = z_to_percentile(recent_log.standardised_score) if recent_log and recent_log.standardised_score is not None else None
+
+    return render_template('home.html',
                            recent_log=recent_log,
                            recent_log_score=recent_log_score,
                            performance_labels=performance_labels,
@@ -103,7 +103,63 @@ def home():
 @app.route('/leaderboard')
 @login_required
 def leaderboard():
-    return render_template('leaderboard.html')
+    # Get all users with their logs
+    users = User.query.all()
+    leaderboard_data = []
+    
+    for user in users:
+        # Get all logs for this user
+        user_logs = Log.query.filter_by(user_id=user.user_id).all()
+        
+        if not user_logs:
+            continue
+        
+        # Get latest log per exercise
+        latest_logs_per_exercise = {}
+        for log in user_logs:
+            if log.exercise_id not in latest_logs_per_exercise:
+                latest_logs_per_exercise[log.exercise_id] = log
+        
+        # Get all distinct exercise types
+        exercise_types = set()
+        for log in latest_logs_per_exercise.values():
+            exercise_types.add(log.exercise.exercise_type)
+        
+        # Calculate average score per exercise type
+        category_scores = {}
+        for etype in exercise_types:
+            type_logs = [log for log in latest_logs_per_exercise.values() 
+                        if log.exercise.exercise_type == etype]
+            if type_logs:
+                valid_scores = [log.standardised_score for log in type_logs 
+                              if log.standardised_score is not None]
+                if valid_scores:
+                    avg_z = sum(valid_scores) / len(valid_scores)
+                    category_scores[etype] = z_to_percentile(avg_z)
+                else:
+                    category_scores[etype] = 0
+            else:
+                category_scores[etype] = 0
+        
+        # Calculate overall score as average of all category scores
+        if category_scores:
+            overall_score = sum(category_scores.values()) / len(category_scores)
+        else:
+            overall_score = 0
+        
+        leaderboard_data.append({
+            'user_id': user.user_id,
+            'username': user.username,
+            'overall_score': overall_score,
+            'category_scores': category_scores,
+            'total_sessions': len(user_logs),
+            'primary_category': max(category_scores, key=category_scores.get) if category_scores else 'N/A'
+        })
+    
+    # Sort by overall score descending
+    leaderboard_data.sort(key=lambda x: x['overall_score'], reverse=True)
+    
+    return render_template('leaderboard.html', leaderboard=leaderboard_data)
 
 @app.route('/log', methods=['GET', 'POST'])
 @login_required
@@ -187,7 +243,9 @@ def register():
     if User.query.filter_by(email=email).first():
         return {'field': 'email', 'success': False, 'message': 'Email already exists'}, 409
 
-    new_user = User(username=username, email=email, password=password)
+    # Create new user
+    new_user = User(username=username, email=email)
+    new_user.set_password(password)
     db.session.add(new_user)
     db.session.commit()
 
