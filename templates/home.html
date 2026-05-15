@@ -34,7 +34,7 @@
                     <span>Highest Score</span>
                     <span class="badge bg-success rounded-pill">
                         {% if stats.highest_score is not none %}
-                            {{ "%.2f"|format(stats.highest_score) }}
+                            {{ stats.highest_score }}
                         {% else %}
                             N/A
                         {% endif %}
@@ -54,9 +54,9 @@
                     <li class="mb-3 border-bottom pb-2 last-no-border">
                         <strong>{{ log.user.username }}</strong> logged <em>{{ log.exercise.exercise_name }}</em>
                         <br>
-                        Result: {{ log.stat_value | abs }} {{ log.exercise.units }} 
-                        {% if log.standardised_score is not none %}
-                            <span class="text-success fw-bold">(Score: {{ "%.2f"|format(log.standardised_score) }})</span>
+                        Result: {{ log.stat_value | abs }} {{ log.exercise.units }}
+                        {% if log.log_id in friend_log_scores %}
+                            <span class="text-success fw-bold">(Score: {{ friend_log_scores[log.log_id] }})</span>
                         {% endif %}
                         <br>
                         <small class="text-muted">{{ log.completed_on.strftime('%Y-%m-%d %H:%M') }}</small>
@@ -75,13 +75,12 @@
             {% if recent_log %}
             <div>
                 <p class="mb-1"><strong>Exercise:</strong> {{ recent_log.exercise.exercise_name }}</p>
-                <p class="mb-1"><strong>Result:</strong> {{ recent_log.stat_value | abs }} {{ recent_log.exercise.units
-                    }}</p>
+                <p class="mb-1"><strong>Result:</strong> {{ recent_log.stat_value | abs }} {{ recent_log.exercise.units }}</p>
                 <p class="mb-1"><strong>Score:</strong>
-                    {% if recent_log.standardised_score is not none %}
-                    {{ "%.2f"|format(recent_log.standardised_score) }}
+                    {% if recent_log_score is not none %}
+                        {{ recent_log_score }}
                     {% else %}
-                    N/A
+                        N/A
                     {% endif %}
                 </p>
                 <p class="mb-0 mt-2"><small class="text-muted">Completed on: {{
@@ -101,42 +100,41 @@
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         const ctx = document.getElementById('performanceChart').getContext('2d');
-        const labels = {{ performance_labels | tojson
-    }};
-    const data = {{ performance_data | tojson }};
+        const labels = {{ performance_labels | tojson }};
+        const data = {{ performance_data | tojson }};
 
-    new Chart(ctx, {
-        type: 'radar',
-        data: {
-            labels: labels,
-            datasets: [{
-                label: 'Performance Score',
-                data: data,
-                backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                borderColor: 'rgba(54, 162, 235, 1)',
-                pointBackgroundColor: 'rgba(54, 162, 235, 1)',
-                pointBorderColor: '#fff',
-                pointHoverBackgroundColor: '#fff',
-                pointHoverBorderColor: 'rgba(54, 162, 235, 1)'
-            }]
-        },
-        options: {
-            scales: {
-                r: {
-                    angleLines: {
-                        display: true
-                    },
-                    suggestedMin: 0,
-                    suggestedMax: 100
-                }
+        new Chart(ctx, {
+            type: 'radar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Performance Score',
+                    data: data,
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    pointBackgroundColor: 'rgba(54, 162, 235, 1)',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: 'rgba(54, 162, 235, 1)'
+                }]
             },
-            plugins: {
-                legend: {
-                    display: false
+            options: {
+                scales: {
+                    r: {
+                        angleLines: {
+                            display: true
+                        },
+                        suggestedMin: 0,
+                        suggestedMax: 100
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
                 }
             }
-        }
-    });
+        });
     });
 </script>
 {% endblock %}
