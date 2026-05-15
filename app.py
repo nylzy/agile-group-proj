@@ -1,3 +1,4 @@
+from importlib import machinery
 from flask import render_template, request, redirect, url_for, flash
 from flask import Flask, render_template
 from flask_login import UserMixin, LoginManager, login_user, logout_user, login_required, current_user
@@ -56,10 +57,25 @@ def home():
     performance_labels = list(performance_scores.keys())
     performance_data = list(performance_scores.values())
     
+    # Calculate Statistics
+    valid_logs = [log for log in user_logs if log.standardised_score is not None]    
+    highest_z = max((log.standardised_score for log in valid_logs), default=None)
+    cdf = 0.5 * (1 + math.erf(highest_z / math.sqrt(2)))
+    highest_score = round(cdf * 100)
+
+
+    stats = {
+        'total_workouts': len(user_logs),
+        'unique_exercises': len(set(log.exercise_id for log in user_logs)),
+        'highest_score': highest_score,
+        'total_friends': Friendship.query.filter_by(user_id_1=current_user.user_id).count()
+    }
+    
     return render_template('home.html', 
                            recent_log=recent_log,
                            performance_labels=performance_labels,
-                           performance_data=performance_data)
+                           performance_data=performance_data,
+                           stats=stats)
 
 @app.route('/leaderboard')
 @login_required
