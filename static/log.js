@@ -62,11 +62,14 @@ const liftFeedback  = document.getElementById('lift-feedback');
 liftSubmitBtn.addEventListener('click', async () => {
     const exerciseId = parseInt(document.querySelector('[data-sport="lifting"] .log-select').value);
     const weight     = parseFloat(document.getElementById('lift-weight').value);
+    const userweight = parseFloat(document.getElementById('current-weight').value);
 
     if (!exerciseId) { showFeedback(liftFeedback, 'Please select an exercise.', true); return; }
     if (!weight)     { showFeedback(liftFeedback, 'Please enter a weight.', true); return; }
+    if (!userweight) { showFeedback(liftFeedback, 'Please enter your current weight.', true); return; }
 
-    await handleSubmit(liftSubmitBtn, liftFeedback, exerciseId, weight);
+    const statValue = parseFloat((weight / userweight).toFixed(3));
+    await handleSubmit(liftSubmitBtn, liftFeedback, exerciseId, statValue);
 });
 
 

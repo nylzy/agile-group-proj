@@ -33,9 +33,9 @@ def index():
 @login_required
 def home():
     recent_log = Log.query.filter_by(user_id=current_user.user_id).order_by(Log.completed_on.desc()).first()
-    if recent_log and recent_log.standardised_score is not None:
-        cdf = 0.5 * (1 + math.erf(recent_log.standardised_score / math.sqrt(2)))
-        recent_log.standardised_score = round(cdf * 100)
+    # if recent_log and recent_log.standardised_score is not None:
+    #     cdf = 0.5 * (1 + math.erf(recent_log.standardised_score / math.sqrt(2)))
+    #     recent_log.standardised_score = round(cdf * 100)
 
     # Calculate Performance Matrix Scores
     exercise_types = [r[0] for r in db.session.query(Exercise.exercise_type).distinct().all()]
@@ -172,7 +172,7 @@ def log():
         exercise_id = data.get('exercise_id')
         stat_value  = data.get('stat_value')
 
-        if not exercise_id or stat_value is None:
+        if exercise_id is None or stat_value is None:
             return jsonify({'error': 'Missing exercise or value'}), 400
 
         exercise = Exercise.query.get(exercise_id)
