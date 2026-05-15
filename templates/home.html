@@ -16,6 +16,7 @@
         <div class="dash-grid">
             <div class="panel">
                 <h2 class="h5">Performance Matrix</h2>
+                <canvas id="performanceChart"></canvas>
             </div>
             <div class="panel">
                 <h2 class="h5">Statistics</h2>
@@ -48,4 +49,48 @@
         </div>
     </div>
 
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const ctx = document.getElementById('performanceChart').getContext('2d');
+        const labels = {{ performance_labels | tojson }};
+        const data = {{ performance_data | tojson }};
+        
+        new Chart(ctx, {
+            type: 'radar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Performance Score',
+                    data: data,
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    pointBackgroundColor: 'rgba(54, 162, 235, 1)',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: 'rgba(54, 162, 235, 1)'
+                }]
+            },
+            options: {
+                scales: {
+                    r: {
+                        angleLines: {
+                            display: true
+                        },
+                        suggestedMin: 0,
+                        suggestedMax: 100
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+    });
+</script>
 {% endblock %}
