@@ -33,21 +33,19 @@ def index():
 @login_required
 def home():
     recent_log = Log.query.filter_by(user_id=current_user.user_id).order_by(Log.completed_on.desc()).first()
-
-    # Convert for display only — don't mutate the object
-    recent_log_score = None
     if recent_log and recent_log.standardised_score is not None:
-        recent_log_score = z_to_percentile(recent_log.standardised_score)
+        cdf = 0.5 * (1 + math.erf(recent_log.standardised_score / math.sqrt(2)))
+        recent_log.standardised_score = round(cdf * 100)
 
     # Calculate Performance Matrix Scores
     exercise_types = [r[0] for r in db.session.query(Exercise.exercise_type).distinct().all()]
-    
+
     user_logs = Log.query.filter_by(user_id=current_user.user_id).order_by(Log.completed_on.desc()).all()
     latest_logs_per_exercise = {}
     for log in user_logs:
         if log.exercise_id not in latest_logs_per_exercise:
             latest_logs_per_exercise[log.exercise_id] = log
-            
+
     performance_scores = {}
     for etype in exercise_types:
         type_logs = [log for log in latest_logs_per_exercise.values() if log.exercise.exercise_type == etype]
@@ -60,17 +58,17 @@ def home():
                 performance_scores[etype] = 0
             else:
                 avg_z = sum(valid_scores) / len(valid_scores)
-                performance_scores[etype] = z_to_percentile(avg_z)
-                
+                cdf = 0.5 * (1 + math.erf(avg_z / math.sqrt(2)))
+                performance_scores[etype] = round(cdf * 100)
+
     performance_labels = list(performance_scores.keys())
-    performance_data   = list(performance_scores.values())
-    
+    performance_data = list(performance_scores.values())
+
     # Calculate Statistics
-    valid_logs    = [log for log in user_logs if log.standardised_score is not None]
-    highest_score = 0
-    if valid_logs:
-        highest_z     = max(log.standardised_score for log in valid_logs)
-        highest_score = z_to_percentile(highest_z)
+    valid_logs = [log for log in user_logs if log.standardised_score is not None]
+    highest_z = max((log.standardised_score for log in valid_logs), default=None)
+    highest_score = round(0.5 * (1 + math.erf(highest_z / math.sqrt(2))) * 100) if highest_z is not None else None
+
 
     stats = {
         'total_workouts':   len(user_logs),
@@ -91,7 +89,9 @@ def home():
         if log.standardised_score is not None
     }
     
-    return render_template('home.html', 
+    recent_log_score = z_to_percentile(recent_log.standardised_score) if recent_log and recent_log.standardised_score is not None else None
+
+    return render_template('home.html',
                            recent_log=recent_log,
                            recent_log_score=recent_log_score,
                            performance_labels=performance_labels,
