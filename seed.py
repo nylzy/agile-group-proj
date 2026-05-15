@@ -32,6 +32,13 @@ with app.app_context():
         Exercise(exercise_name="50m Butterfly",    exercise_type="Swimming", units="seconds", mean_statistic=-95.0,   stdev_statistic=21.0),
         Exercise(exercise_name="100m Butterfly",   exercise_type="Swimming", units="seconds", mean_statistic=-200.0,  stdev_statistic=45.0),
         Exercise(exercise_name="200m Butterfly",   exercise_type="Swimming", units="seconds", mean_statistic=-430.0,  stdev_statistic=110.0),
+
+        # Cycling - (negative values for time-based, recreational adult averages)
+        Exercise(exercise_name="10km Cycling",   exercise_type="Cycling", units="seconds", mean_statistic=-1200.0,  stdev_statistic=180.0),
+        Exercise(exercise_name="20km Cycling",   exercise_type="Cycling", units="seconds", mean_statistic=-2700.0,  stdev_statistic=360.0),
+        Exercise(exercise_name="40km Cycling",   exercise_type="Cycling", units="seconds", mean_statistic=-5400.0,  stdev_statistic=720.0),
+        Exercise(exercise_name="100km Cycling",  exercise_type="Cycling", units="seconds", mean_statistic=-14400.0, stdev_statistic=1800.0),
+        Exercise(exercise_name="160km Cycling",  exercise_type="Cycling", units="seconds", mean_statistic=-25200.0, stdev_statistic=3600.0),
     ]
 
     for exercise in exercises:
