@@ -9,6 +9,7 @@
 {% block flashes %}{% endblock %}
 
 {% block content %}
+{% set active_section = request.args.get('section', 'details') %}
 
     <!-- Main Content -->
     <div class="split-layout">
@@ -28,13 +29,13 @@
         </div>
 
         <ul class="panel-nav">
-            <li><a href="#" class="active" data-section="details">
+            <li><a href="#" class="{% if active_section == 'details' %}active{% endif %}" data-section="details">
                 <i class="bi bi-person-fill"></i> Profile
             </a></li>
-            <li><a href="#" data-section="security">
+            <li><a href="#" class="{% if active_section == 'security' %}active{% endif %}" data-section="security">
                 <i class="bi bi-shield-lock"></i> Security
             </a></li>
-            <li><a href="#" data-section="activity">
+            <li><a href="#" class="{% if active_section == 'activity' %}active{% endif %}" data-section="activity">
                 <i class="bi bi-activity"></i> Activity Log
             </a></li>
         </ul>
@@ -44,7 +45,7 @@
     <main class="right-panel">
 
         <!-- Section 1: Profile Details -->
-        <div class="section active" id="section-details">
+        <div class="section {% if active_section == 'details' %}active{% endif %}" id="section-details">
             <div class="section-title">Profile</div>
             <div class="section-subtitle">Update your personal information and fitness preferences.</div>
 
@@ -54,7 +55,7 @@
                     <img src="{{ url_for('static', filename='images/generic_profile_pic.png') }}" alt="Avatar" style="width: 384px; height: 384px;">
                     <div class="avatar-actions">
                         <button class="btn btn-primary" style="font-size: 0.8rem; padding: 7px 16px">
-                            <i class="bi bi-upload"></i> Upload photo
+                        Upload photo
                         </button>
                         <button class="btn btn-secondary" style="font-size: 0.8rem; padding: 7px 16px; margin-left: 6px">
                             Remove</button>
@@ -64,11 +65,11 @@
                 <!-- Name fields -->
                 <div style="flex: 1; min-width: 0;">
                 <div class="section-title">Personal Information</div>
-                {% with messages = get_flashed_messages(with_categories=true) %}
+                {% with messages = get_flashed_messages(with_categories=true, category_filter=['profile-success', 'profile-danger']) %}
                     {% if messages %}
                         <div class="profile-flash-container">
                             {% for category, message in messages %}
-                                <div class="alert alert-{{ category if category != 'message' else 'info' }} alert-dismissible fade show" role="alert">
+                                <div class="alert alert-{{ category.split('-')[1] }} alert-dismissible fade show" role="alert">
                                     {{ message }}
                                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                                 </div>
@@ -77,6 +78,7 @@
                     {% endif %}
                 {% endwith %}
                 <form method="post" action="{{ url_for('profile') }}">
+                    <input type="hidden" name="form_action" value="update_profile">
                     <div class="form-group">
                         <label for="username">Username</label>
                         <input type="text" id="username" name="username" value="{{ current_user.username }}" maxlength="50" required>
@@ -98,7 +100,7 @@
                     </div>
 
                     <div class="d-flex gap-3 mt-2">
-                        <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg"></i> Save changes</button>
+                        <button type="submit" class="btn btn-primary">Save changes</button>
                         <button type="reset" class="btn btn-secondary">Discard</button>
                     </div>
                 </form>
@@ -111,57 +113,73 @@
         </div>
 
         <!-- Section 2: Security -->
-        <div class="section" id="section-security">
+        <div class="section {% if active_section == 'security' %}active{% endif %}" id="section-security">
 
             <div class="section-title">Security</div>
             <div class="section-subtitle">Change your account security information.</div>
+            {% with messages = get_flashed_messages(with_categories=true, category_filter=['security-success', 'security-danger']) %}
+                {% if messages %}
+                    <div class="profile-flash-container">
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category.split('-')[1] }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
 
             <div style="display:flex; gap:32px; align-items:flex-start; margin-bottom:8px;">
             <!-- Email -->
                 <div style="flex: 1; min-width: 0;">
+                    <form method="post" action="{{ url_for('profile') }}">
+                    <input type="hidden" name="form_action" value="update_email">
                     <div class="form-group">
-                        <label>Current email</label>
-                        <input type="email" value="alex@email.com">
+                        <label for="current_email">Current email</label>
+                        <input type="email" id="current_email" name="current_email" placeholder="Enter your current e-mail here" required>
                     </div>
                     <div class="form-row">
                         <div class="form-group">
-                            <label>New email</label>
-                            <input type="email" placeholder="Enter e-mail here">
+                            <label for="new_email">New email</label>
+                            <input type="email" id="new_email" name="new_email" placeholder="Enter e-mail here" maxlength="50" required>
                         </div>
                         <div class="form-group">
-                            <label>Confirm new email</label>
-                            <input type="email" placeholder="Re-enter e-mail here">
+                            <label for="confirm_email">Confirm new email</label>
+                            <input type="email" id="confirm_email" name="confirm_email" placeholder="Re-enter e-mail here" maxlength="50" required>
                         </div>
                     </div>
-                    <button class="btn btn-primary" style="margin-bottom:28px"><i class="bi bi-lock-fill"></i>
-                        Update email</button>
+                    <button type="submit" class="btn btn-primary" style="margin-bottom:28px">Update email</button>
+                    </form>
                 </div>
 
             <!-- Password -->
                 <div style="flex: 1; min-width: 0;">
+                    <form method="post" action="{{ url_for('profile') }}">
+                    <input type="hidden" name="form_action" value="update_password">
                     <div class="form-group">
-                        <label>Current password</label>
-                        <input type="password" placeholder="••••••••">
+                        <label for="current_password">Current password</label>
+                        <input type="password" id="current_password" name="current_password" placeholder="Enter your current password here" required>
                     </div>
                     <div class="form-row">
                         <div class="form-group">
-                            <label>New password</label>
-                            <input type="password" placeholder="••••••••">
+                            <label for="new_password">New password</label>
+                            <input type="password" id="new_password" name="new_password" placeholder="Enter your new password here" minlength="8" required>
                         </div>
                         <div class="form-group">
-                            <label>Confirm new password</label>
-                            <input type="password" placeholder="••••••••">
+                            <label for="confirm_password">Confirm new password</label>
+                            <input type="password" id="confirm_password" name="confirm_password" placeholder="Re-enter your new password here" minlength="8" required>
                         </div>
                     </div>
-                    <button class="btn btn-primary" style="margin-bottom:28px"><i class="bi bi-lock-fill"></i>
-                        Update password</button>
+                    <button type="submit" class="btn btn-primary" style="margin-bottom:28px">Update password</button>
+                    </form>
                 </div>
             </div>
 
         </div>
 
         <!-- Activity Log -->
-        <div class="section" id="section-activity">
+        <div class="section {% if active_section == 'activity' %}active{% endif %}" id="section-activity">
             <div class="section-title">Activity Log</div>
             <div class="section-subtitle">Your full history of logged workouts and earned FitScores.</div>
 
@@ -276,13 +294,6 @@
         $('.filter-btn').removeClass('active');
         $(this).addClass('active');
     });
-
-    // Save toast
-    $(document).on('click', '.save-btn', function() {
-        const $toast = $('#save-toast');
-        $toast.fadeIn(200);
-        setTimeout(() => $toast.fadeOut(400), 2200);
-        // TODO: replace with real AJAX POST
-    });
+    
 </script>
 {% endblock %}
