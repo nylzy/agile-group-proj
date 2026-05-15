@@ -1,10 +1,9 @@
-from importlib import machinery
-from flask import render_template, request, redirect, url_for, flash
-from flask import Flask, render_template
+from datetime import datetime
+import math
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 from flask_login import UserMixin, LoginManager, login_user, logout_user, login_required, current_user
 from config import Config
 from extensions import db, migrate
-import math
 app = Flask(__name__)
 app.config.from_object(Config)
 
@@ -30,6 +29,8 @@ def index():
 @login_required
 def home():
     recent_log = Log.query.filter_by(user_id=current_user.user_id).order_by(Log.completed_on.desc()).first()
+    cdf = 0.5 * (1 + math.erf(recent_log.standardised_score / math.sqrt(2)))
+    recent_log.standardised_score = round(cdf * 100)
     
     # Calculate Performance Matrix Scores
     exercise_types = [r[0] for r in db.session.query(Exercise.exercise_type).distinct().all()]
@@ -92,9 +93,40 @@ def home():
 def leaderboard():
     return render_template('leaderboard.html')
 
-@app.route('/log')
+@app.route('/log', methods=['GET', 'POST'])
 @login_required
 def log():
+    if request.method == 'POST':
+        data = request.get_json()
+        if not data:
+            return jsonify({'error': 'No data received'}), 400
+
+        exercise_id = data.get('exercise_id')
+        stat_value = data.get('stat_value')
+
+        if not exercise_id or stat_value is None:
+            return jsonify({'error': 'Missing exercise or value'}), 400
+
+        exercise = Exercise.query.get(exercise_id)
+        if not exercise:
+            return jsonify({'error': 'Exercise not found'}), 404
+
+        z_score = None
+        if exercise.stdev_statistic:
+            z_score = (stat_value - exercise.mean_statistic) / exercise.stdev_statistic
+
+        log_entry = Log(
+            exercise_id=exercise.exercise_id,
+            user_id=current_user.user_id,
+            stat_value=stat_value,
+            standardised_score=z_score,
+            completed_on=datetime.utcnow()
+        )
+        db.session.add(log_entry)
+        db.session.commit()
+
+        return jsonify({'success': True, 'exercise': exercise.exercise_name, 'score': z_score})
+
     lifting = Exercise.query.filter_by(exercise_type="Lifting").all()
     cardio = Exercise.query.filter_by(exercise_type="Cardio").all()
     swimming = Exercise.query.filter_by(exercise_type="Swimming").all()
