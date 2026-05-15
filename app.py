@@ -89,7 +89,9 @@ def home():
         if log.standardised_score is not None
     }
     
-    return render_template('home.html', 
+    recent_log_score = z_to_percentile(recent_log.standardised_score) if recent_log and recent_log.standardised_score is not None else None
+
+    return render_template('home.html',
                            recent_log=recent_log,
                            recent_log_score=recent_log_score,
                            performance_labels=performance_labels,
