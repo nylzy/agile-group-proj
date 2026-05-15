@@ -29,9 +29,11 @@ def index():
 @login_required
 def home():
     recent_log = Log.query.filter_by(user_id=current_user.user_id).order_by(Log.completed_on.desc()).first()
-    cdf = 0.5 * (1 + math.erf(recent_log.standardised_score / math.sqrt(2)))
-    recent_log.standardised_score = round(cdf * 100)
-    
+
+    if recent_log and recent_log.standardised_score is not None:
+        cdf = 0.5 * (1 + math.erf(recent_log.standardised_score / math.sqrt(2)))
+        recent_log.standardised_score = round(cdf * 100)
+
     # Calculate Performance Matrix Scores
     exercise_types = [r[0] for r in db.session.query(Exercise.exercise_type).distinct().all()]
     
@@ -59,11 +61,12 @@ def home():
     performance_data = list(performance_scores.values())
     
     # Calculate Statistics
-    valid_logs = [log for log in user_logs if log.standardised_score is not None]    
-    highest_z = max((log.standardised_score for log in valid_logs), default=None)
-    cdf = 0.5 * (1 + math.erf(highest_z / math.sqrt(2)))
-    highest_score = round(cdf * 100)
-
+    valid_logs = [log for log in user_logs if log.standardised_score is not None]
+    highest_score = 0
+    if valid_logs:
+        highest_z = max(log.standardised_score for log in valid_logs)
+        cdf = 0.5 * (1 + math.erf(highest_z / math.sqrt(2)))
+        highest_score = round(cdf * 100)
 
     stats = {
         'total_workouts': len(user_logs),
@@ -78,8 +81,9 @@ def home():
     recent_friend_logs = Log.query.filter(Log.user_id.in_(friend_ids)).order_by(Log.completed_on.desc()).limit(2).all()
     
     for log in recent_friend_logs:
-        cdf = 0.5 * (1 + math.erf(log.standardised_score / math.sqrt(2)))
-        log.standardised_score = round(cdf * 100)
+        if log.standardised_score is not None:
+            cdf = 0.5 * (1 + math.erf(log.standardised_score / math.sqrt(2)))
+            log.standardised_score = round(cdf * 100)
     
     return render_template('home.html', 
                            recent_log=recent_log,
@@ -102,7 +106,7 @@ def log():
             return jsonify({'error': 'No data received'}), 400
 
         exercise_id = data.get('exercise_id')
-        stat_value = data.get('stat_value')
+        stat_value  = data.get('stat_value')
 
         if not exercise_id or stat_value is None:
             return jsonify({'error': 'Missing exercise or value'}), 400
@@ -127,10 +131,10 @@ def log():
 
         return jsonify({'success': True, 'exercise': exercise.exercise_name, 'score': z_score})
 
-    lifting = Exercise.query.filter_by(exercise_type="Lifting").all()
-    cardio = Exercise.query.filter_by(exercise_type="Cardio").all()
-    swimming = Exercise.query.filter_by(exercise_type="Swimming").all()
-    cycling = Exercise.query.filter_by(exercise_type="Cycling").all()
+    lifting     = Exercise.query.filter_by(exercise_type="Lifting").all()
+    cardio      = Exercise.query.filter_by(exercise_type="Cardio").all()
+    swimming    = Exercise.query.filter_by(exercise_type="Swimming").all()
+    cycling     = Exercise.query.filter_by(exercise_type="Cycling").all()
     plyometrics = Exercise.query.filter_by(exercise_type="Plyometrics").all()
     return render_template('log.html', lifting=lifting, cardio=cardio, swimming=swimming, cycling=cycling, plyometrics=plyometrics)
 
@@ -166,36 +170,28 @@ def register():
     
     data = request.get_json()
     username = data.get('username', '').strip()
-    email = data.get('email', '').strip()
+    email    = data.get('email', '').strip()
     password = data.get('password', '').strip()
 
-    # Duplicated username
     if User.query.filter_by(username=username).first():
         return {'field': 'username', 'success': False, 'message': 'Username already exists'}, 409
 
-    # Duplicated email
     if User.query.filter_by(email=email).first():
         return {'field': 'email', 'success': False, 'message': 'Email already exists'}, 409
 
-    # Create new user
     new_user = User(username=username, email=email, password=password)
     db.session.add(new_user)
     db.session.commit()
 
     login_user(new_user)
-
     return {}, 200
 
 @app.route('/social')
 @login_required
 def social():
-    # Get all friends of the current user
     friendships = Friendship.query.filter_by(user_id_1=current_user.user_id).all()
-    friend_ids = [f.user_id_2 for f in friendships]
-    
-    # Get the last 10 logs from those friends
+    friend_ids  = [f.user_id_2 for f in friendships]
     recent_friend_logs = Log.query.filter(Log.user_id.in_(friend_ids)).order_by(Log.completed_on.desc()).limit(10).all()
-    
     return render_template('social.html', recent_friend_logs=recent_friend_logs)
 
 @app.route('/add_friend', methods=['POST'])
@@ -207,7 +203,6 @@ def add_friend():
         return redirect(url_for('social'))
     
     friend = User.query.filter_by(username=friend_username).first()
-    
     if not friend:
         flash('User not found.', 'danger')
         return redirect(url_for('social'))
@@ -216,13 +211,11 @@ def add_friend():
         flash('You cannot add yourself as a friend.', 'warning')
         return redirect(url_for('social'))
         
-    # Check if already friends
     existing_friendship = Friendship.query.filter_by(user_id_1=current_user.user_id, user_id_2=friend.user_id).first()
     if existing_friendship:
         flash('You are already friends with this user.', 'info')
         return redirect(url_for('social'))
         
-    # Create friendship
     new_friendship = Friendship(user_id_1=current_user.user_id, user_id_2=friend.user_id)
     db.session.add(new_friendship)
     db.session.commit()
