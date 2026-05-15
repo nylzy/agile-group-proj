@@ -2,13 +2,8 @@
 
 // ── Sport selector ──────────────────────────────────────────────────────────
 
-const sportButtons   = document.querySelectorAll('.lb-filter-btn[data-sport]');
-const sportForms     = document.querySelectorAll('.log-sport-form');
-const commonFields   = document.getElementById('log-common-fields');
-
-// Default the date input to today when the page loads
-const dateInput = document.getElementById('log-date');
-dateInput.value = new Date().toISOString().split('T')[0];
+const sportButtons = document.querySelectorAll('.lb-filter-btn[data-sport]');
+const sportForms   = document.querySelectorAll('.log-sport-form');
 
 sportButtons.forEach(button => {
     button.addEventListener('click', () => {
@@ -22,10 +17,30 @@ sportButtons.forEach(button => {
         sportForms.forEach(form => {
             form.hidden = form.dataset.sport !== selectedSport;
         });
-
-        // Reveal the common session details section
-        commonFields.hidden = false;
     });
+});
+
+
+// ── Swimming stroke → distance filter ───────────────────────────────────────
+
+const swimStrokeSelect   = document.getElementById('swim-stroke');
+const swimDistanceSelect = document.getElementById('swim-exercise');
+const allSwimOptions     = Array.from(swimDistanceSelect.querySelectorAll('option[data-stroke]'));
+
+swimStrokeSelect.addEventListener('change', () => {
+    const selectedStroke = swimStrokeSelect.value;
+
+    // Remove all exercise options, then re-add only matching ones
+    allSwimOptions.forEach(opt => opt.remove());
+
+    const matching = allSwimOptions.filter(opt => opt.dataset.stroke === selectedStroke);
+    matching.forEach(opt => swimDistanceSelect.appendChild(opt));
+
+    // Reset and enable the distance dropdown
+    swimDistanceSelect.value = '';
+    swimDistanceSelect.disabled = matching.length === 0;
+    swimDistanceSelect.querySelector('option[disabled]').textContent =
+        matching.length === 0 ? 'No distances available' : 'Choose a distance';
 });
 
 

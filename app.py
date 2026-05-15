@@ -2,16 +2,15 @@ from flask import render_template, request, redirect, url_for, flash
 from flask import Flask, render_template
 from flask_login import UserMixin, LoginManager, login_user, logout_user, login_required, current_user
 from config import Config
-from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
+from extensions import db, migrate
 
 app = Flask(__name__)
 app.config.from_object(Config)
 
-db = SQLAlchemy(app)
-migrate = Migrate(app, db)
+db.init_app(app)
+migrate.init_app(app, db)
 
-from models import User, Log, Friendship
+from models import User, Exercise, Log, Friendship
 
 # flask login manager
 login_manager = LoginManager()
@@ -40,11 +39,13 @@ def leaderboard():
 @app.route('/log')
 @login_required
 def log():
-    return render_template('log.html')
+    lifting = Exercise.query.filter_by(exercise_type="Lifting").all()
+    cardio = Exercise.query.filter_by(exercise_type="Cardio").all()
+    swimming = Exercise.query.filter_by(exercise_type="Swimming").all()
+    return render_template('log.html', lifting=lifting, cardio=cardio, swimming=swimming)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    # If a user is already logged in, send them to the dashboard
     if current_user.is_authenticated:
         return redirect(url_for('home'))
 
@@ -52,21 +53,48 @@ def login():
         username = request.form.get('username')
         password = request.form.get('password')
 
-        # Find the user in the SQLAlchemy database
         user = User.query.filter_by(username=username).first()
 
-        # Check if user exists and the password matches the hash
         if user and user.check_password(password):
-            login_user(user) # This logs the user in!
+            login_user(user)
             return redirect(url_for('home'))
         else:
             flash('Invalid username or password')
 
     return render_template('login.html')
 
-@app.route('/register')
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('index'))
+
+@app.route('/register', methods=['GET', 'POST'])
 def register():
-    return render_template('register.html')
+    if request.method == 'GET':
+        return render_template('register.html')
+    
+    data = request.get_json()
+    username = data.get('username', '').strip()
+    email = data.get('email', '').strip()
+    password = data.get('password', '').strip()
+
+    # Duplicated username
+    if User.query.filter_by(username=username).first():
+        return {'field': 'username', 'success': False, 'message': 'Username already exists'}, 409
+
+    # Duplicated email
+    if User.query.filter_by(email=email).first():
+        return {'field': 'email', 'success': False, 'message': 'Email already exists'}, 409
+
+    # Create new user
+    new_user = User(username=username, email=email, password=password)
+    db.session.add(new_user)
+    db.session.commit()
+
+    login_user(new_user)
+
+    return {}, 200
 
 @app.route('/social')
 @login_required

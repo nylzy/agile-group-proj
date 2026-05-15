@@ -273,6 +273,10 @@ input.is-invalid {
   display: none;
 }
 
+.field-error.active {
+  display: block;
+}
+
 /* HOME PAGE STYLING */
 .header {
   margin-bottom: 30px;

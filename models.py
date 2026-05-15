@@ -1,4 +1,4 @@
-from app import db
+from extensions import db
 from datetime import datetime
 
 from flask_login import UserMixin
@@ -23,7 +23,7 @@ class User(UserMixin, db.Model):
 class Exercise(db.Model):
     __tablename__ = 'Exercises'
     exercise_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    exercise_name = db.Column(db.String(50), nullable=False)
+    exercise_name = db.Column(db.String(50), nullable=False, unique=True)
     exercise_type = db.Column(db.String(50), nullable=False)
     units = db.Column(db.String(50), nullable=False)
     mean_statistic = db.Column(db.Float, nullable=False) # use negative value for time-based exercises
@@ -45,6 +45,90 @@ class Friendship(db.Model):
     friendship_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     user_id_1 = db.Column(db.Integer, db.ForeignKey('Users.user_id'), nullable=False)
     user_id_2 = db.Column(db.Integer, db.ForeignKey('Users.user_id'), nullable=False)
+
+
+def get_duplicate_exercise_names():
+    """Return exercise names that appear more than once in the database."""
+    from sqlalchemy import func
+
+    duplicates = db.session.query(
+        Exercise.exercise_name,
+        func.count(Exercise.exercise_id).label('count')
+    ).group_by(Exercise.exercise_name).having(func.count(Exercise.exercise_id) > 1).all()
+
+    return [name for name, count in duplicates]
+
+
+def remove_exact_duplicate_exercises():
+    """Remove exact duplicate Exercise rows by exercise_name, keeping the oldest entry."""
+    from sqlalchemy import func
+
+    subq = db.session.query(
+        Exercise.exercise_name,
+        func.min(Exercise.exercise_id).label('keep_id')
+    ).group_by(Exercise.exercise_name).having(func.count(Exercise.exercise_id) > 1).subquery()
+
+    duplicates = db.session.query(Exercise, subq.c.keep_id).join(
+        subq,
+        Exercise.exercise_name == subq.c.exercise_name
+    ).filter(Exercise.exercise_id != subq.c.keep_id).all()
+
+    for duplicate, keep_id in duplicates:
+        # Preserve any existing logs by re-pointing them to the kept exercise row.
+        db.session.query(Log).filter_by(exercise_id=duplicate.exercise_id).update(
+            {'exercise_id': keep_id}
+        )
+        db.session.delete(duplicate)
+
+    db.session.commit()
+    return len(duplicates)
+
+
+def merge_exercises(name_to_remove, name_to_keep):
+    """
+    Merge two exercises that are duplicates but have different names
+    (e.g. '5km Run' -> '5k Run').
+
+    Re-points all logs from name_to_remove to name_to_keep, then
+    deletes the unwanted exercise row.
+
+    Returns True on success, False if either exercise is not found.
+
+    Usage:
+        merge_exercises('5km Run', '5k Run')
+    """
+    exercise_to_remove = Exercise.query.filter_by(exercise_name=name_to_remove).first()
+    exercise_to_keep   = Exercise.query.filter_by(exercise_name=name_to_keep).first()
+
+    if not exercise_to_remove or not exercise_to_keep:
+        return False
+
+    # Re-point every log that references the exercise being removed.
+    db.session.query(Log).filter_by(exercise_id=exercise_to_remove.exercise_id).update(
+        {'exercise_id': exercise_to_keep.exercise_id}
+    )
+
+    db.session.delete(exercise_to_remove)
+    db.session.commit()
+    return True
+
+
+def delete_exercise_by_name(exercise_name):
+    """
+    Delete a single exercise by exact exercise_name.
+    Any logs referencing this exercise will also be deleted (cascade).
+    If you want to preserve logs, use merge_exercises() instead.
+    """
+    exercise = Exercise.query.filter_by(exercise_name=exercise_name).first()
+    if not exercise:
+        return False
+
+    # Delete associated logs first to avoid FK constraint violations.
+    db.session.query(Log).filter_by(exercise_id=exercise.exercise_id).delete()
+    db.session.delete(exercise)
+    db.session.commit()
+    return True
+
 
 
 
