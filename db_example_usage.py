@@ -9,7 +9,8 @@ def demonstrate_log_creation():
         # 1. Get or create a User
         user = User.query.filter_by(username="admin").first()
         if not user:
-            user = User(username="admin", email="admin@admin.com", password="admin")
+            user = User(username="admin", email="admin@admin.com")
+            user.set_password("admin")
             db.session.add(user)
             db.session.commit()
             print(f"Created new user: {user.username}")
@@ -19,7 +20,8 @@ def demonstrate_log_creation():
         # Create second user
         user2 = User.query.filter_by(username="user").first()
         if not user2:
-            user2 = User(username="user", email="user@user.com", password="user")
+            user2 = User(username="user", email="user@user.com")
+            user2.set_password("user")
             db.session.add(user2)
             db.session.commit()
             print(f"Created new user: {user2.username}")
