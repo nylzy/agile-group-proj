@@ -8,10 +8,9 @@ body {
 .navbar {
   background-color: #1a1d27;
   border-bottom: 1px solid #2e3250;
-  height: 80px;
-  padding-top: 0;
-  padding-bottom: 0;
-  align-items: center;
+  min-height: 80px;
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
 }
 
 .navbar-brand {
