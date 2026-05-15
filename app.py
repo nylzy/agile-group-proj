@@ -3,14 +3,14 @@ from flask import Flask, render_template
 from flask_login import UserMixin, LoginManager, login_user, logout_user, login_required, current_user
 from config import Config
 from extensions import db, migrate
-
+import math
 app = Flask(__name__)
 app.config.from_object(Config)
 
 db.init_app(app)
 migrate.init_app(app, db)
 
-from models import User, Exercise
+from models import User, Exercise, Log, Friendship
 
 # flask login manager
 login_manager = LoginManager()
@@ -28,7 +28,38 @@ def index():
 @app.route('/home')
 @login_required
 def home():
-    return render_template('home.html')
+    recent_log = Log.query.filter_by(user_id=current_user.user_id).order_by(Log.completed_on.desc()).first()
+    
+    # Calculate Performance Matrix Scores
+    exercise_types = [r[0] for r in db.session.query(Exercise.exercise_type).distinct().all()]
+    
+    user_logs = Log.query.filter_by(user_id=current_user.user_id).order_by(Log.completed_on.desc()).all()
+    latest_logs_per_exercise = {}
+    for log in user_logs:
+        if log.exercise_id not in latest_logs_per_exercise:
+            latest_logs_per_exercise[log.exercise_id] = log
+            
+    performance_scores = {}
+    for etype in exercise_types:
+        type_logs = [log for log in latest_logs_per_exercise.values() if log.exercise.exercise_type == etype]
+        if not type_logs:
+            performance_scores[etype] = 0
+        else:
+            valid_scores = [log.standardised_score for log in type_logs if log.standardised_score is not None]
+            if not valid_scores:
+                performance_scores[etype] = 0
+            else:
+                avg_z = sum(valid_scores) / len(valid_scores)
+                cdf = 0.5 * (1 + math.erf(avg_z / math.sqrt(2)))
+                performance_scores[etype] = round(cdf * 100)
+                
+    performance_labels = list(performance_scores.keys())
+    performance_data = list(performance_scores.values())
+    
+    return render_template('home.html', 
+                           recent_log=recent_log,
+                           performance_labels=performance_labels,
+                           performance_data=performance_data)
 
 @app.route('/leaderboard')
 @login_required
@@ -98,7 +129,46 @@ def register():
 @app.route('/social')
 @login_required
 def social():
-    return render_template('social.html')
+    # Get all friends of the current user
+    friendships = Friendship.query.filter_by(user_id_1=current_user.user_id).all()
+    friend_ids = [f.user_id_2 for f in friendships]
+    
+    # Get the last 10 logs from those friends
+    recent_friend_logs = Log.query.filter(Log.user_id.in_(friend_ids)).order_by(Log.completed_on.desc()).limit(10).all()
+    
+    return render_template('social.html', recent_friend_logs=recent_friend_logs)
+
+@app.route('/add_friend', methods=['POST'])
+@login_required
+def add_friend():
+    friend_username = request.form.get('username')
+    if not friend_username:
+        flash('Please enter a username.', 'warning')
+        return redirect(url_for('social'))
+    
+    friend = User.query.filter_by(username=friend_username).first()
+    
+    if not friend:
+        flash('User not found.', 'danger')
+        return redirect(url_for('social'))
+        
+    if friend.user_id == current_user.user_id:
+        flash('You cannot add yourself as a friend.', 'warning')
+        return redirect(url_for('social'))
+        
+    # Check if already friends
+    existing_friendship = Friendship.query.filter_by(user_id_1=current_user.user_id, user_id_2=friend.user_id).first()
+    if existing_friendship:
+        flash('You are already friends with this user.', 'info')
+        return redirect(url_for('social'))
+        
+    # Create friendship
+    new_friendship = Friendship(user_id_1=current_user.user_id, user_id_2=friend.user_id)
+    db.session.add(new_friendship)
+    db.session.commit()
+    
+    flash(f'Successfully added {friend.username} as a friend!', 'success')
+    return redirect(url_for('social'))
 
 @app.route('/profile')
 @login_required

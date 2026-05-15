@@ -16,48 +16,40 @@ def demonstrate_log_creation():
         else:
             print(f"Found existing user: {user.username}")
 
-        # 2. Get or create an Exercise
-        # Let's say we are tracking a 5km run. 
-        # The models note says "use negative value for time-based exercises", meaning a lower time is better.
-        # For example, mean time is -1500 seconds (25 mins), stdev is 180 seconds (3 mins).
-        exercise = Exercise.query.filter_by(exercise_name="5km Run").first()
-        if not exercise:
-            exercise = Exercise(
-                exercise_name="5km Run",
-                exercise_type="Cardio",
-                units="seconds",
-                mean_statistic=-1500.0, 
-                stdev_statistic=180.0
-            )
-            db.session.add(exercise)
+        # Create second user
+        user2 = User.query.filter_by(username="user").first()
+        if not user2:
+            user2 = User(username="user", email="user@user.com", password="user")
+            db.session.add(user2)
             db.session.commit()
-            print(f"Created new exercise: {exercise.exercise_name}")
+            print(f"Created new user: {user2.username}")
+        else:
+            print(f"Found existing user: {user2.username}")
 
-        # 3. Create a Log and calculate the standardised score
-        # Let's say the user ran it in 22 minutes (1320 seconds).
-        # We store it as -1320 because lower time is better, which makes the standardised score calculation work correctly.
-        user_stat_value = -1320.0 
-        
-        # Calculate the Standardised Score (Z-Score)
-        # Formula: (Value - Mean) / Standard Deviation
-        z_score = (user_stat_value - exercise.mean_statistic) / exercise.stdev_statistic
-        
-        new_log = Log(
-            user_id=user.user_id,
-            exercise_id=exercise.exercise_id,
-            stat_value=user_stat_value,
-            standardised_score=z_score
-        )
-        
-        db.session.add(new_log)
+
+        def create_log(user, exercise_name, stat_value):
+            exercise_id = Exercise.query.filter_by(exercise_name=exercise_name).first().exercise_id
+            
+            exercise_mean = Exercise.query.filter_by(exercise_id=exercise_id).first().mean_statistic
+            exercise_stdev = Exercise.query.filter_by(exercise_id=exercise_id).first().stdev_statistic
+            
+            z_score = (stat_value - exercise_mean) / exercise_stdev
+            
+            new_log = Log(
+                user_id=user.user_id,
+                exercise_id=exercise_id,
+                stat_value=stat_value,
+                standardised_score=z_score
+            )
+            db.session.add(new_log)
+            db.session.commit()
+
+        create_log(user, "200m Breaststroke", -520.0)
+        create_log(user, "5k Run", -1200.0)
+        create_log(user, "Bench Press", 60.0)
+
         db.session.commit()
-
-        print("\n--- Log Successfully Created ---")
-        print(f"Athlete: {user.username}")
-        print(f"Exercise: {exercise.exercise_name}")
-        print(f"Stat Value Recorded: {user_stat_value} {exercise.units}")
-        print(f"Calculated Standardised Score: +{z_score:.2f}")
-        print("Note: A positive score here means they performed better than the mean!")
+        
 
 if __name__ == "__main__":
     demonstrate_log_creation()

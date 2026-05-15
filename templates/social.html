@@ -9,11 +9,11 @@
 
         <!-- Search & Add Friend Bar -->
         <div class="social-search-container">
-            <div class="search-input-group">
+            <form action="{{ url_for('add_friend') }}" method="POST" class="search-input-group">
                 <i class="bi bi-search py-2 ps-3 text-muted"></i>
-                <input type="text" placeholder="Enter username to add friend...">
-                <button class="btn btn-primary px-4">Add Friend</button>
-            </div>
+                <input type="text" name="username" placeholder="Enter username to add friend..." required>
+                <button type="submit" class="btn btn-primary px-4">Add Friend</button>
+            </form>
         </div>
 
         <div class="row">
@@ -22,60 +22,27 @@
                 <h2 class="section-title"><i class="bi bi-people-fill"></i> Recent Friend Activity</h2>
 
                 <div class="activity-feed">
-                    <!-- Activity Item 1 -->
-                    <div class="activity-card">
-                        <div class="activity-header">
-                            <img src="{{ url_for('static', filename='images/generic_profile_pic.png') }}" class="activity-user-img" alt="User">
-                            <div class="activity-info">
-                                <h6>Alex Rivera</h6>
-                                <span class="activity-time">2 hours ago</span>
+                    {% if recent_friend_logs %}
+                        {% for log in recent_friend_logs %}
+                            <div class="activity-card">
+                                <div class="activity-header">
+                                    <img src="{{ url_for('static', filename='images/generic_profile_pic.png') }}" class="activity-user-img" alt="User">
+                                    <div class="activity-info">
+                                        <h6>{{ log.user.username }}</h6>
+                                        <span class="activity-time">{{ log.completed_on.strftime('%b %d, %Y %I:%M %p') }}</span>
+                                    </div>
+                                </div>
+                                <div class="activity-content">
+                                    <strong>{{ log.exercise.exercise_name }}:</strong> Completed with a value of {{ log.stat_value | abs if log.stat_value < 0 else log.stat_value }} {{ log.exercise.units }}.
+                                    <div class="activity-stats">
+                                        <span><i class="bi bi-activity"></i> Score: {{ "%.2f"|format(log.standardised_score) if log.standardised_score is not none else "N/A" }}</span>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                        <div class="activity-content">
-                            <strong>Morning Run:</strong> Completed a 8.5 km run in Central Park.
-                            <div class="activity-stats">
-                                <span><i class="bi bi-stopwatch"></i> 42:15</span>
-                                <span><i class="bi bi-fire"></i> 640 kcal</span>
-                                <span><i class="bi bi-geo-alt"></i> 4:58 min/km</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Activity Item 2 -->
-                    <div class="activity-card">
-                        <div class="activity-header">
-                            <img src="{{ url_for('static', filename='images/generic_profile_pic.png') }}" class="activity-user-img" alt="User">
-                            <div class="activity-info">
-                                <h6>Sarah Chen</h6>
-                                <span class="activity-time">5 hours ago</span>
-                            </div>
-                        </div>
-                        <div class="activity-content">
-                            <strong>New Personal Record!</strong> Sarah smashed her Squat PR.
-                            <div class="activity-stats">
-                                <span><i class="bi bi-award"></i> 120 kg Squat</span>
-                                <span><i class="bi bi-lightning-charge"></i> Strength Gainz</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Activity Item 3 -->
-                    <div class="activity-card">
-                        <div class="activity-header">
-                            <img src="{{ url_for('static', filename='images/generic_profile_pic.png') }}" class="activity-user-img" alt="User">
-                            <div class="activity-info">
-                                <h6>Marcus Thorne</h6>
-                                <span class="activity-time">Yesterday</span>
-                            </div>
-                        </div>
-                        <div class="activity-content">
-                            <strong>Yoga Session:</strong> Completed "Sunset Flow" (45 min).
-                            <div class="activity-stats">
-                                <span><i class="bi bi-heart-pulse"></i> 115 avg BPM</span>
-                                <span><i class="bi bi-droplet"></i> High Focus</span>
-                            </div>
-                        </div>
-                    </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted">No recent activity from friends.</p>
+                    {% endif %}
                 </div>
             </div>
 
