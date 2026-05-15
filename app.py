@@ -72,7 +72,8 @@ def log():
     lifting = Exercise.query.filter_by(exercise_type="Lifting").all()
     cardio = Exercise.query.filter_by(exercise_type="Cardio").all()
     swimming = Exercise.query.filter_by(exercise_type="Swimming").all()
-    return render_template('log.html', lifting=lifting, cardio=cardio, swimming=swimming)
+    cycling = Exercise.query.filter_by(exercise_type="Cycling").all()
+    return render_template('log.html', lifting=lifting, cardio=cardio, swimming=swimming, cycling=cycling)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
