@@ -39,6 +39,15 @@ with app.app_context():
         Exercise(exercise_name="40km Cycling",   exercise_type="Cycling", units="seconds", mean_statistic=-5400.0,  stdev_statistic=720.0),
         Exercise(exercise_name="100km Cycling",  exercise_type="Cycling", units="seconds", mean_statistic=-14400.0, stdev_statistic=1800.0),
         Exercise(exercise_name="160km Cycling",  exercise_type="Cycling", units="seconds", mean_statistic=-25200.0, stdev_statistic=3600.0),
+
+        # Plyometrics
+        Exercise(exercise_name="Broad Jump",           exercise_type="Plyometrics", units="cm",      mean_statistic=180.0, stdev_statistic=25.0),
+        Exercise(exercise_name="Box Jump",             exercise_type="Plyometrics", units="cm",      mean_statistic=50.0,  stdev_statistic=12.0),
+        Exercise(exercise_name="Broad Jump",           exercise_type="Plyometrics", units="cm",      mean_statistic=180.0, stdev_statistic=25.0),
+        Exercise(exercise_name="Standing Triple Jump", exercise_type="Plyometrics", units="cm",      mean_statistic=520.0, stdev_statistic=60.0),
+        Exercise(exercise_name="30m Sprint",           exercise_type="Plyometrics", units="seconds", mean_statistic=-4.5,  stdev_statistic=0.5),
+        Exercise(exercise_name="60m Sprint",           exercise_type="Plyometrics", units="seconds", mean_statistic=-8.5,  stdev_statistic=0.8),
+        Exercise(exercise_name="100m Sprint",          exercise_type="Plyometrics", units="seconds", mean_statistic=-13.5, stdev_statistic=1.2),
     ]
 
     for exercise in exercises:

@@ -44,16 +44,13 @@ swimStrokeSelect.addEventListener('change', () => {
 });
 
 
-// ── Climbing / Calisthenics sub-type toggle ─────────────────────────────────
+// ── Calisthenics sub-type toggle ─────────────────────────────────
 
-const climbingRadios      = document.querySelectorAll('input[name="climbing-type"]');
-const climbingFields      = document.getElementById('climbing-fields');
-const calisthenicsFields  = document.getElementById('calisthenics-fields');
-
-climbingRadios.forEach(radio => {
-    radio.addEventListener('change', () => {
-        const isClimbing = radio.value === 'climbing';
-        climbingFields.hidden     = !isClimbing;
-        calisthenicsFields.hidden =  isClimbing;
-    });
+document.getElementById('plyo-exercise').addEventListener('change', function () {
+    const units = this.options[this.selectedIndex].dataset.units;
+    const isTime = units === 'seconds';
+    document.getElementById('plyo-time-input').hidden = !isTime;
+    document.getElementById('plyo-value-input').hidden = isTime;
+    document.getElementById('plyo-value-label').textContent =
+        units === 'cm' ? 'Distance (cm)' : 'Reps';
 });
