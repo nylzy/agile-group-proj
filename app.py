@@ -287,9 +287,36 @@ def add_friend():
     flash(f'Successfully added {friend.username} as a friend!', 'success')
     return redirect(url_for('social'))
 
-@app.route('/profile')
+@app.route('/profile', methods=['GET', 'POST'])
 @login_required
 def profile():
+    if request.method == 'POST':
+        username = request.form.get('username', '').strip()
+        firstname = request.form.get('firstname', '').strip()
+        lastname = request.form.get('lastname', '').strip()
+        bio = request.form.get('bio', '').strip()
+
+        if not username:
+            flash('Username cannot be empty.', 'danger')
+            return redirect(url_for('profile'))
+
+        existing_user = User.query.filter(
+            User.username == username,
+            User.user_id != current_user.user_id
+        ).first()
+        if existing_user:
+            flash('Username is already taken.', 'danger')
+            return redirect(url_for('profile'))
+
+        current_user.username = username
+        current_user.firstname = firstname or None
+        current_user.lastname = lastname or None
+        current_user.bio = bio[:500] or None
+        db.session.commit()
+
+        flash('Profile details updated.', 'success')
+        return redirect(url_for('profile'))
+
     return render_template('profile.html')
 
 if __name__ == '__main__':

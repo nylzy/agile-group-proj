@@ -6,6 +6,8 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='profile-styles.css') }}">
 {% endblock %}
 
+{% block flashes %}{% endblock %}
+
 {% block content %}
 
     <!-- Main Content -->
@@ -15,8 +17,14 @@
     <aside class="left-panel">
         <div class="profile-summary">
             <img src="{{ url_for('static', filename='images/generic_profile_pic.png') }}" alt="Avatar" id="sidebar-avatar">
-            <div class="name">Alex Johnson</div>
-            <div class="handle">@alexj · Rank #14</div>
+            <div class="name">
+                {% if current_user.firstname or current_user.lastname %}
+                    {{ current_user.firstname or '' }} {{ current_user.lastname or '' }}
+                {% else %}
+                    {{ current_user.username }}
+                {% endif %}
+            </div>
+            <div class="handle">@{{ current_user.username }}</div>
         </div>
 
         <ul class="panel-nav">
@@ -24,7 +32,7 @@
                 <i class="bi bi-person-fill"></i> Profile
             </a></li>
             <li><a href="#" data-section="security">
-                <i class="bi bi-security"></i> Security
+                <i class="bi bi-shield-lock"></i> Security
             </a></li>
             <li><a href="#" data-section="activity">
                 <i class="bi bi-activity"></i> Activity Log
@@ -56,55 +64,45 @@
                 <!-- Name fields -->
                 <div style="flex: 1; min-width: 0;">
                 <div class="section-title">Personal Information</div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>First name</label>
-                            <input type="text" value="Alex">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        <div class="profile-flash-container">
+                            {% for category, message in messages %}
+                                <div class="alert alert-{{ category if category != 'message' else 'info' }} alert-dismissible fade show" role="alert">
+                                    {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                            {% endfor %}
                         </div>
-
-                        <div class="form-group">
-                            <label>Last name</label>
-                            <input type="text" value="Johnson">
-                        </div>
+                    {% endif %}
+                {% endwith %}
+                <form method="post" action="{{ url_for('profile') }}">
+                    <div class="form-group">
+                        <label for="username">Username</label>
+                        <input type="text" id="username" name="username" value="{{ current_user.username }}" maxlength="50" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="firstname">First name</label>
+                        <input type="text" id="firstname" name="firstname" value="{{ current_user.firstname or '' }}" placeholder="Enter first name" maxlength="50">
                     </div>
 
                     <div class="form-group">
-                        <label>Username</label>
-                        <input type="text" value="alexj">
+                        <label for="lastname">Last name</label>
+                        <input type="text" id="lastname" name="lastname" value="{{ current_user.lastname or '' }}" placeholder="Enter last name" maxlength="50">
                     </div>
 
                     <div class="form-group">
-                        <label>Bio</label>
-                        <textarea class="profile-bio" rows="3" placeholder="Tell others about your fitness journey…">Marathon runner chasing a sub-3hr finish</textarea>
-                    </div>
-                </div>
-
-                <!-- Fitness Info -->
-                <div style="flex: 1; min-width: 0;">
-                    <div class="section-title">Fitness Info</div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Age</label>
-                            <input type="number" value="27">
-                        </div>
-                        <div class="form-group">
-                            <label>Weight (kg)</label>
-                            <input type="number" value="74">
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Height (cm)</label>
-                            <input type="number" value="178">
-                        </div>
+                        <label for="bio">Bio (max. 500 characters)</label>
+                        <textarea class="profile-bio" id="bio" name="bio" rows="3" maxlength="500" placeholder="Tell others about your fitness journey... (500 character limit)">{{ current_user.bio or '' }}</textarea>
                     </div>
 
                     <div class="d-flex gap-3 mt-2">
-                        <button class="btn btn-primary"><i class="bi bi-check-lg"></i> Save changes</button>
-                        <button class="btn btn-secondary">Discard</button>
+                        <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg"></i> Save changes</button>
+                        <button type="reset" class="btn btn-secondary">Discard</button>
                     </div>
+                </form>
+                
                 </div>
 
             <div class="divider"></div>
