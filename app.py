@@ -131,7 +131,8 @@ def log():
     cardio = Exercise.query.filter_by(exercise_type="Cardio").all()
     swimming = Exercise.query.filter_by(exercise_type="Swimming").all()
     cycling = Exercise.query.filter_by(exercise_type="Cycling").all()
-    return render_template('log.html', lifting=lifting, cardio=cardio, swimming=swimming, cycling=cycling)
+    plyometrics = Exercise.query.filter_by(exercise_type="Plyometrics").all()
+    return render_template('log.html', lifting=lifting, cardio=cardio, swimming=swimming, cycling=cycling, plyometrics=plyometrics)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():

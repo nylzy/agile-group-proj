@@ -152,30 +152,42 @@
         <div class="log-sport-form" data-sport="plyometrics" hidden>
             <div class="log-form-card">
                 <h4 class="log-form-title">Plyometrics &amp; Sprints</h4>
-                <div class="log-form-grid">
+                <div class="form-group">
+                    <label>Exercise</label>
+                    <select id="plyo-exercise" class="log-select">
+                        <option value="" disabled selected>Choose an exercise</option>
+                        {% for exercise in plyometrics %}
+                            <option value="{{ exercise.exercise_id }}"
+                                    data-units="{{ exercise.units }}">
+                                {{ exercise.exercise_name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Time input (for sprints) -->
+                <div id="plyo-time-input" class="log-form-grid" style="margin-top: 1rem;" hidden>
                     <div class="form-group">
-                        <label for="plyo-focus">Focus</label>
-                        <select id="plyo-focus" class="log-select">
-                            <option value="" disabled selected>Select focus</option>
-                            <option>Sprints</option>
-                            <option>Box Jumps</option>
-                            <option>Burpees</option>
-                            <option>Mixed Circuit</option>
-                        </select>
+                        <label for="plyo-minutes">Minutes</label>
+                        <input type="number" id="plyo-minutes" class="log-input" placeholder="0" min="0">
                     </div>
                     <div class="form-group">
-                        <label for="plyo-rounds">Rounds</label>
-                        <input type="number" id="plyo-rounds" class="log-input" placeholder="0" min="0">
-                    </div>
-                    <div class="form-group">
-                        <label for="plyo-rest">Rest Between Rounds (sec)</label>
-                        <input type="number" id="plyo-rest" class="log-input" placeholder="60" min="0">
+                        <label for="plyo-seconds">Seconds</label>
+                        <input type="number" id="plyo-seconds" class="log-input" placeholder="0" min="0" max="59">
                     </div>
                 </div>
+
+                <!-- Single value input (for jumps, reps) -->
+                <div id="plyo-value-input" style="margin-top: 1rem;" hidden>
+                    <div class="form-group">
+                        <label for="plyo-value" id="plyo-value-label">Value</label>
+                        <input type="number" id="plyo-value" class="log-input" placeholder="0" min="0">
+                    </div>
+                </div>
+
                 <button type="submit" class="btn-submit log-submit-btn" style="margin-top: 1rem;">Save Session</button>
             </div>
         </div>
-
     </div><!-- end container -->
 
 {% endblock %}
