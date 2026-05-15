@@ -71,11 +71,21 @@ def home():
         'total_friends': Friendship.query.filter_by(user_id_1=current_user.user_id).count()
     }
     
+    # Get 2 recent logs from friends
+    friendships = Friendship.query.filter_by(user_id_1=current_user.user_id).all()
+    friend_ids = [f.user_id_2 for f in friendships]
+    recent_friend_logs = Log.query.filter(Log.user_id.in_(friend_ids)).order_by(Log.completed_on.desc()).limit(2).all()
+    
+    for log in recent_friend_logs:
+        cdf = 0.5 * (1 + math.erf(log.standardised_score / math.sqrt(2)))
+        log.standardised_score = round(cdf * 100)
+    
     return render_template('home.html', 
                            recent_log=recent_log,
                            performance_labels=performance_labels,
                            performance_data=performance_data,
-                           stats=stats)
+                           stats=stats,
+                           recent_friend_logs=recent_friend_logs)
 
 @app.route('/leaderboard')
 @login_required

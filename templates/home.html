@@ -47,7 +47,25 @@
             </ul>
         </div>
         <div class="panel">
-            <h2 class="h5">Recent Friend Activity</h2>
+            <h2 class="h5 mb-3">Recent Friend Activity</h2>
+            {% if recent_friend_logs %}
+                <ul class="list-unstyled mb-0">
+                {% for log in recent_friend_logs %}
+                    <li class="mb-3 border-bottom pb-2 last-no-border">
+                        <strong>{{ log.user.username }}</strong> logged <em>{{ log.exercise.exercise_name }}</em>
+                        <br>
+                        Result: {{ log.stat_value | abs }} {{ log.exercise.units }} 
+                        {% if log.standardised_score is not none %}
+                            <span class="text-success fw-bold">(Score: {{ "%.2f"|format(log.standardised_score) }})</span>
+                        {% endif %}
+                        <br>
+                        <small class="text-muted">{{ log.completed_on.strftime('%Y-%m-%d %H:%M') }}</small>
+                    </li>
+                {% endfor %}
+                </ul>
+            {% else %}
+                <p class="text-muted">No recent activity from friends.</p>
+            {% endif %}
         </div>
         <div class="panel">
             <h2 class="h5">Friends Leaderboard</h2>
