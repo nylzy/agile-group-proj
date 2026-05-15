@@ -285,11 +285,18 @@ input.is-invalid {
 }
 
 .dash-grid {
-  display: grid;
-  /* Automatically creates columns that fit the screen width */
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 1.5rem; /* Space between the boxes */
-  margin-top: 2rem;
+    display: grid;
+    /* Creates 4 equal-width columns */
+    grid-template-columns: repeat(4, 1fr); 
+    /* Adjust the gap spacing to match your design */
+    gap: 1.5rem; 
+}
+
+/* Targets the first panel (Performance Matrix) */
+.dash-grid .panel:first-child {
+    /* Forces it to take up a 2x2 space */
+    grid-column: span 2;
+    grid-row: span 2;
 }
 
 .panel {
