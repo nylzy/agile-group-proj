@@ -103,7 +103,63 @@ def home():
 @app.route('/leaderboard')
 @login_required
 def leaderboard():
-    return render_template('leaderboard.html')
+    # Get all users with their logs
+    users = User.query.all()
+    leaderboard_data = []
+    
+    for user in users:
+        # Get all logs for this user
+        user_logs = Log.query.filter_by(user_id=user.user_id).all()
+        
+        if not user_logs:
+            continue
+        
+        # Get latest log per exercise
+        latest_logs_per_exercise = {}
+        for log in user_logs:
+            if log.exercise_id not in latest_logs_per_exercise:
+                latest_logs_per_exercise[log.exercise_id] = log
+        
+        # Get all distinct exercise types
+        exercise_types = set()
+        for log in latest_logs_per_exercise.values():
+            exercise_types.add(log.exercise.exercise_type)
+        
+        # Calculate average score per exercise type
+        category_scores = {}
+        for etype in exercise_types:
+            type_logs = [log for log in latest_logs_per_exercise.values() 
+                        if log.exercise.exercise_type == etype]
+            if type_logs:
+                valid_scores = [log.standardised_score for log in type_logs 
+                              if log.standardised_score is not None]
+                if valid_scores:
+                    avg_z = sum(valid_scores) / len(valid_scores)
+                    category_scores[etype] = z_to_percentile(avg_z)
+                else:
+                    category_scores[etype] = 0
+            else:
+                category_scores[etype] = 0
+        
+        # Calculate overall score as average of all category scores
+        if category_scores:
+            overall_score = sum(category_scores.values()) / len(category_scores)
+        else:
+            overall_score = 0
+        
+        leaderboard_data.append({
+            'user_id': user.user_id,
+            'username': user.username,
+            'overall_score': overall_score,
+            'category_scores': category_scores,
+            'total_sessions': len(user_logs),
+            'primary_category': max(category_scores, key=category_scores.get) if category_scores else 'N/A'
+        })
+    
+    # Sort by overall score descending
+    leaderboard_data.sort(key=lambda x: x['overall_score'], reverse=True)
+    
+    return render_template('leaderboard.html', leaderboard=leaderboard_data)
 
 @app.route('/log', methods=['GET', 'POST'])
 @login_required
