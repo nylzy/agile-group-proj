@@ -43,7 +43,6 @@ with app.app_context():
         # Plyometrics
         Exercise(exercise_name="Broad Jump",           exercise_type="Plyometrics", units="cm",      mean_statistic=180.0, stdev_statistic=25.0),
         Exercise(exercise_name="Box Jump",             exercise_type="Plyometrics", units="cm",      mean_statistic=50.0,  stdev_statistic=12.0),
-        Exercise(exercise_name="Broad Jump",           exercise_type="Plyometrics", units="cm",      mean_statistic=180.0, stdev_statistic=25.0),
         Exercise(exercise_name="Standing Triple Jump", exercise_type="Plyometrics", units="cm",      mean_statistic=520.0, stdev_statistic=60.0),
         Exercise(exercise_name="30m Sprint",           exercise_type="Plyometrics", units="seconds", mean_statistic=-4.5,  stdev_statistic=0.5),
         Exercise(exercise_name="60m Sprint",           exercise_type="Plyometrics", units="seconds", mean_statistic=-8.5,  stdev_statistic=0.8),
