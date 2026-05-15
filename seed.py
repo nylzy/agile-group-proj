@@ -6,10 +6,10 @@ with app.app_context():
     db.create_all()
 
     exercises = [
-        # Lifting
-        Exercise(exercise_name="Bench Press", exercise_type="Lifting", units="kg", mean_statistic=60.0, stdev_statistic=10.0),
-        Exercise(exercise_name="Squat", exercise_type="Lifting", units="kg", mean_statistic=80.0, stdev_statistic=15.0),
-        Exercise(exercise_name="Deadlift", exercise_type="Lifting", units="kg", mean_statistic=100.0, stdev_statistic=20.0),
+        # Lifting. bw = bodyweight multiplier, e.g. 1.5 bw = 1.5x bodyweight
+        Exercise(exercise_name="Bench Press", exercise_type="Lifting", units="bw", mean_statistic=1, stdev_statistic=0.25),
+        Exercise(exercise_name="Squat", exercise_type="Lifting", units="bw", mean_statistic=1.25, stdev_statistic=0.30),
+        Exercise(exercise_name="Deadlift", exercise_type="Lifting", units="bw", mean_statistic=1.6, stdev_statistic=0.35),
 
         # Cardio - (negative values for time-based)
         Exercise(exercise_name="400m Run", exercise_type="Cardio",  units="seconds", mean_statistic=-65.0, stdev_statistic=8.0),
@@ -43,7 +43,6 @@ with app.app_context():
         # Plyometrics
         Exercise(exercise_name="Broad Jump",           exercise_type="Plyometrics", units="cm",      mean_statistic=180.0, stdev_statistic=25.0),
         Exercise(exercise_name="Box Jump",             exercise_type="Plyometrics", units="cm",      mean_statistic=50.0,  stdev_statistic=12.0),
-        Exercise(exercise_name="Broad Jump",           exercise_type="Plyometrics", units="cm",      mean_statistic=180.0, stdev_statistic=25.0),
         Exercise(exercise_name="Standing Triple Jump", exercise_type="Plyometrics", units="cm",      mean_statistic=520.0, stdev_statistic=60.0),
         Exercise(exercise_name="30m Sprint",           exercise_type="Plyometrics", units="seconds", mean_statistic=-4.5,  stdev_statistic=0.5),
         Exercise(exercise_name="60m Sprint",           exercise_type="Plyometrics", units="seconds", mean_statistic=-8.5,  stdev_statistic=0.8),
