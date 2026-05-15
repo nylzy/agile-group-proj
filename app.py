@@ -21,6 +21,10 @@ login_manager.login_view = 'login'
 def load_user(user_id):
     return User.query.get(int(user_id))
 
+def z_to_percentile(z):
+    """Convert a z-score to a 0-100 percentile score."""
+    return round(0.5 * (1 + math.erf(z / math.sqrt(2))) * 100)
+
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -29,9 +33,12 @@ def index():
 @login_required
 def home():
     recent_log = Log.query.filter_by(user_id=current_user.user_id).order_by(Log.completed_on.desc()).first()
-    cdf = 0.5 * (1 + math.erf(recent_log.standardised_score / math.sqrt(2)))
-    recent_log.standardised_score = round(cdf * 100)
-    
+
+    # Convert for display only — don't mutate the object
+    recent_log_score = None
+    if recent_log and recent_log.standardised_score is not None:
+        recent_log_score = z_to_percentile(recent_log.standardised_score)
+
     # Calculate Performance Matrix Scores
     exercise_types = [r[0] for r in db.session.query(Exercise.exercise_type).distinct().all()]
     
@@ -47,51 +54,112 @@ def home():
         if not type_logs:
             performance_scores[etype] = 0
         else:
+            # Use raw z-scores here, not converted percentiles
             valid_scores = [log.standardised_score for log in type_logs if log.standardised_score is not None]
             if not valid_scores:
                 performance_scores[etype] = 0
             else:
                 avg_z = sum(valid_scores) / len(valid_scores)
-                cdf = 0.5 * (1 + math.erf(avg_z / math.sqrt(2)))
-                performance_scores[etype] = round(cdf * 100)
+                performance_scores[etype] = z_to_percentile(avg_z)
                 
     performance_labels = list(performance_scores.keys())
-    performance_data = list(performance_scores.values())
+    performance_data   = list(performance_scores.values())
     
     # Calculate Statistics
-    valid_logs = [log for log in user_logs if log.standardised_score is not None]    
-    highest_z = max((log.standardised_score for log in valid_logs), default=None)
-    cdf = 0.5 * (1 + math.erf(highest_z / math.sqrt(2)))
-    highest_score = round(cdf * 100)
-
+    valid_logs    = [log for log in user_logs if log.standardised_score is not None]
+    highest_score = 0
+    if valid_logs:
+        highest_z     = max(log.standardised_score for log in valid_logs)
+        highest_score = z_to_percentile(highest_z)
 
     stats = {
-        'total_workouts': len(user_logs),
+        'total_workouts':   len(user_logs),
         'unique_exercises': len(set(log.exercise_id for log in user_logs)),
-        'highest_score': highest_score,
-        'total_friends': Friendship.query.filter_by(user_id_1=current_user.user_id).count()
+        'highest_score':    highest_score,
+        'total_friends':    Friendship.query.filter_by(user_id_1=current_user.user_id).count()
     }
     
     # Get 2 recent logs from friends
-    friendships = Friendship.query.filter_by(user_id_1=current_user.user_id).all()
-    friend_ids = [f.user_id_2 for f in friendships]
+    friendships        = Friendship.query.filter_by(user_id_1=current_user.user_id).all()
+    friend_ids         = [f.user_id_2 for f in friendships]
     recent_friend_logs = Log.query.filter(Log.user_id.in_(friend_ids)).order_by(Log.completed_on.desc()).limit(2).all()
-    
-    for log in recent_friend_logs:
-        cdf = 0.5 * (1 + math.erf(log.standardised_score / math.sqrt(2)))
-        log.standardised_score = round(cdf * 100)
+
+    # Build display scores separately rather than mutating log objects
+    friend_log_scores = {
+        log.log_id: z_to_percentile(log.standardised_score)
+        for log in recent_friend_logs
+        if log.standardised_score is not None
+    }
     
     return render_template('home.html', 
                            recent_log=recent_log,
+                           recent_log_score=recent_log_score,
                            performance_labels=performance_labels,
                            performance_data=performance_data,
                            stats=stats,
-                           recent_friend_logs=recent_friend_logs)
+                           recent_friend_logs=recent_friend_logs,
+                           friend_log_scores=friend_log_scores)
 
 @app.route('/leaderboard')
 @login_required
 def leaderboard():
-    return render_template('leaderboard.html')
+    # Get all users with their logs
+    users = User.query.all()
+    leaderboard_data = []
+    
+    for user in users:
+        # Get all logs for this user
+        user_logs = Log.query.filter_by(user_id=user.user_id).all()
+        
+        if not user_logs:
+            continue
+        
+        # Get latest log per exercise
+        latest_logs_per_exercise = {}
+        for log in user_logs:
+            if log.exercise_id not in latest_logs_per_exercise:
+                latest_logs_per_exercise[log.exercise_id] = log
+        
+        # Get all distinct exercise types
+        exercise_types = set()
+        for log in latest_logs_per_exercise.values():
+            exercise_types.add(log.exercise.exercise_type)
+        
+        # Calculate average score per exercise type
+        category_scores = {}
+        for etype in exercise_types:
+            type_logs = [log for log in latest_logs_per_exercise.values() 
+                        if log.exercise.exercise_type == etype]
+            if type_logs:
+                valid_scores = [log.standardised_score for log in type_logs 
+                              if log.standardised_score is not None]
+                if valid_scores:
+                    avg_z = sum(valid_scores) / len(valid_scores)
+                    category_scores[etype] = z_to_percentile(avg_z)
+                else:
+                    category_scores[etype] = 0
+            else:
+                category_scores[etype] = 0
+        
+        # Calculate overall score as average of all category scores
+        if category_scores:
+            overall_score = sum(category_scores.values()) / len(category_scores)
+        else:
+            overall_score = 0
+        
+        leaderboard_data.append({
+            'user_id': user.user_id,
+            'username': user.username,
+            'overall_score': overall_score,
+            'category_scores': category_scores,
+            'total_sessions': len(user_logs),
+            'primary_category': max(category_scores, key=category_scores.get) if category_scores else 'N/A'
+        })
+    
+    # Sort by overall score descending
+    leaderboard_data.sort(key=lambda x: x['overall_score'], reverse=True)
+    
+    return render_template('leaderboard.html', leaderboard=leaderboard_data)
 
 @app.route('/log', methods=['GET', 'POST'])
 @login_required
@@ -102,7 +170,7 @@ def log():
             return jsonify({'error': 'No data received'}), 400
 
         exercise_id = data.get('exercise_id')
-        stat_value = data.get('stat_value')
+        stat_value  = data.get('stat_value')
 
         if not exercise_id or stat_value is None:
             return jsonify({'error': 'Missing exercise or value'}), 400
@@ -127,10 +195,10 @@ def log():
 
         return jsonify({'success': True, 'exercise': exercise.exercise_name, 'score': z_score})
 
-    lifting = Exercise.query.filter_by(exercise_type="Lifting").all()
-    cardio = Exercise.query.filter_by(exercise_type="Cardio").all()
-    swimming = Exercise.query.filter_by(exercise_type="Swimming").all()
-    cycling = Exercise.query.filter_by(exercise_type="Cycling").all()
+    lifting     = Exercise.query.filter_by(exercise_type="Lifting").all()
+    cardio      = Exercise.query.filter_by(exercise_type="Cardio").all()
+    swimming    = Exercise.query.filter_by(exercise_type="Swimming").all()
+    cycling     = Exercise.query.filter_by(exercise_type="Cycling").all()
     plyometrics = Exercise.query.filter_by(exercise_type="Plyometrics").all()
     return render_template('log.html', lifting=lifting, cardio=cardio, swimming=swimming, cycling=cycling, plyometrics=plyometrics)
 
@@ -166,36 +234,28 @@ def register():
     
     data = request.get_json()
     username = data.get('username', '').strip()
-    email = data.get('email', '').strip()
+    email    = data.get('email', '').strip()
     password = data.get('password', '').strip()
 
-    # Duplicated username
     if User.query.filter_by(username=username).first():
         return {'field': 'username', 'success': False, 'message': 'Username already exists'}, 409
 
-    # Duplicated email
     if User.query.filter_by(email=email).first():
         return {'field': 'email', 'success': False, 'message': 'Email already exists'}, 409
 
-    # Create new user
     new_user = User(username=username, email=email, password=password)
     db.session.add(new_user)
     db.session.commit()
 
     login_user(new_user)
-
     return {}, 200
 
 @app.route('/social')
 @login_required
 def social():
-    # Get all friends of the current user
     friendships = Friendship.query.filter_by(user_id_1=current_user.user_id).all()
-    friend_ids = [f.user_id_2 for f in friendships]
-    
-    # Get the last 10 logs from those friends
+    friend_ids  = [f.user_id_2 for f in friendships]
     recent_friend_logs = Log.query.filter(Log.user_id.in_(friend_ids)).order_by(Log.completed_on.desc()).limit(10).all()
-    
     return render_template('social.html', recent_friend_logs=recent_friend_logs)
 
 @app.route('/add_friend', methods=['POST'])
@@ -207,7 +267,6 @@ def add_friend():
         return redirect(url_for('social'))
     
     friend = User.query.filter_by(username=friend_username).first()
-    
     if not friend:
         flash('User not found.', 'danger')
         return redirect(url_for('social'))
@@ -216,13 +275,11 @@ def add_friend():
         flash('You cannot add yourself as a friend.', 'warning')
         return redirect(url_for('social'))
         
-    # Check if already friends
     existing_friendship = Friendship.query.filter_by(user_id_1=current_user.user_id, user_id_2=friend.user_id).first()
     if existing_friendship:
         flash('You are already friends with this user.', 'info')
         return redirect(url_for('social'))
         
-    # Create friendship
     new_friendship = Friendship(user_id_1=current_user.user_id, user_id_2=friend.user_id)
     db.session.add(new_friendship)
     db.session.commit()
