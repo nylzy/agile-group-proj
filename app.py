@@ -1,3 +1,4 @@
+from importlib import machinery
 from flask import render_template, request, redirect, url_for, flash
 from flask import Flask, render_template
 from flask_login import UserMixin, LoginManager, login_user, logout_user, login_required, current_user
@@ -56,10 +57,35 @@ def home():
     performance_labels = list(performance_scores.keys())
     performance_data = list(performance_scores.values())
     
+    # Calculate Statistics
+    valid_logs = [log for log in user_logs if log.standardised_score is not None]    
+    highest_z = max((log.standardised_score for log in valid_logs), default=None)
+    cdf = 0.5 * (1 + math.erf(highest_z / math.sqrt(2)))
+    highest_score = round(cdf * 100)
+
+
+    stats = {
+        'total_workouts': len(user_logs),
+        'unique_exercises': len(set(log.exercise_id for log in user_logs)),
+        'highest_score': highest_score,
+        'total_friends': Friendship.query.filter_by(user_id_1=current_user.user_id).count()
+    }
+    
+    # Get 2 recent logs from friends
+    friendships = Friendship.query.filter_by(user_id_1=current_user.user_id).all()
+    friend_ids = [f.user_id_2 for f in friendships]
+    recent_friend_logs = Log.query.filter(Log.user_id.in_(friend_ids)).order_by(Log.completed_on.desc()).limit(2).all()
+    
+    for log in recent_friend_logs:
+        cdf = 0.5 * (1 + math.erf(log.standardised_score / math.sqrt(2)))
+        log.standardised_score = round(cdf * 100)
+    
     return render_template('home.html', 
                            recent_log=recent_log,
                            performance_labels=performance_labels,
-                           performance_data=performance_data)
+                           performance_data=performance_data,
+                           stats=stats,
+                           recent_friend_logs=recent_friend_logs)
 
 @app.route('/leaderboard')
 @login_required
