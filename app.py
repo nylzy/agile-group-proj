@@ -243,7 +243,9 @@ def register():
     if User.query.filter_by(email=email).first():
         return {'field': 'email', 'success': False, 'message': 'Email already exists'}, 409
 
-    new_user = User(username=username, email=email, password=password)
+    # Create new user
+    new_user = User(username=username, email=email)
+    new_user.set_password(password)
     db.session.add(new_user)
     db.session.commit()
 
