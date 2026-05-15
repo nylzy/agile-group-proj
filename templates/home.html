@@ -69,6 +69,24 @@
         </div>
         <div class="panel">
             <h2 class="h5">Friends Leaderboard</h2>
+            {% if friends_leaderboard %}
+                <ul class="list-unstyled mb-0">
+                    {% for friend in friends_leaderboard %}
+                        <li class="mb-3 border-bottom pb-2 last-no-border d-flex justify-content-between align-items-center">
+                            <span><strong>{{ friend.username }}</strong></span>
+                            <span class="badge bg-primary rounded-pill">
+                                {% if friend.has_logs %}
+                                    {{ friend.overall_score }}
+                                {% else %}
+                                    N/A
+                                {% endif %}
+                            </span>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="text-muted">No friends to show. Add friends to compare your leaderboard scores.</p>
+            {% endif %}
         </div>
         <div class="panel">
             <h2 class="h5 mb-3">Your Last Workout</h2>
