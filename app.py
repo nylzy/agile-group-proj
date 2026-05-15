@@ -230,7 +230,7 @@ def register():
     if request.method == 'GET':
         return render_template('register.html')
     
-    data = request.get_json()
+    data = request.get_json(silent=True) or {}
     username = data.get('username', '').strip()
     email    = data.get('email', '').strip()
     password = data.get('password', '').strip()
@@ -249,6 +249,20 @@ def register():
 
     login_user(new_user)
     return {}, 200
+
+@app.route('/register/check', methods=['POST'])
+def check_registration_account():
+    data = request.get_json(silent=True) or {}
+    username = data.get('username', '').strip()
+    email    = data.get('email', '').strip()
+
+    if User.query.filter_by(username=username).first():
+        return {'field': 'username', 'success': False, 'message': 'Username already exists'}, 409
+
+    if User.query.filter_by(email=email).first():
+        return {'field': 'email', 'success': False, 'message': 'Email already exists'}, 409
+
+    return {'success': True}, 200
 
 @app.route('/social')
 @login_required

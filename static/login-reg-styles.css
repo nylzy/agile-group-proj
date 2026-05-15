@@ -153,7 +153,8 @@ input[type="checkbox"] {
 /* Step label row */
 .step-labels {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
+  gap: 16px;
   margin-bottom: 1.8rem;
 }
 .step-label {

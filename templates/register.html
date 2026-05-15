@@ -13,7 +13,7 @@
             <!-- Step Indicator -->
             <div class="step-indicator">
                 <div class="step-dot active" id="dot-1">1</div>
-                <div class="step-line"></div>
+                <div class="step-line" id="line-1"></div>
                 <div class="step-dot" id="dot-2">2</div>
             </div>
 
@@ -57,7 +57,7 @@
 
                 <!-- Nav Buttons -->
                 <div class="form-nav" id="form-nav">
-                    <button type="button" id="back-btn" class="btn btn-secondary" disabled>Back</button>
+                    <button type="button" id="back-btn" class="btn btn-secondary">Back</button>
                     <button type="button" id="next-btn" class="btn btn-primary">Continue</button>
                 </div>
             </form>
@@ -124,7 +124,7 @@ $(function () {
     function updateIndicator(step) {
         for (let i = 1; i <= totalSteps; i++) {
             const dot = $('#dot-' + i);
-            const lbl = $('#lbl-' + i);
+            const lbl = $('#label-' + i);
             dot.removeClass('active completed');
             lbl.removeClass('active completed');
 
@@ -145,16 +145,14 @@ $(function () {
 
         updateIndicator(currentStep);
 
-        $('#back-btn').prop('disabled', currentStep === 1);
-        $('#next-btn').text(currentStep === totalSteps ? 'Create Account' : 'Continue →');
+        $('#next-btn').text(currentStep === totalSteps ? 'Create Account' : 'Continue');
     }
 
     $('#next-btn').on('click', function () {
         if (!validateStep(currentStep)) return;
 
         if (currentStep < totalSteps) {
-            direction = 'forward';
-            goToStep(currentStep + 1);
+            checkAccountAvailability();
         } else {
             submitForm();
         }
@@ -165,8 +163,47 @@ $(function () {
             direction = 'back';
             clearAllErrors();
             goToStep(currentStep - 1);
+        } else {
+            window.location.href = "{{ url_for('index') }}";
         }
     });
+
+    function showAccountAvailabilityError(xhr) {
+        const res = xhr.responseJSON;
+
+        if (res && res.field === 'username') {
+            showError('error-username', res.message);
+        } else if (res && res.field === 'email') {
+            showError('error-email', res.message);
+        } else {
+            showError('error-email', 'Unable to check account details. Please try again.');
+        }
+    }
+
+    function checkAccountAvailability() {
+        const payload = {
+            username: $('#username').val().trim(),
+            email: $('#email').val().trim(),
+        };
+
+        $('#next-btn').prop('disabled', true).text('Checking...');
+
+        $.ajax({
+            url: '/register/check',
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(payload),
+            success: function () {
+                direction = 'forward';
+                goToStep(currentStep + 1);
+            },
+            error: showAccountAvailabilityError,
+            complete: function () {
+                $('#next-btn').prop('disabled', false);
+                $('#next-btn').text(currentStep === totalSteps ? 'Create Account' : 'Continue');
+            }
+        });
+    }
 
     function submitForm() {
         const payload = {
@@ -182,17 +219,9 @@ $(function () {
             data: JSON.stringify(payload),
             success: function () { window.location.href = "{{ url_for('home') }}"; },
             error:   function (xhr) { 
-                const res = xhr.responseJSON;
-                if (res && res.field === 'username') {
-                    goToStep(1);
-                    showError('error-username', res.message);
-                } else if (res && res.field === 'email') {
-                    goToStep(1);
-                    showError('error-email', res.message);
-                } else {
-                    goToStep(1);
-                    alert('An unexpected error occurred. Please try again.');
-                }
+                direction = 'back';
+                goToStep(1);
+                showAccountAvailabilityError(xhr);
             }
         });
     }
