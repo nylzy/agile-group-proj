@@ -185,84 +185,54 @@
 
             <!-- Filters -->
             <div class="activity-filters">
-                <button class="filter-btn active">All</button>
-                <button class="filter-btn">Running</button>
-                <button class="filter-btn">Cycling</button>
-                <button class="filter-btn">Lifting</button>
-                <button class="filter-btn">Swimming</button>
+                <button class="filter-btn active" data-activity-filter="all">All</button>
+                {% for activity_type in activity_types %}
+                    <button class="filter-btn" data-activity-filter="{{ activity_type }}">{{ activity_type }}</button>
+                {% endfor %}
             </div>
 
             <div class="activity-list">
-
-                <div class="activity-item">
-                    <div class="activity-icon icon-run"><i class="bi bi-lightning-charge-fill"></i></div>
-                    <div class="activity-info">
-                        <div class="activity-name">Morning 10K Run</div>
-                        <div class="activity-meta">Today · 6:45 AM · Riverside Loop</div>
-                    </div>
-                    <div class="activity-stats">
-                        <div class="stat-block"><div class="val">10.2 km</div><div class="lbl">Distance</div></div>
-                        <div class="stat-block"><div class="val">51:34</div><div class="lbl">Time</div></div>
-                        <div class="stat-block"><div class="val">148</div><div class="lbl">BPM avg</div></div>
-                    </div>
-                    <div class="score-badge">+320</div>
-                </div>
-
-                <div class="activity-item">
-                    <div class="activity-icon icon-lift"><i class="bi bi-trophy-fill"></i></div>
-                    <div class="activity-info">
-                        <div class="activity-name">Upper Body Strength</div>
-                        <div class="activity-meta">Yesterday · 5:30 PM · Home gym</div>
-                    </div>
-                    <div class="activity-stats">
-                        <div class="stat-block"><div class="val">8 sets</div><div class="lbl">Volume</div></div>
-                        <div class="stat-block"><div class="val">48 min</div><div class="lbl">Time</div></div>
-                        <div class="stat-block"><div class="val">134</div><div class="lbl">BPM avg</div></div>
-                    </div>
-                    <div class="score-badge">+280</div>
-                </div>
-
-                <div class="activity-item">
-                    <div class="activity-icon icon-cycle"><i class="bi bi-bicycle"></i></div>
-                    <div class="activity-info">
-                        <div class="activity-name">Evening Ride</div>
-                        <div class="activity-meta">Mon 14 Apr · 7:10 PM · City circuit</div>
-                    </div>
-                    <div class="activity-stats">
-                        <div class="stat-block"><div class="val">32.5 km</div><div class="lbl">Distance</div></div>
-                        <div class="stat-block"><div class="val">1h 12m</div><div class="lbl">Time</div></div>
-                        <div class="stat-block"><div class="val">142</div><div class="lbl">BPM avg</div></div>
-                    </div>
-                    <div class="score-badge">+410</div>
-                </div>
-
-                <div class="activity-item">
-                    <div class="activity-icon icon-swim"><i class="bi bi-water"></i></div>
-                    <div class="activity-info">
-                        <div class="activity-name">Pool Laps — Sprint Set</div>
-                        <div class="activity-meta">Sun 13 Apr · 8:00 AM · Aquatic Centre</div>
-                    </div>
-                    <div class="activity-stats">
-                        <div class="stat-block"><div class="val">2.0 km</div><div class="lbl">Distance</div></div>
-                        <div class="stat-block"><div class="val">44 min</div><div class="lbl">Time</div></div>
-                        <div class="stat-block"><div class="val">156</div><div class="lbl">BPM avg</div></div>
-                    </div>
-                    <div class="score-badge">+360</div>
-                </div>
-
-                <div class="activity-item">
-                    <div class="activity-icon icon-run"><i class="bi bi-lightning-charge-fill"></i></div>
-                    <div class="activity-info">
-                        <div class="activity-name">Tempo Run — 8K</div>
-                        <div class="activity-meta">Sat 12 Apr · 7:00 AM · Park trail</div>
-                    </div>
-                    <div class="activity-stats">
-                        <div class="stat-block"><div class="val">8.1 km</div><div class="lbl">Distance</div></div>
-                        <div class="stat-block"><div class="val">38:22</div><div class="lbl">Time</div></div>
-                        <div class="stat-block"><div class="val">162</div><div class="lbl">BPM avg</div></div>
-                    </div>
-                    <div class="score-badge">+295</div>
-                </div>
+                {% if activity_logs %}
+                    {% for log in activity_logs %}
+                        {% set exercise_type = log.exercise.exercise_type %}
+                        {% if exercise_type == 'Lifting' %}
+                            {% set icon_class = 'icon-lift' %}
+                            {% set icon_name = 'bi-trophy-fill' %}
+                        {% elif exercise_type == 'Cycling' %}
+                            {% set icon_class = 'icon-cycle' %}
+                            {% set icon_name = 'bi-bicycle' %}
+                        {% elif exercise_type == 'Swimming' %}
+                            {% set icon_class = 'icon-swim' %}
+                            {% set icon_name = 'bi-water' %}
+                        {% else %}
+                            {% set icon_class = 'icon-run' %}
+                            {% set icon_name = 'bi-lightning-charge-fill' %}
+                        {% endif %}
+                        <div class="activity-item" data-activity-type="{{ exercise_type }}">
+                            <div class="activity-icon {{ icon_class }}"><i class="bi {{ icon_name }}"></i></div>
+                            <div class="activity-info">
+                                <div class="activity-name">{{ log.exercise.exercise_name }}</div>
+                                <div class="activity-meta">{{ log.completed_on.strftime('%b %d, %Y %I:%M %p') }} - {{ exercise_type }}</div>
+                            </div>
+                            <div class="activity-stats">
+                                <div class="stat-block">
+                                    <div class="val">{{ "%.2f"|format(log.stat_value|abs) }} {{ log.exercise.units }}</div>
+                                    <div class="lbl">Result</div>
+                                </div>
+                            </div>
+                            <div class="score-badge">
+                                {% if log.log_id in activity_scores %}
+                                    {{ activity_scores[log.log_id] }}
+                                {% else %}
+                                    N/A
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                    <div class="activity-empty" id="activity-filter-empty" hidden>No activity found for this filter.</div>
+                {% else %}
+                    <div class="activity-empty">No workouts logged yet.</div>
+                {% endif %}
 
             </div>
         </div>
@@ -293,6 +263,19 @@
     $('.filter-btn').on('click', function() {
         $('.filter-btn').removeClass('active');
         $(this).addClass('active');
+
+        const filter = $(this).data('activity-filter');
+        let visibleCount = 0;
+
+        $('.activity-item').each(function() {
+            const shouldShow = filter === 'all' || $(this).data('activity-type') === filter;
+            $(this).toggle(shouldShow);
+            if (shouldShow) {
+                visibleCount += 1;
+            }
+        });
+
+        $('#activity-filter-empty').prop('hidden', visibleCount !== 0);
     });
     
 </script>

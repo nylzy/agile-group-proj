@@ -375,7 +375,26 @@ def profile():
         flash('Profile details updated.', 'profile-success')
         return redirect(url_for('profile'))
 
-    return render_template('profile.html')
+    activity_logs = Log.query.filter_by(
+        user_id=current_user.user_id
+    ).order_by(Log.completed_on.desc()).all()
+    activity_logs = [log for log in activity_logs if log.exercise is not None]
+    activity_scores = {
+        log.log_id: z_to_percentile(log.standardised_score)
+        for log in activity_logs
+        if log.standardised_score is not None
+    }
+    activity_types = sorted({
+        log.exercise.exercise_type
+        for log in activity_logs
+    })
+
+    return render_template(
+        'profile.html',
+        activity_logs=activity_logs,
+        activity_scores=activity_scores,
+        activity_types=activity_types
+    )
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
