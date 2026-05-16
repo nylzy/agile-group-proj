@@ -124,7 +124,6 @@ def home():
     # Get 2 recent logs from friends
     recent_friend_logs = []
     friend_log_scores = {}
-    friends_leaderboard = [summarize_user_performance(current_user)]
     if friend_ids:
         recent_friend_logs = Log.query.filter(Log.user_id.in_(friend_ids)).order_by(Log.completed_on.desc()).limit(2).all()
         friend_log_scores = {
@@ -133,9 +132,14 @@ def home():
             if log.standardised_score is not None
         }
 
+    # Calculate friends leaderboard (current user + friends)
+    users_to_check = [current_user]
+    if friend_ids:
         friends = User.query.filter(User.user_id.in_(friend_ids)).all()
-        friends_leaderboard.extend(summarize_user_performance(friend) for friend in friends)
+        users_to_check.extend(friends)
 
+    friends_leaderboard = [entry for user in users_to_check
+                           if (entry := summarize_user_performance(user))['has_logs']]
     friends_leaderboard.sort(key=lambda x: x['overall_score'], reverse=True)
     friends_leaderboard = friends_leaderboard[:5]
 
@@ -271,7 +275,19 @@ def social():
     friendships = Friendship.query.filter_by(user_id_1=current_user.user_id).all()
     friend_ids  = [f.user_id_2 for f in friendships]
     recent_friend_logs = Log.query.filter(Log.user_id.in_(friend_ids)).order_by(Log.completed_on.desc()).limit(10).all()
-    return render_template('social.html', recent_friend_logs=recent_friend_logs)
+
+    # Calculate friends leaderboard (current user + friends)
+    users_to_check = [current_user]
+    if friend_ids:
+        friends = User.query.filter(User.user_id.in_(friend_ids)).all()
+        users_to_check.extend(friends)
+
+    friends_leaderboard = [entry for user in users_to_check
+                           if (entry := summarize_user_performance(user))['has_logs']]
+    friends_leaderboard.sort(key=lambda x: x['overall_score'], reverse=True)
+    friends_leaderboard = friends_leaderboard[:5]
+
+    return render_template('social.html', recent_friend_logs=recent_friend_logs, friends_leaderboard=friends_leaderboard)
 
 @app.route('/add_friend', methods=['POST'])
 @login_required
