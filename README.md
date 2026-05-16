@@ -86,6 +86,8 @@ The database consists of four core models:
    pip install -r requirements.txt
    ```
 
+   > `requirements.txt` includes `pytest` and `selenium` for running the test suite.
+
 4. **Set up the database**
 
    If this is your first time running the app, initialise and apply the database migrations:
@@ -113,9 +115,58 @@ agile-group-proj/
 ├── app.py              # Flask application entry point and route definitions
 ├── models.py           # SQLAlchemy database models
 ├── config.py           # Application configuration
+├── extensions.py       # SQLAlchemy and Migrate extension instances
 ├── requirements.txt    # Python dependencies
 ├── migrations/         # Flask-Migrate database migration files
 ├── static/             # Static assets (CSS, JS, images)
 ├── templates/          # Jinja2 HTML templates
-└── demo_concept/       # Early design/concept files
+├── demo_concept/       # Early design/concept files
+└── tests/
+    ├── test_config.py  # Isolated test configuration (in-memory SQLite)
+    ├── test_unit.py    # Unit tests (routes, scoring logic, auth)
+    └── test_selenium.py# Selenium UI/browser tests
+```
+
+# Running Tests
+
+The test suite uses an in-memory SQLite database completely isolated from `app.db`. You do **not** need to start the server manually — the Selenium tests spin up Flask automatically.
+
+## Prerequisites
+
+Install test dependencies (already in `requirements.txt`):
+
+```bash
+pip install -r requirements.txt
+```
+
+For Selenium tests, Chrome and ChromeDriver are also required:
+
+```bash
+# Ubuntu / Debian
+sudo apt-get install -y chromium-browser chromium-chromedriver
+
+# macOS (via Homebrew)
+brew install --cask chromedriver
+```
+
+## Running Unit Tests
+
+Unit tests cover route logic, scoring calculations, authentication, and database behaviour.
+
+```bash
+pytest tests/test_unit.py -v
+```
+
+## Running Selenium Tests
+
+Selenium tests launch a headless Chrome browser and exercise the full UI. Flask is started automatically on port 5099 — no separate terminal needed.
+
+```bash
+pytest tests/test_selenium.py -v
+```
+
+## Running All Tests
+
+```bash
+pytest tests/ -v
 ```
