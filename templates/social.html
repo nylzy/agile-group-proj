@@ -83,34 +83,20 @@
                     <h2 class="section-title"><i class="bi bi-bar-chart-line-fill"></i> Friend's Leaderboard</h2>
                     <div class="panel p-0">
                         <div class="p-4">
-                            <div class="mini-lb-item">
-                                <div class="mini-lb-rank top">1</div>
-                                <div class="mini-lb-name">Alex Rivera</div>
-                                <div class="mini-lb-score">14,250</div>
-                            </div>
-                            <div class="mini-lb-item">
-                                <div class="mini-lb-rank top">2</div>
-                                <div class="mini-lb-name">Sarah Chen</div>
-                                <div class="mini-lb-score">12,800</div>
-                            </div>
-                            <div class="mini-lb-item">
-                                <div class="mini-lb-rank top">3</div>
-                                <div class="mini-lb-name">Marcus Thorne</div>
-                                <div class="mini-lb-score">11,500</div>
-                            </div>
-                            <div class="mini-lb-item">
-                                <div class="mini-lb-rank">4</div>
-                                <div class="mini-lb-name">You</div>
-                                <div class="mini-lb-score">10,200</div>
-                            </div>
-                            <div class="mini-lb-item">
-                                <div class="mini-lb-rank">5</div>
-                                <div class="mini-lb-name">Elena Gilbert</div>
-                                <div class="mini-lb-score">9,400</div>
-                            </div>
+                            {% if friends_leaderboard %}
+                                {% for friend in friends_leaderboard %}
+                                    <div class="mini-lb-item">
+                                        <div class="mini-lb-rank {% if loop.index <= 3 %}top{% endif %}">{{ loop.index }}</div>
+                                        <div class="mini-lb-name">{{ friend.username }}</div>
+                                        <div class="mini-lb-score">{{ friend.overall_score|int }}</div>
+                                    </div>
+                                {% endfor %}
+                            {% else %}
+                                <p class="text-muted mb-0">No friends to show. Add friends to compare your leaderboard scores.</p>
+                            {% endif %}
                         </div>
-                        <div class="p-3 bg-dark-subtle text-center rounded-bottom">
-                            <a href="{{ url_for('leaderboard') }}" class="text-decoration-none text-muted small">View Global Leaderboard <i class="bi bi-arrow-right"></i></a>
+                        <div class="p-3 text-center rounded-bottom" style="background-color: rgba(77, 184, 255, 0.1); border-top: 1px solid rgba(77, 184, 255, 0.2);">
+                            <a href="{{ url_for('leaderboard') }}" class="text-decoration-none small fw-bold" style="color: #4db8ff;">View Global Leaderboard <i class="bi bi-arrow-right"></i></a>
                         </div>
                     </div>
                 </div>
