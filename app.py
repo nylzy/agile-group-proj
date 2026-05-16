@@ -11,7 +11,7 @@ app.config.from_object(Config)
 db.init_app(app)
 migrate.init_app(app, db)
 
-from models import User, Exercise, Log, Friendship
+from models import User, Exercise, Log, Friendship, Event
 
 # flask login manager
 login_manager = LoginManager()
@@ -287,7 +287,38 @@ def social():
     friends_leaderboard.sort(key=lambda x: x['overall_score'], reverse=True)
     friends_leaderboard = friends_leaderboard[:5]
 
-    return render_template('social.html', recent_friend_logs=recent_friend_logs, friends_leaderboard=friends_leaderboard)
+    # Fetch active events
+    current_time = datetime.utcnow()
+    active_events = Event.query.filter(Event.start_date <= current_time, Event.end_date >= current_time).all()
+    
+    event_data = []
+    for event in active_events:
+        # Calculate progress
+        completed_sessions = Log.query.join(Exercise).filter(
+            Log.user_id == current_user.user_id,
+            Exercise.exercise_type == event.target_exercise_type,
+            Log.completed_on >= event.start_date,
+            Log.completed_on <= event.end_date
+        ).count()
+        
+        # Calculate true participants count
+        active_participants = db.session.query(Log.user_id).join(Exercise).filter(
+            Exercise.exercise_type == event.target_exercise_type,
+            Log.completed_on >= event.start_date,
+            Log.completed_on <= event.end_date
+        ).distinct().count()
+        
+        progress_percentage = min(100, int((completed_sessions / event.target_sessions) * 100)) if event.target_sessions > 0 else 0
+        days_left = (event.end_date - current_time).days
+        
+        event_data.append({
+            'title': event.title,
+            'participants_count': active_participants,
+            'progress_percentage': progress_percentage,
+            'days_left': days_left
+        })
+
+    return render_template('social.html', recent_friend_logs=recent_friend_logs, friends_leaderboard=friends_leaderboard, events=event_data)
 
 @app.route('/add_friend', methods=['POST'])
 @login_required
