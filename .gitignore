@@ -4,3 +4,4 @@ __pycache__/
 CREATE_TABLES.sql
 query.py
 app.db
+.env

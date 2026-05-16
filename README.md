@@ -88,7 +88,22 @@ The database consists of four core models:
 
    > `requirements.txt` includes `pytest` and `selenium` for running the test suite.
 
-4. **Set up the database**
+4. **Set up Environment Variables**
+
+   The application requires a secure secret key to run correctly. You can copy the example `.env` file and generate a new key using Python:
+
+   ```bash
+   # Windows (PowerShell)
+   cp .env.example .env
+   $key = python -c "import secrets; print(secrets.token_hex(32))"
+   (Get-Content .env) -replace 'your_secure_secret_key_here', $key | Set-Content .env
+
+   # macOS / Linux (Bash)
+   cp .env.example .env
+   sed -i "s/your_secure_secret_key_here/$(python3 -c 'import secrets; print(secrets.token_hex(32))')/g" .env
+   ```
+
+5. **Set up the database**
 
    If this is your first time running the app, initialise and apply the database migrations:
 
@@ -98,13 +113,13 @@ The database consists of four core models:
 
    > If a migration folder doesn't exist yet, run `flask db init` first, then `flask db migrate -m "init"`, then `flask db upgrade`.
 
-5. **Run the application**
+6. **Run the application**
 
    ```bash
    python app.py
    ```
 
-6. **Open in your browser**
+7. **Open in your browser**
 
    Navigate to [http://localhost:5000](http://localhost:5000)
 
