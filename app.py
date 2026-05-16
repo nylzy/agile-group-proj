@@ -318,7 +318,13 @@ def social():
             'days_left': days_left
         })
 
-    return render_template('social.html', recent_friend_logs=recent_friend_logs, friends_leaderboard=friends_leaderboard, events=event_data)
+        friend_log_scores = {
+            log.log_id: z_to_percentile(log.standardised_score)
+            for log in recent_friend_logs
+            if log.standardised_score is not None
+        }
+
+    return render_template('social.html', recent_friend_logs=recent_friend_logs, friends_leaderboard=friends_leaderboard, events=event_data, friend_log_scores=friend_log_scores)
 
 @app.route('/add_friend', methods=['POST'])
 @login_required
