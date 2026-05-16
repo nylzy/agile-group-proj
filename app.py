@@ -1,5 +1,6 @@
 from datetime import datetime
 import math
+import re
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 from flask_login import UserMixin, LoginManager, login_user, logout_user, login_required, current_user
 from config import Config
@@ -301,10 +302,113 @@ def add_friend():
     flash(f'Successfully added {friend.username} as a friend!', 'success')
     return redirect(url_for('social'))
 
-@app.route('/profile')
+@app.route('/profile', methods=['GET', 'POST'])
 @login_required
 def profile():
-    return render_template('profile.html')
+    if request.method == 'POST':
+        form_action = request.form.get('form_action')
+
+        if form_action == 'update_email':
+            current_email = request.form.get('current_email', '').strip()
+            new_email = request.form.get('new_email', '').strip()
+            confirm_email = request.form.get('confirm_email', '').strip()
+            email_pattern = r'^[^\s@]+@[^\s@]+\.[^\s@]+$'
+
+            if current_email.lower() != current_user.email.lower():
+                flash('Current email does not match your account email.', 'security-danger')
+                return redirect(url_for('profile', section='security'))
+
+            if not re.match(email_pattern, new_email):
+                flash('Please enter a valid new email address.', 'security-danger')
+                return redirect(url_for('profile', section='security'))
+
+            if new_email.lower() != confirm_email.lower():
+                flash('New email addresses do not match.', 'security-danger')
+                return redirect(url_for('profile', section='security'))
+
+            existing_user = User.query.filter(
+                User.email == new_email,
+                User.user_id != current_user.user_id
+            ).first()
+            if existing_user:
+                flash('Email is already in use.', 'security-danger')
+                return redirect(url_for('profile', section='security'))
+
+            current_user.email = new_email
+            db.session.commit()
+
+            flash('Email updated successfully.', 'security-success')
+            return redirect(url_for('profile', section='security'))
+
+        if form_action == 'update_password':
+            current_password = request.form.get('current_password', '')
+            new_password = request.form.get('new_password', '')
+            confirm_password = request.form.get('confirm_password', '')
+
+            if not current_user.check_password(current_password):
+                flash('Current password is incorrect.', 'security-danger')
+                return redirect(url_for('profile', section='security'))
+
+            if len(new_password) < 8:
+                flash('New password must be at least 8 characters.', 'security-danger')
+                return redirect(url_for('profile', section='security'))
+
+            if new_password != confirm_password:
+                flash('New passwords do not match.', 'security-danger')
+                return redirect(url_for('profile', section='security'))
+
+            current_user.set_password(new_password)
+            db.session.commit()
+
+            flash('Password updated successfully.', 'security-success')
+            return redirect(url_for('profile', section='security'))
+
+        username = request.form.get('username', '').strip()
+        firstname = request.form.get('firstname', '').strip()
+        lastname = request.form.get('lastname', '').strip()
+        bio = request.form.get('bio', '').strip()
+
+        if not username:
+            flash('Username cannot be empty.', 'profile-danger')
+            return redirect(url_for('profile'))
+
+        existing_user = User.query.filter(
+            User.username == username,
+            User.user_id != current_user.user_id
+        ).first()
+        if existing_user:
+            flash('Username is already taken.', 'profile-danger')
+            return redirect(url_for('profile'))
+
+        current_user.username = username
+        current_user.firstname = firstname or None
+        current_user.lastname = lastname or None
+        current_user.bio = bio[:500] or None
+        db.session.commit()
+
+        flash('Profile details updated.', 'profile-success')
+        return redirect(url_for('profile'))
+
+    activity_logs = Log.query.filter_by(
+        user_id=current_user.user_id
+    ).order_by(Log.completed_on.desc()).all()
+    activity_logs = [log for log in activity_logs if log.exercise is not None]
+    activity_scores = {
+        log.log_id: z_to_percentile(log.standardised_score)
+        for log in activity_logs
+        if log.standardised_score is not None
+    }
+    activity_types = sorted({
+        log.exercise.exercise_type
+        for log in activity_logs
+    })
+
+    return render_template(
+        'profile.html',
+        activity_logs=activity_logs,
+        activity_scores=activity_scores,
+        activity_types=activity_types
+    )
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)

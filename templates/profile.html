@@ -6,7 +6,10 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='profile-styles.css') }}">
 {% endblock %}
 
+{% block flashes %}{% endblock %}
+
 {% block content %}
+{% set active_section = request.args.get('section', 'details') %}
 
     <!-- Main Content -->
     <div class="split-layout">
@@ -15,18 +18,24 @@
     <aside class="left-panel">
         <div class="profile-summary">
             <img src="{{ url_for('static', filename='images/generic_profile_pic.png') }}" alt="Avatar" id="sidebar-avatar">
-            <div class="name">Alex Johnson</div>
-            <div class="handle">@alexj · Rank #14</div>
+            <div class="name">
+                {% if current_user.firstname or current_user.lastname %}
+                    {{ current_user.firstname or '' }} {{ current_user.lastname or '' }}
+                {% else %}
+                    {{ current_user.username }}
+                {% endif %}
+            </div>
+            <div class="handle">@{{ current_user.username }}</div>
         </div>
 
         <ul class="panel-nav">
-            <li><a href="#" class="active" data-section="details">
+            <li><a href="#" class="{% if active_section == 'details' %}active{% endif %}" data-section="details">
                 <i class="bi bi-person-fill"></i> Profile
             </a></li>
-            <li><a href="#" data-section="security">
-                <i class="bi bi-security"></i> Security
+            <li><a href="#" class="{% if active_section == 'security' %}active{% endif %}" data-section="security">
+                <i class="bi bi-shield-lock"></i> Security
             </a></li>
-            <li><a href="#" data-section="activity">
+            <li><a href="#" class="{% if active_section == 'activity' %}active{% endif %}" data-section="activity">
                 <i class="bi bi-activity"></i> Activity Log
             </a></li>
         </ul>
@@ -36,7 +45,7 @@
     <main class="right-panel">
 
         <!-- Section 1: Profile Details -->
-        <div class="section active" id="section-details">
+        <div class="section {% if active_section == 'details' %}active{% endif %}" id="section-details">
             <div class="section-title">Profile</div>
             <div class="section-subtitle">Update your personal information and fitness preferences.</div>
 
@@ -46,7 +55,7 @@
                     <img src="{{ url_for('static', filename='images/generic_profile_pic.png') }}" alt="Avatar" style="width: 384px; height: 384px;">
                     <div class="avatar-actions">
                         <button class="btn btn-primary" style="font-size: 0.8rem; padding: 7px 16px">
-                            <i class="bi bi-upload"></i> Upload photo
+                        Upload photo
                         </button>
                         <button class="btn btn-secondary" style="font-size: 0.8rem; padding: 7px 16px; margin-left: 6px">
                             Remove</button>
@@ -56,55 +65,46 @@
                 <!-- Name fields -->
                 <div style="flex: 1; min-width: 0;">
                 <div class="section-title">Personal Information</div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>First name</label>
-                            <input type="text" value="Alex">
+                {% with messages = get_flashed_messages(with_categories=true, category_filter=['profile-success', 'profile-danger']) %}
+                    {% if messages %}
+                        <div class="profile-flash-container">
+                            {% for category, message in messages %}
+                                <div class="alert alert-{{ category.split('-')[1] }} alert-dismissible fade show" role="alert">
+                                    {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                            {% endfor %}
                         </div>
-
-                        <div class="form-group">
-                            <label>Last name</label>
-                            <input type="text" value="Johnson">
-                        </div>
+                    {% endif %}
+                {% endwith %}
+                <form method="post" action="{{ url_for('profile') }}">
+                    <input type="hidden" name="form_action" value="update_profile">
+                    <div class="form-group">
+                        <label for="username">Username</label>
+                        <input type="text" id="username" name="username" value="{{ current_user.username }}" maxlength="50" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="firstname">First name</label>
+                        <input type="text" id="firstname" name="firstname" value="{{ current_user.firstname or '' }}" placeholder="Enter first name" maxlength="50">
                     </div>
 
                     <div class="form-group">
-                        <label>Username</label>
-                        <input type="text" value="alexj">
+                        <label for="lastname">Last name</label>
+                        <input type="text" id="lastname" name="lastname" value="{{ current_user.lastname or '' }}" placeholder="Enter last name" maxlength="50">
                     </div>
 
                     <div class="form-group">
-                        <label>Bio</label>
-                        <textarea class="profile-bio" rows="3" placeholder="Tell others about your fitness journey…">Marathon runner chasing a sub-3hr finish</textarea>
-                    </div>
-                </div>
-
-                <!-- Fitness Info -->
-                <div style="flex: 1; min-width: 0;">
-                    <div class="section-title">Fitness Info</div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Age</label>
-                            <input type="number" value="27">
-                        </div>
-                        <div class="form-group">
-                            <label>Weight (kg)</label>
-                            <input type="number" value="74">
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Height (cm)</label>
-                            <input type="number" value="178">
-                        </div>
+                        <label for="bio">Bio (max. 500 characters)</label>
+                        <textarea class="profile-bio" id="bio" name="bio" rows="3" maxlength="500" placeholder="Tell others about your fitness journey... (500 character limit)">{{ current_user.bio or '' }}</textarea>
                     </div>
 
                     <div class="d-flex gap-3 mt-2">
-                        <button class="btn btn-primary"><i class="bi bi-check-lg"></i> Save changes</button>
-                        <button class="btn btn-secondary">Discard</button>
+                        <button type="submit" class="btn btn-primary">Save changes</button>
+                        <button type="reset" class="btn btn-secondary">Discard</button>
                     </div>
+                </form>
+                
                 </div>
 
             <div class="divider"></div>
@@ -113,140 +113,126 @@
         </div>
 
         <!-- Section 2: Security -->
-        <div class="section" id="section-security">
+        <div class="section {% if active_section == 'security' %}active{% endif %}" id="section-security">
 
             <div class="section-title">Security</div>
             <div class="section-subtitle">Change your account security information.</div>
+            {% with messages = get_flashed_messages(with_categories=true, category_filter=['security-success', 'security-danger']) %}
+                {% if messages %}
+                    <div class="profile-flash-container">
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category.split('-')[1] }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
 
             <div style="display:flex; gap:32px; align-items:flex-start; margin-bottom:8px;">
             <!-- Email -->
                 <div style="flex: 1; min-width: 0;">
+                    <form method="post" action="{{ url_for('profile') }}">
+                    <input type="hidden" name="form_action" value="update_email">
                     <div class="form-group">
-                        <label>Current email</label>
-                        <input type="email" value="alex@email.com">
+                        <label for="current_email">Current email</label>
+                        <input type="email" id="current_email" name="current_email" placeholder="Enter your current e-mail here" required>
                     </div>
                     <div class="form-row">
                         <div class="form-group">
-                            <label>New email</label>
-                            <input type="email" placeholder="Enter e-mail here">
+                            <label for="new_email">New email</label>
+                            <input type="email" id="new_email" name="new_email" placeholder="Enter e-mail here" maxlength="50" required>
                         </div>
                         <div class="form-group">
-                            <label>Confirm new email</label>
-                            <input type="email" placeholder="Re-enter e-mail here">
+                            <label for="confirm_email">Confirm new email</label>
+                            <input type="email" id="confirm_email" name="confirm_email" placeholder="Re-enter e-mail here" maxlength="50" required>
                         </div>
                     </div>
-                    <button class="btn btn-primary" style="margin-bottom:28px"><i class="bi bi-lock-fill"></i>
-                        Update email</button>
+                    <button type="submit" class="btn btn-primary" style="margin-bottom:28px">Update email</button>
+                    </form>
                 </div>
 
             <!-- Password -->
                 <div style="flex: 1; min-width: 0;">
+                    <form method="post" action="{{ url_for('profile') }}">
+                    <input type="hidden" name="form_action" value="update_password">
                     <div class="form-group">
-                        <label>Current password</label>
-                        <input type="password" placeholder="••••••••">
+                        <label for="current_password">Current password</label>
+                        <input type="password" id="current_password" name="current_password" placeholder="Enter your current password here" required>
                     </div>
                     <div class="form-row">
                         <div class="form-group">
-                            <label>New password</label>
-                            <input type="password" placeholder="••••••••">
+                            <label for="new_password">New password</label>
+                            <input type="password" id="new_password" name="new_password" placeholder="Enter your new password here" minlength="8" required>
                         </div>
                         <div class="form-group">
-                            <label>Confirm new password</label>
-                            <input type="password" placeholder="••••••••">
+                            <label for="confirm_password">Confirm new password</label>
+                            <input type="password" id="confirm_password" name="confirm_password" placeholder="Re-enter your new password here" minlength="8" required>
                         </div>
                     </div>
-                    <button class="btn btn-primary" style="margin-bottom:28px"><i class="bi bi-lock-fill"></i>
-                        Update password</button>
+                    <button type="submit" class="btn btn-primary" style="margin-bottom:28px">Update password</button>
+                    </form>
                 </div>
             </div>
 
         </div>
 
         <!-- Activity Log -->
-        <div class="section" id="section-activity">
+        <div class="section {% if active_section == 'activity' %}active{% endif %}" id="section-activity">
             <div class="section-title">Activity Log</div>
             <div class="section-subtitle">Your full history of logged workouts and earned FitScores.</div>
 
             <!-- Filters -->
             <div class="activity-filters">
-                <button class="filter-btn active">All</button>
-                <button class="filter-btn">Running</button>
-                <button class="filter-btn">Cycling</button>
-                <button class="filter-btn">Lifting</button>
-                <button class="filter-btn">Swimming</button>
+                <button class="filter-btn active" data-activity-filter="all">All</button>
+                {% for activity_type in activity_types %}
+                    <button class="filter-btn" data-activity-filter="{{ activity_type }}">{{ activity_type }}</button>
+                {% endfor %}
             </div>
 
             <div class="activity-list">
-
-                <div class="activity-item">
-                    <div class="activity-icon icon-run"><i class="bi bi-lightning-charge-fill"></i></div>
-                    <div class="activity-info">
-                        <div class="activity-name">Morning 10K Run</div>
-                        <div class="activity-meta">Today · 6:45 AM · Riverside Loop</div>
-                    </div>
-                    <div class="activity-stats">
-                        <div class="stat-block"><div class="val">10.2 km</div><div class="lbl">Distance</div></div>
-                        <div class="stat-block"><div class="val">51:34</div><div class="lbl">Time</div></div>
-                        <div class="stat-block"><div class="val">148</div><div class="lbl">BPM avg</div></div>
-                    </div>
-                    <div class="score-badge">+320</div>
-                </div>
-
-                <div class="activity-item">
-                    <div class="activity-icon icon-lift"><i class="bi bi-trophy-fill"></i></div>
-                    <div class="activity-info">
-                        <div class="activity-name">Upper Body Strength</div>
-                        <div class="activity-meta">Yesterday · 5:30 PM · Home gym</div>
-                    </div>
-                    <div class="activity-stats">
-                        <div class="stat-block"><div class="val">8 sets</div><div class="lbl">Volume</div></div>
-                        <div class="stat-block"><div class="val">48 min</div><div class="lbl">Time</div></div>
-                        <div class="stat-block"><div class="val">134</div><div class="lbl">BPM avg</div></div>
-                    </div>
-                    <div class="score-badge">+280</div>
-                </div>
-
-                <div class="activity-item">
-                    <div class="activity-icon icon-cycle"><i class="bi bi-bicycle"></i></div>
-                    <div class="activity-info">
-                        <div class="activity-name">Evening Ride</div>
-                        <div class="activity-meta">Mon 14 Apr · 7:10 PM · City circuit</div>
-                    </div>
-                    <div class="activity-stats">
-                        <div class="stat-block"><div class="val">32.5 km</div><div class="lbl">Distance</div></div>
-                        <div class="stat-block"><div class="val">1h 12m</div><div class="lbl">Time</div></div>
-                        <div class="stat-block"><div class="val">142</div><div class="lbl">BPM avg</div></div>
-                    </div>
-                    <div class="score-badge">+410</div>
-                </div>
-
-                <div class="activity-item">
-                    <div class="activity-icon icon-swim"><i class="bi bi-water"></i></div>
-                    <div class="activity-info">
-                        <div class="activity-name">Pool Laps — Sprint Set</div>
-                        <div class="activity-meta">Sun 13 Apr · 8:00 AM · Aquatic Centre</div>
-                    </div>
-                    <div class="activity-stats">
-                        <div class="stat-block"><div class="val">2.0 km</div><div class="lbl">Distance</div></div>
-                        <div class="stat-block"><div class="val">44 min</div><div class="lbl">Time</div></div>
-                        <div class="stat-block"><div class="val">156</div><div class="lbl">BPM avg</div></div>
-                    </div>
-                    <div class="score-badge">+360</div>
-                </div>
-
-                <div class="activity-item">
-                    <div class="activity-icon icon-run"><i class="bi bi-lightning-charge-fill"></i></div>
-                    <div class="activity-info">
-                        <div class="activity-name">Tempo Run — 8K</div>
-                        <div class="activity-meta">Sat 12 Apr · 7:00 AM · Park trail</div>
-                    </div>
-                    <div class="activity-stats">
-                        <div class="stat-block"><div class="val">8.1 km</div><div class="lbl">Distance</div></div>
-                        <div class="stat-block"><div class="val">38:22</div><div class="lbl">Time</div></div>
-                        <div class="stat-block"><div class="val">162</div><div class="lbl">BPM avg</div></div>
-                    </div>
-                    <div class="score-badge">+295</div>
-                </div>
+                {% if activity_logs %}
+                    {% for log in activity_logs %}
+                        {% set exercise_type = log.exercise.exercise_type %}
+                        {% if exercise_type == 'Lifting' %}
+                            {% set icon_class = 'icon-lift' %}
+                            {% set icon_name = 'bi-trophy-fill' %}
+                        {% elif exercise_type == 'Cycling' %}
+                            {% set icon_class = 'icon-cycle' %}
+                            {% set icon_name = 'bi-bicycle' %}
+                        {% elif exercise_type == 'Swimming' %}
+                            {% set icon_class = 'icon-swim' %}
+                            {% set icon_name = 'bi-water' %}
+                        {% else %}
+                            {% set icon_class = 'icon-run' %}
+                            {% set icon_name = 'bi-lightning-charge-fill' %}
+                        {% endif %}
+                        <div class="activity-item" data-activity-type="{{ exercise_type }}">
+                            <div class="activity-icon {{ icon_class }}"><i class="bi {{ icon_name }}"></i></div>
+                            <div class="activity-info">
+                                <div class="activity-name">{{ log.exercise.exercise_name }}</div>
+                                <div class="activity-meta">{{ log.completed_on.strftime('%b %d, %Y %I:%M %p') }} - {{ exercise_type }}</div>
+                            </div>
+                            <div class="activity-stats">
+                                <div class="stat-block">
+                                    <div class="val">{{ "%.2f"|format(log.stat_value|abs) }} {{ log.exercise.units }}</div>
+                                    <div class="lbl">Result</div>
+                                </div>
+                            </div>
+                            <div class="score-badge">
+                                {% if log.log_id in activity_scores %}
+                                    {{ activity_scores[log.log_id] }}
+                                {% else %}
+                                    N/A
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                    <div class="activity-empty" id="activity-filter-empty" hidden>No activity found for this filter.</div>
+                {% else %}
+                    <div class="activity-empty">No workouts logged yet.</div>
+                {% endif %}
 
             </div>
         </div>
@@ -277,14 +263,20 @@
     $('.filter-btn').on('click', function() {
         $('.filter-btn').removeClass('active');
         $(this).addClass('active');
-    });
 
-    // Save toast
-    $(document).on('click', '.save-btn', function() {
-        const $toast = $('#save-toast');
-        $toast.fadeIn(200);
-        setTimeout(() => $toast.fadeOut(400), 2200);
-        // TODO: replace with real AJAX POST
+        const filter = $(this).data('activity-filter');
+        let visibleCount = 0;
+
+        $('.activity-item').each(function() {
+            const shouldShow = filter === 'all' || $(this).data('activity-type') === filter;
+            $(this).toggle(shouldShow);
+            if (shouldShow) {
+                visibleCount += 1;
+            }
+        });
+
+        $('#activity-filter-empty').prop('hidden', visibleCount !== 0);
     });
+    
 </script>
 {% endblock %}

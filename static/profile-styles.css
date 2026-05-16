@@ -129,6 +129,14 @@
 
 .activity-list { display: flex; flex-direction: column; gap: 10px; }
 
+.activity-empty {
+    background: #1a1d27;
+    border: 1px solid #2e3250;
+    border-radius: 10px;
+    color: #b0b3c1;
+    padding: 18px 20px;
+}
+
 .activity-item {
     background: #1a1d27;
     border: 1px solid #2e3250;
