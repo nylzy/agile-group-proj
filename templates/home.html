@@ -123,19 +123,34 @@
                 datasets: [{
                     label: 'Performance Score',
                     data: data,
-                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                    borderColor: 'rgba(54, 162, 235, 1)',
-                    pointBackgroundColor: 'rgba(54, 162, 235, 1)',
+                    backgroundColor: 'rgba(0, 200, 150, 0.2)',
+                    borderColor: 'rgba(0, 200, 150, 1)',
+                    pointBackgroundColor: 'rgba(0, 200, 150, 1)',
                     pointBorderColor: '#fff',
                     pointHoverBackgroundColor: '#fff',
-                    pointHoverBorderColor: 'rgba(54, 162, 235, 1)'
+                    pointHoverBorderColor: 'rgba(0, 200, 150, 1)'
                 }]
             },
             options: {
                 scales: {
                     r: {
                         angleLines: {
-                            display: true
+                            display: true,
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        },
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        },
+                        pointLabels: {
+                            color: '#e8eaf0',
+                            font: {
+                                size: 14
+                            }
+                        },
+                        ticks: {
+                            backdropColor: 'transparent',
+                            color: '#aaa',
+                            stepSize: 20
                         },
                         suggestedMin: 0,
                         suggestedMax: 100
