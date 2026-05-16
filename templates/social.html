@@ -35,7 +35,7 @@
                                 <div class="activity-content">
                                     <strong>{{ log.exercise.exercise_name }}:</strong> Completed with a value of {{ log.stat_value | abs if log.stat_value < 0 else log.stat_value }} {{ log.exercise.units }}.
                                     <div class="activity-stats">
-                                        <span><i class="bi bi-activity"></i> Score: {{ "%.2f"|format(log.standardised_score) if log.standardised_score is not none else "N/A" }}</span>
+                                        <span><i class="bi bi-activity"></i> Score: {{ friend_log_scores[log.log_id] if log.log_id in friend_log_scores else "N/A" }}</span>
                                     </div>
                                 </div>
                             </div>
