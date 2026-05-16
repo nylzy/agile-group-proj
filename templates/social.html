@@ -53,29 +53,23 @@
                 <div class="mb-5">
                     <h2 class="section-title"><i class="bi bi-trophy-fill"></i> Ongoing Events</h2>
 
-                    <div class="event-card">
-                        <div class="event-title">30-Day Step Challenge</div>
-                        <div class="event-meta">Ends in 5 days • 1,240 participants</div>
-                        <div class="d-flex justify-content-between mb-2">
-                            <small>Your Progress</small>
-                            <small>75%</small>
+                    {% if events %}
+                        {% for event in events %}
+                        <div class="event-card">
+                            <div class="event-title">{{ event.title }}</div>
+                            <div class="event-meta">Ends in {{ event.days_left }} days • {{ event.participants_count }} participants</div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <small>Your Progress</small>
+                                <small>{{ event.progress_percentage }}%</small>
+                            </div>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar-fill" style="width: {{ event.progress_percentage }}%;"></div>
+                            </div>
                         </div>
-                        <div class="progress-bar-container">
-                            <div class="progress-bar-fill" style="width: 75%;"></div>
-                        </div>
-                    </div>
-
-                    <div class="event-card">
-                        <div class="event-title">Summer Shred Master</div>
-                        <div class="event-meta">Ends in 12 days • 850 participants</div>
-                        <div class="d-flex justify-content-between mb-2">
-                            <small>Your Progress</small>
-                            <small>40%</small>
-                        </div>
-                        <div class="progress-bar-container">
-                            <div class="progress-bar-fill" style="width: 40%;"></div>
-                        </div>
-                    </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted">No ongoing events at the moment. Check back later!</p>
+                    {% endif %}
                 </div>
 
                 <!-- Friend Leaderboard -->

@@ -52,6 +52,17 @@ class Friendship(db.Model):
     friendship_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     user_id_1 = db.Column(db.Integer, db.ForeignKey('Users.user_id'), nullable=False)
     user_id_2 = db.Column(db.Integer, db.ForeignKey('Users.user_id'), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+class Event(db.Model):
+    __tablename__ = 'Events'
+    event_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    title = db.Column(db.String(100), nullable=False)
+    target_exercise_type = db.Column(db.String(50), nullable=False)
+    target_sessions = db.Column(db.Integer, nullable=False)
+    start_date = db.Column(db.DateTime, nullable=False)
+    end_date = db.Column(db.DateTime, nullable=False)
+    participants_count = db.Column(db.Integer, default=0)
 
 
 def get_duplicate_exercise_names():

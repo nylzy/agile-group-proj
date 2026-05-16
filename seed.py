@@ -1,6 +1,7 @@
 from app import app
 from extensions import db
-from models import Exercise
+from models import Exercise, Event
+from datetime import datetime, timedelta
 
 with app.app_context():
     db.create_all()
@@ -53,6 +54,31 @@ with app.app_context():
         existing_exercise = Exercise.query.filter_by(exercise_name=exercise.exercise_name).first()
         if not existing_exercise:
             db.session.add(exercise)
+
+    events = [
+
+        Event(
+            title="Summer Shred Master",
+            target_exercise_type="Cardio",
+            target_sessions=20,
+            start_date=datetime.utcnow() - timedelta(days=5),
+            end_date=datetime.utcnow() + timedelta(days=12),
+            participants_count=850
+        ),
+        Event(
+            title="May Swimming Challenge",
+            target_exercise_type="Swimming",
+            target_sessions=5,
+            start_date=datetime.utcnow() - timedelta(days=10),
+            end_date=datetime.utcnow() + timedelta(days=20),
+            participants_count=420
+        )
+    ]
+    
+    for event in events:
+        existing_event = Event.query.filter_by(title=event.title).first()
+        if not existing_event:
+            db.session.add(event)
             
     db.session.commit()
     print("Done!")
