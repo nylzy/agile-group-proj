@@ -155,6 +155,7 @@ pip install -r requirements.txt
 ```
 
 For Selenium tests, Chrome and ChromeDriver are also required:
+Instructions below are only if you don't already have either installed.
 
 ```bash
 # Ubuntu / Debian
