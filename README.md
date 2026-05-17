@@ -105,18 +105,19 @@ The database consists of four core models:
 
 5. **Set up the database**
 
-   If this is your first time running the app, initialise and apply the database migrations:
+   If this is your first time running the app, create the database tables and populate the initial seed data:
 
    ```bash
-   flask db upgrade
+   python seed.py
+   flask db stamp head
    ```
 
-   > If a migration folder doesn't exist yet, run `flask db init` first, then `flask db migrate -m "init"`, then `flask db upgrade`.
+   > This will generate `app.db`, create all necessary tables, and mark the database migrations as up-to-date.
 
 6. **Run the application**
 
    ```bash
-   python app.py
+   flask run
    ```
 
 7. **Open in your browser**
