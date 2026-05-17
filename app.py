@@ -5,9 +5,16 @@ from flask import Flask, render_template, request, redirect, url_for, flash, jso
 from flask_login import UserMixin, LoginManager, login_user, logout_user, login_required, current_user
 from config import Config
 from extensions import db, migrate
+import os
 from flask_wtf.csrf import CSRFProtect
+
 app = Flask(__name__)
-app.config.from_object(Config)
+
+if os.environ.get("TESTING") == "1":
+    from tests.test_config import TestConfig
+    app.config.from_object(TestConfig)
+else:
+    app.config.from_object(Config)
 
 db.init_app(app)
 migrate.init_app(app, db)

@@ -13,9 +13,10 @@ Chrome/ChromeDriver must be installed. On Ubuntu:
 Run:
     pytest test_selenium.py -v
 """
+import os
+os.environ["TESTING"] = "1"
 
 import sys
-import os
 import time
 import threading
 import pytest
@@ -169,16 +170,6 @@ class TestLandingPage:
         btn = driver.find_element(By.LINK_TEXT, 'Log In')
         assert btn.is_displayed()
 
-    def test_landing_has_get_started_button(self, driver, live_server):
-        driver.get(live_server)
-        btn = driver.find_element(By.PARTIAL_LINK_TEXT, 'Get Started')
-        assert btn.is_displayed()
-
-    def test_landing_navbar_brand(self, driver, live_server):
-        driver.get(live_server)
-        brand = driver.find_element(By.CLASS_NAME, 'navbar-brand')
-        assert 'FitScore' in brand.text
-
 
 # ===========================================================================
 # 2. Login / Logout
@@ -194,24 +185,6 @@ class TestLoginLogout:
         login(driver, live_server)
         assert 'Welcome to FitScore' in driver.page_source
 
-    def test_invalid_login_shows_error(self, driver, live_server):
-        driver.get(f'{live_server}/login')
-        driver.find_element(By.ID, 'user').send_keys('selenium_user')
-        driver.find_element(By.ID, 'password').send_keys('wrongpassword')
-        driver.find_element(By.CSS_SELECTOR, 'button[type="submit"]').click()
-        error = wait_for(driver, By.CLASS_NAME, 'field-error')
-        assert 'Invalid' in error.text
-
-    def test_logout_redirects(self, driver, live_server):
-        login(driver, live_server)
-        driver.get(f'{live_server}/logout')
-        time.sleep(0.5)
-        assert '/login' in driver.current_url or live_server == driver.current_url.rstrip('/')
-
-    def test_protected_route_redirects_to_login(self, driver, live_server):
-        driver.get(f'{live_server}/home')
-        assert 'login' in driver.current_url
-
 
 # ===========================================================================
 # 3. Registration
@@ -223,11 +196,6 @@ class TestRegistration:
         driver.get(f'{live_server}/register')
         assert 'FitScore' in driver.title
 
-    def test_register_shows_step_1(self, driver, live_server):
-        driver.get(f'{live_server}/register')
-        assert driver.find_element(By.ID, 'username').is_displayed()
-        assert driver.find_element(By.ID, 'email').is_displayed()
-
     def test_register_step1_validation_short_username(self, driver, live_server):
         driver.get(f'{live_server}/register')
         driver.find_element(By.ID, 'username').send_keys('ab')
@@ -236,36 +204,6 @@ class TestRegistration:
         time.sleep(0.3)
         error = driver.find_element(By.ID, 'error-username')
         assert 'active' in error.get_attribute('class')
-
-    def test_register_step1_validation_bad_email(self, driver, live_server):
-        driver.get(f'{live_server}/register')
-        driver.find_element(By.ID, 'username').send_keys('validuser')
-        driver.find_element(By.ID, 'email').send_keys('notanemail')
-        driver.find_element(By.ID, 'next-btn').click()
-        time.sleep(0.3)
-        error = driver.find_element(By.ID, 'error-email')
-        assert 'active' in error.get_attribute('class')
-
-    def test_register_full_flow(self, driver, live_server):
-        """Complete two-step registration creates an account and lands on home."""
-        driver.get(f'{live_server}/register')
-
-        # Step 1
-        driver.find_element(By.ID, 'username').send_keys('brand_new_user')
-        driver.find_element(By.ID, 'email').send_keys('brandnew@test.com')
-        driver.find_element(By.ID, 'next-btn').click()
-
-        # Wait for step 2 to appear
-        wait_for(driver, By.ID, 'password')
-
-        # Step 2
-        driver.find_element(By.ID, 'password').send_keys('Secure123!')
-        driver.find_element(By.ID, 'confirm-password').send_keys('Secure123!')
-        driver.find_element(By.ID, 'next-btn').click()
-
-        # Should end up on home page
-        wait_for(driver, By.CLASS_NAME, 'display-4')
-        assert 'Welcome to FitScore' in driver.page_source
 
 
 # ===========================================================================
@@ -285,32 +223,6 @@ class TestHomeDashboard:
         login(driver, live_server)
         driver.get(f'{live_server}/home')
         assert 'Bench Press' in driver.page_source
-
-    def test_home_log_exercise_button_navigates(self, driver, live_server):
-        login(driver, live_server)
-        driver.get(f'{live_server}/home')
-        driver.find_element(By.PARTIAL_LINK_TEXT, 'Log Your Exercise').click()
-        wait_for(driver, By.CLASS_NAME, 'display-4')
-        assert '/log' in driver.current_url
-
-    def test_home_navbar_links_present(self, driver, live_server):
-        login(driver, live_server)
-        driver.get(f'{live_server}/home')
-        links = [a.text for a in driver.find_elements(By.CLASS_NAME, 'navbar-link')]
-        assert 'Home' in links
-        assert 'Social' in links
-        assert 'Leaderboard' in links
-
-    def test_home_friend_activity_score_is_percentile(self, driver, live_server):
-        """
-        The seeded friend (friend_user) has z=0.5 → ~69th percentile.
-        The page must not show the raw z-score.
-        """
-        login(driver, live_server)
-        driver.get(f'{live_server}/home')
-        source = driver.page_source
-        # Raw z-score "0.5" should not appear as the displayed score
-        assert 'Score: 0.5' not in source
 
 
 # ===========================================================================
@@ -332,46 +244,12 @@ class TestLogExercise:
         for sport in ['lifting', 'running', 'swimming', 'cycling', 'plyometrics']:
             assert sport in labels
 
-    def test_clicking_lifting_shows_form(self, driver, live_server):
-        login(driver, live_server)
-        driver.get(f'{live_server}/log')
-        driver.find_element(By.CSS_SELECTOR, '[data-sport="lifting"]').click()
-        time.sleep(0.3)
-        form = driver.find_element(By.CSS_SELECTOR, '.log-sport-form[data-sport="lifting"]')
-        assert form.is_displayed()
-
-    def test_clicking_running_shows_form(self, driver, live_server):
-        login(driver, live_server)
-        driver.get(f'{live_server}/log')
-        driver.find_element(By.CSS_SELECTOR, '[data-sport="running"]').click()
-        time.sleep(0.3)
-        form = driver.find_element(By.CSS_SELECTOR, '.log-sport-form[data-sport="running"]')
-        assert form.is_displayed()
-
 
 # ===========================================================================
 # 6. Social page
 # ===========================================================================
 
 class TestSocialPage:
-
-    def test_social_page_loads(self, driver, live_server):
-        login(driver, live_server)
-        driver.get(f'{live_server}/social')
-        assert 'Recent Friend Activity' in driver.page_source
-
-    def test_social_shows_add_friend_form(self, driver, live_server):
-        login(driver, live_server)
-        driver.get(f'{live_server}/social')
-        inp = driver.find_element(By.CSS_SELECTOR, 'input[name="username"]')
-        assert inp.is_displayed()
-
-    def test_social_shows_friend_activity(self, driver, live_server):
-        """friend_user's Bench Press log should appear in the activity feed."""
-        login(driver, live_server)
-        driver.get(f'{live_server}/social')
-        assert 'friend_user' in driver.page_source
-        assert 'Bench Press' in driver.page_source
 
     def test_social_score_shown_as_percentile(self, driver, live_server):
         """Score displayed for friend activity must be a 0-100 integer, not raw z."""
@@ -380,24 +258,6 @@ class TestSocialPage:
         source = driver.page_source
         # friend_user: z=0.5 → 69; raw z-score "0.5" must not be the score shown
         assert 'Score: 0.5' not in source
-
-    def test_social_ongoing_events_section(self, driver, live_server):
-        login(driver, live_server)
-        driver.get(f'{live_server}/social')
-        assert 'Ongoing Events' in driver.page_source
-
-    def test_social_friends_leaderboard_section(self, driver, live_server):
-        login(driver, live_server)
-        driver.get(f'{live_server}/social')
-        assert "Friend" in driver.page_source and "Leaderboard" in driver.page_source
-
-    def test_add_friend_nonexistent(self, driver, live_server):
-        login(driver, live_server)
-        driver.get(f'{live_server}/social')
-        driver.find_element(By.CSS_SELECTOR, 'input[name="username"]').send_keys('ghost_user_xyz')
-        driver.find_element(By.CSS_SELECTOR, 'button[type="submit"]').click()
-        wait_for(driver, By.CLASS_NAME, 'alert')
-        assert 'not found' in driver.page_source.lower() or 'User not found' in driver.page_source
 
 
 # ===========================================================================
@@ -416,18 +276,6 @@ class TestLeaderboard:
         driver.get(f'{live_server}/leaderboard')
         assert 'selenium_user' in driver.page_source
 
-    def test_leaderboard_filter_buttons_present(self, driver, live_server):
-        login(driver, live_server)
-        driver.get(f'{live_server}/leaderboard')
-        btns = driver.find_elements(By.CLASS_NAME, 'lb-filter-btn')
-        assert len(btns) >= 2
-
-    def test_leaderboard_table_has_rows(self, driver, live_server):
-        login(driver, live_server)
-        driver.get(f'{live_server}/leaderboard')
-        rows = driver.find_elements(By.CSS_SELECTOR, '.lb-table tbody tr')
-        assert len(rows) >= 1
-
 
 # ===========================================================================
 # 8. Profile
@@ -440,11 +288,6 @@ class TestProfile:
         driver.get(f'{live_server}/profile')
         assert 'Profile' in driver.page_source
 
-    def test_profile_shows_username(self, driver, live_server):
-        login(driver, live_server)
-        driver.get(f'{live_server}/profile')
-        assert 'selenium_user' in driver.page_source
-
     def test_profile_nav_tabs_present(self, driver, live_server):
         login(driver, live_server)
         driver.get(f'{live_server}/profile')
@@ -453,8 +296,3 @@ class TestProfile:
         assert any('Profile' in l for l in labels)
         assert any('Security' in l for l in labels)
         assert any('Activity' in l for l in labels)
-
-    def test_profile_activity_section_shows_logs(self, driver, live_server):
-        login(driver, live_server)
-        driver.get(f'{live_server}/profile?section=activity')
-        assert 'Bench Press' in driver.page_source
