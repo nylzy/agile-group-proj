@@ -12,6 +12,7 @@
 
             <!-- Login Form -->
             <form method="POST" action="/login" id="loginform">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                 <!-- Username -->
                 <div class="form-group">
                     <label for="user"><b>Username</b></label>

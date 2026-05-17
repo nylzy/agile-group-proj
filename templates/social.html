@@ -10,6 +10,7 @@
         <!-- Search & Add Friend Bar -->
         <div class="social-search-container">
             <form action="{{ url_for('add_friend') }}" method="POST" class="search-input-group">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                 <i class="bi bi-search py-2 ps-3 text-muted"></i>
                 <input type="text" name="username" placeholder="Enter username to add friend..." required>
                 <button type="submit" class="btn btn-primary px-4">Add Friend</button>

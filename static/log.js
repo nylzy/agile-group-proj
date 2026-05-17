@@ -27,9 +27,13 @@ function showFeedback(feedbackEl, message, isError) {
 }
 
 async function postLog(exerciseId, statValue) {
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
     const response = await fetch('/log', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrfToken
+        },
         body: JSON.stringify({ exercise_id: exerciseId, stat_value: statValue })
     });
     return response.json();

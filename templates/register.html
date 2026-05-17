@@ -185,12 +185,14 @@ $(function () {
             username: $('#username').val().trim(),
             email: $('#email').val().trim(),
         };
+        const csrfToken = $('meta[name="csrf-token"]').attr('content');
 
         $('#next-btn').prop('disabled', true).text('Checking...');
 
         $.ajax({
             url: '/register/check',
             method: 'POST',
+            headers: { 'X-CSRFToken': csrfToken },
             contentType: 'application/json',
             data: JSON.stringify(payload),
             success: function () {
@@ -211,10 +213,12 @@ $(function () {
             email:    $('#email').val().trim(),
             password: $('#password').val(),
         };
+        const csrfToken = $('meta[name="csrf-token"]').attr('content');
 
         $.ajax({
             url: '/register',
             method: 'POST',
+            headers: { 'X-CSRFToken': csrfToken },
             contentType: 'application/json',
             data: JSON.stringify(payload),
             success: function () { window.location.href = "{{ url_for('home') }}"; },

@@ -5,11 +5,13 @@ from flask import Flask, render_template, request, redirect, url_for, flash, jso
 from flask_login import UserMixin, LoginManager, login_user, logout_user, login_required, current_user
 from config import Config
 from extensions import db, migrate
+from flask_wtf.csrf import CSRFProtect
 app = Flask(__name__)
 app.config.from_object(Config)
 
 db.init_app(app)
 migrate.init_app(app, db)
+csrf = CSRFProtect(app)
 
 from models import User, Exercise, Log, Friendship, Event
 
