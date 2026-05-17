@@ -6,6 +6,7 @@ from flask_login import UserMixin, LoginManager, login_user, logout_user, login_
 from config import Config
 from extensions import db, migrate
 import os
+from flask_wtf.csrf import CSRFProtect
 
 app = Flask(__name__)
 
@@ -17,6 +18,7 @@ else:
 
 db.init_app(app)
 migrate.init_app(app, db)
+csrf = CSRFProtect(app)
 
 from models import User, Exercise, Log, Friendship, Event
 

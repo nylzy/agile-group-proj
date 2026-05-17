@@ -79,7 +79,8 @@
                 {% endwith %}
                 <form method="post" action="{{ url_for('profile') }}">
                     <input type="hidden" name="form_action" value="update_profile">
-                    <div class="form-group">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                    <div class="form-group mb-3">
                         <label for="username">Username</label>
                         <input type="text" id="username" name="username" value="{{ current_user.username }}" maxlength="50" required>
                     </div>
@@ -135,7 +136,8 @@
                 <div style="flex: 1; min-width: 0;">
                     <form method="post" action="{{ url_for('profile') }}">
                     <input type="hidden" name="form_action" value="update_email">
-                    <div class="form-group">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                    <div class="form-group mb-3">
                         <label for="current_email">Current email</label>
                         <input type="email" id="current_email" name="current_email" placeholder="Enter your current e-mail here" required>
                     </div>
@@ -157,7 +159,8 @@
                 <div style="flex: 1; min-width: 0;">
                     <form method="post" action="{{ url_for('profile') }}">
                     <input type="hidden" name="form_action" value="update_password">
-                    <div class="form-group">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                    <div class="form-group mb-3">
                         <label for="current_password">Current password</label>
                         <input type="password" id="current_password" name="current_password" placeholder="Enter your current password here" required>
                     </div>
